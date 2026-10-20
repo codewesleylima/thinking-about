@@ -1,0 +1,17 @@
+{
+  "name": "wzzy-ai",
+  "version": "0.1.0",
+  "description": "WZZY AI — agente CLI observável com ferramentas e verificação",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=24" },
+  "bin": { "wzzy": "bin/wzzy.js" },
+  "scripts": {
+    "start": "node bin/wzzy.js", "demo": "node bin/wzzy.js demo",
+    "test": "node --test", "check": "node scripts/check.js",
+    "evaluate": "node evaluations/run.js", "test:docker": "node scripts/docker-smoke.js",
+    "test:live": "node scripts/live-smoke.js", "test:package": "node scripts/package-smoke.js"
+  },
+  "files": ["bin/", "src/", "docs/", "wzzy.config.json", "WZZY.md", "README.md", "estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md"],
+  "license": "UNLICENSED"
+}

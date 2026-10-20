@@ -1,0 +1,9 @@
+node_modules/
+.wzzy/
+.env
+.env.*
+!.env.example
+coverage/
+*.tgz
+evaluations/results/*.json
+!evaluations/results/.gitkeep

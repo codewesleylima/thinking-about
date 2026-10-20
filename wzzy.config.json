@@ -1,0 +1,16 @@
+{
+  "provider": "ollama",
+  "model": "",
+  "baseUrl": "http://127.0.0.1:11434",
+  "writeRoots": ["src", "tests", "docs"],
+  "limits": {
+    "maxModelCalls": 24, "maxToolCalls": 80, "maxWallMs": 900000,
+    "requestTimeoutMs": 120000, "commandTimeoutMs": 60000,
+    "maxOutputTokens": 4096, "maxContextBytes": 180000,
+    "maxFileBytes": 1048576, "maxOutputBytes": 32768, "maxScanFiles": 2000,
+    "maxCostMicrousd": 1000000, "repeatLimit": 3
+  },
+  "pricing": null,
+  "docker": { "image": "node:24-bookworm-slim@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bdf74566a0ebe01daee5", "memory": "512m", "cpus": "1", "pids": 64 },
+  "commands": { "tests": { "argv": ["node", "--test"], "verification": true } }
+}
