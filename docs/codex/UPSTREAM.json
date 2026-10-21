@@ -1,0 +1,166 @@
+{
+  "repository": "https://github.com/openai/codex",
+  "packageVersion": "0.163.0",
+  "tag": "rust-v0.163.0",
+  "tagObject": "129b8ec7ee6f4511557a4856279f529025c25af4",
+  "commit": "83086188ae0614bd882818ff1aa23f3194962012",
+  "retrievedAt": "2026-10-21T06:06:58.610Z",
+  "method": "Pinned public source; SHA-256 of unmodified bytes; no upstream execution.",
+  "files": [
+    {
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/LICENSE",
+      "sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+      "bytes": 10926,
+      "lines": 202
+    },
+    {
+      "path": "NOTICE",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/NOTICE",
+      "sha256": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+      "bytes": 242,
+      "lines": 7
+    },
+    {
+      "path": "codex-rs/app-server/README.md",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/app-server/README.md",
+      "sha256": "d8e489c92adeb9d33bcbbcc5ff78431e839fdb2d6cefccb16812316bc22f5573",
+      "bytes": 39714,
+      "lines": 619
+    },
+    {
+      "path": "codex-rs/core/src/tools/router.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/core/src/tools/router.rs",
+      "sha256": "f97420f8a7b117563faad165ae7ad0d020545a2dfffbc46dbbfbdc5251fd939d",
+      "bytes": 15214,
+      "lines": 441
+    },
+    {
+      "path": "codex-rs/core/src/tools/orchestrator.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/core/src/tools/orchestrator.rs",
+      "sha256": "2867fc8655b0a1c59e61f9b99c1e316c1759316a353d7bea0e5d84e8faa7a629",
+      "bytes": 27682,
+      "lines": 627
+    },
+    {
+      "path": "codex-rs/core/src/config/mod.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/core/src/config/mod.rs",
+      "sha256": "cbd8dd6d50cb7d61183d309cbefa95cd368de87bf44d2ac60e83c3a2aff59658",
+      "bytes": 209523,
+      "lines": 5136
+    },
+    {
+      "path": "codex-rs/core/src/compact.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/core/src/compact.rs",
+      "sha256": "28363b56f58b999358b3f2fbf9953a1633818c0a74f5a71a3d7f3d813144355a",
+      "bytes": 32023,
+      "lines": 892
+    },
+    {
+      "path": "codex-rs/core/src/agent/mod.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/core/src/agent/mod.rs",
+      "sha256": "d7f961b963a1db8824b1a31b67e7428d3481f5121422b3f3a5cc0cfbf6aa1a67",
+      "bytes": 439,
+      "lines": 15
+    },
+    {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/core/src/session/turn.rs",
+      "sha256": "394b2246903a312c0cd76c370d06afe7f0673dddde792105a9779a7657dc9e70",
+      "bytes": 132898,
+      "lines": 3331
+    },
+    {
+      "path": "codex-rs/core/src/session/session.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/core/src/session/session.rs",
+      "sha256": "e6f4b9f069343031a87bd2a862701f461d1aa9728272196f8a7376b610234806",
+      "bytes": 96272,
+      "lines": 2003
+    },
+    {
+      "path": "codex-rs/core/src/agent/control.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/core/src/agent/control.rs",
+      "sha256": "c0bf44ec6398168170e7e3f9455c0941e82d0cba1a3c23ec3909af455ec383e5",
+      "bytes": 26183,
+      "lines": 745
+    },
+    {
+      "path": "codex-rs/codex-home/src/instructions/mod.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/codex-home/src/instructions/mod.rs",
+      "sha256": "5f900d536d2a085345178e4311ab55c801ce90df50db49f15d05c4525a3b5c2e",
+      "bytes": 4248,
+      "lines": 114
+    },
+    {
+      "path": "codex-rs/prompts/src/model_instructions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/prompts/src/model_instructions.rs",
+      "sha256": "e53d3d2b7196b5520ebfa0d9a010b07c6e5925c1d0ef2619d4b1ad5498e2b78f",
+      "bytes": 798,
+      "lines": 22
+    },
+    {
+      "path": "codex-rs/prompts/src/permissions_instructions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/prompts/src/permissions_instructions.rs",
+      "sha256": "9a07d8910dae60bb4fc54b3f5e6e706f34215372ee9ad7f94bb3ee019ad56dff",
+      "bytes": 19262,
+      "lines": 476
+    },
+    {
+      "path": "codex-rs/prompts/src/multi_agent_instructions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/83086188ae0614bd882818ff1aa23f3194962012/codex-rs/prompts/src/multi_agent_instructions.rs",
+      "sha256": "77f82dbf516de7baa5a3d453b7c376d37163191b26db7a30079a32cfd80ebaf5",
+      "bytes": 4319,
+      "lines": 93
+    }
+  ],
+  "missing": [
+    "codex-rs/core/src/codex.rs",
+    "codex-rs/core/src/project_doc.rs",
+    "codex-rs/core/src/skills/mod.rs"
+  ],
+  "relatedPaths": [
+    "codex-rs/app-server/tests/suite/v2/multi_agent_v2_developer_instructions.rs",
+    "codex-rs/codex-home/src/instructions/mod.rs",
+    "codex-rs/codex-home/src/instructions/tests.rs",
+    "codex-rs/core/src/context/apps_instructions.rs",
+    "codex-rs/core/src/context/available_plugins_instructions.rs",
+    "codex-rs/core/src/context/base_instructions.rs",
+    "codex-rs/core/src/context/developer_instructions.rs",
+    "codex-rs/core/src/context/environments_instructions.rs",
+    "codex-rs/core/src/context/guardian_retained_instructions.rs",
+    "codex-rs/core/src/context/model_switch_instructions.rs",
+    "codex-rs/core/src/context/multi_agent_mode_instructions.rs",
+    "codex-rs/core/src/context/plugin_instructions.rs",
+    "codex-rs/core/src/context/realtime_end_instructions.rs",
+    "codex-rs/core/src/context/realtime_start_instructions.rs",
+    "codex-rs/core/src/context/realtime_start_with_instructions.rs",
+    "codex-rs/core/src/context/recommended_plugins_instructions.rs",
+    "codex-rs/core/src/context/user_instructions.rs",
+    "codex-rs/core/src/context/world_state/apps_instructions.rs",
+    "codex-rs/core/src/context/world_state/apps_instructions_tests.rs",
+    "codex-rs/core/src/context/world_state/base_instructions.rs",
+    "codex-rs/core/src/context/world_state/environments_instructions.rs",
+    "codex-rs/core/src/context/world_state/environments_instructions_tests.rs",
+    "codex-rs/core/src/context/world_state/managed_developer_instructions.rs",
+    "codex-rs/core/src/context/world_state/managed_developer_instructions_tests.rs",
+    "codex-rs/core/src/context/world_state/plugins_instructions.rs",
+    "codex-rs/core/src/context/world_state/plugins_instructions_tests.rs",
+    "codex-rs/core/src/thread_manager/shared_instructions.rs",
+    "codex-rs/core/tests/suite/collaboration_instructions.rs",
+    "codex-rs/core/tests/suite/scenarios_shared_instructions.rs",
+    "codex-rs/ext/extension-api/src/user_instructions.rs",
+    "codex-rs/guardian-context/src/retained_instructions.rs",
+    "codex-rs/guardian-context/src/retained_instructions_tests.rs",
+    "codex-rs/prompts/src/guardian_instructions.rs",
+    "codex-rs/prompts/src/guardian_instructions_tests.rs",
+    "codex-rs/prompts/src/model_instructions.rs",
+    "codex-rs/prompts/src/model_instructions_tests.rs",
+    "codex-rs/prompts/src/multi_agent_instructions.rs",
+    "codex-rs/prompts/src/multi_agent_instructions_tests.rs",
+    "codex-rs/prompts/src/permissions_instructions.rs",
+    "codex-rs/prompts/src/permissions_instructions_tests.rs",
+    "codex-rs/prompts/src/update_plan_instructions.rs",
+    "codex-rs/prompts/src/update_plan_instructions_tests.rs",
+    "codex-rs/tui/src/terminal_visualization_instructions.rs"
+  ]
+}

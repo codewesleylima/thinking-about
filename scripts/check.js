@@ -16,5 +16,5 @@ async function walk(dir) {
   }
 }
 for (const dir of directories) await walk(dir);
-for (const file of ['package.json', 'package-lock.json', 'wzzy.config.json', 'evaluations/tasks.json']) JSON.parse(await readFile(file, 'utf8'));
+for (const file of ['package.json', 'package-lock.json', 'yzzy.config.json', 'evaluations/tasks.json']) JSON.parse(await readFile(file, 'utf8'));
 console.log(`Sintaxe: ${checked} módulos JavaScript; configurações JSON válidas.`);

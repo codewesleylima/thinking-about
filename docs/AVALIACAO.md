@@ -8,6 +8,8 @@
 | `npm.cmd run evaluate` | Oito cenários determinísticos, incluindo controle negativo | Taxa de sucesso de um LLM em tarefas diversas |
 | `npm.cmd run test:docker` | Fronteiras do container real e remoção após timeout | Segurança formal contra escapes de kernel |
 | `npm.cmd run test:live` | Uma tarefa com modelo real + grader independente em Docker | Benchmark representativo ou comparação comercial |
+| `npm.cmd run test:codex` | Handshake/login e uma resposta real por App Server | Correção geral de código |
+| `npm.cmd run test:codex:edit` | Leitura/edição reais e grader independente em Docker | Benchmark representativo |
 
 Os testes da implementação são próprios e separados dos 22 testes do laboratório embutido no estudo original. Resultados de um nível não substituem outro. O [relatório de validação](VALIDACAO.md) registra o que realmente foi executado nesta entrega.
 
@@ -18,7 +20,7 @@ npm.cmd ci --ignore-scripts --no-audit --no-fund
 npm.cmd test
 npm.cmd run check
 npm.cmd run evaluate
-node bin/wzzy.js demo --json
+node bin/yzzy.js demo --json
 ```
 
 `evaluations/tasks.json` contém 24 especificações de desenvolvimento. O campo `automated` informa se a tarefa é exercitada no runner offline, testes unitários, smoke Docker ou se ainda é uma proposta. Oito cenários são executados pelo runner; os outros não devem ser contados como oito ou vinte e quatro soluções de um modelo.
@@ -31,8 +33,10 @@ O campo `passed` contabiliza a conformidade do controlador ao cenário, incluind
 
 Configure modelo e, se aplicável, preços/chave. Prepare Docker e a imagem. Depois:
 
+Para o backend padrão, `yzzy login` autentica oficialmente. `npm.cmd run test:codex` testa uma resposta mínima, e `npm.cmd run test:codex:edit` uma edição com grader externo; ambos fazem chamadas reais e consomem cota, sem ledger financeiro local. O smoke genérico abaixo também continua disponível.
+
 ```powershell
-$env:WZZY_LIVE = "1"
+$env:YZZY_LIVE = "1"
 npm.cmd run test:live
 ```
 

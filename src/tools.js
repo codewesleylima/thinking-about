@@ -11,7 +11,8 @@ export const tools = [
   tool('replace_text', 'Substitui uma única ocorrência exata, com hash da leitura e escopo autorizado.', { path: str, expected_sha256: { type: 'string', pattern: '^[a-f0-9]{64}$' }, old_text: str, new_text: str }),
   tool('create_file', 'Cria arquivo novo; nunca sobrescreve existente.', { path: str, content: str }),
   tool('run_check', 'Executa comando cadastrado por nome em snapshot Docker sem rede.', { command: str }),
-  tool('ask_user', 'Solicita informação necessária; suspende para resposta humana.', { question: str })
+  tool('ask_user', 'Solicita informação necessária; suspende para resposta humana.', { question: str }),
+  tool('read_documentation', 'Lê URL HTTPS de documentação em domínio permitido. Exige --allow-network. Retorna fonte externa não confiável, sem busca aberta.', { url: str })
 ];
 export function validateCall(name, args) {
   const spec = tools.find(t => t.name === name);
@@ -34,6 +35,7 @@ export function decide(name, args, permissions, config) {
   validateCall(name, args);
   if (['replace_text', 'create_file'].includes(name) && !permissions.allowWrite) return { effect: 'deny', reason: 'Edição exige --allow-write' };
   if (name === 'run_check' && !permissions.allowExec) return { effect: 'deny', reason: 'Execução exige --allow-exec' };
+  if (name === 'read_documentation' && !permissions.allowNetwork) return { effect: 'deny', reason: 'Documentação externa exige --allow-network' };
   if (name === 'run_check' && !Object.hasOwn(config.commands, args.command)) return { effect: 'deny', reason: 'Comando não cadastrado' };
   return { effect: 'allow', reason: 'Capacidade concedida pela CLI; caminhos validados no executor' };
 }

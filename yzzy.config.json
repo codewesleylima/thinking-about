@@ -1,7 +1,10 @@
 {
-  "provider": "ollama",
+  "provider": "codex",
   "model": "",
   "baseUrl": "http://127.0.0.1:11434",
+  "documentation": {
+    "allowedHosts": ["developers.openai.com", "platform.openai.com", "learn.chatgpt.com", "docs.oracle.com", "docs.spring.io", "maven.apache.org", "docs.gradle.org", "junit.org", "docs.junit.org", "developer.mozilla.org", "react.dev", "docs.docker.com", "opentelemetry.io", "owasp.org", "www.rfc-editor.org"]
+  },
   "writeRoots": ["src", "tests", "docs"],
   "limits": {
     "maxModelCalls": 24, "maxToolCalls": 80, "maxWallMs": 900000,

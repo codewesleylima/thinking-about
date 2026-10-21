@@ -6,7 +6,7 @@ import { capture, dockerArgs, runDocker } from '../src/executor.js';
 import { makeFixture } from '../src/demo.js';
 import { Workspace } from '../src/workspace.js';
 test('flags Docker removem rede, escrita no projeto, privilégios e herança de chave', () => {
-  const args = dockerArgs({ docker: { image: 'node:24', memory: '512m', cpus: '1', pids: 64 } }, 'C:/tmp/snapshot', 'wzzy-name', ['node', '--test']);
+  const args = dockerArgs({ docker: { image: 'node:24', memory: '512m', cpus: '1', pids: 64 } }, 'C:/tmp/snapshot', 'yzzy-name', ['node', '--test']);
   for (const flag of ['--pull=never', '--network=none', '--read-only', '--cap-drop=ALL', '--security-opt=no-new-privileges']) assert.ok(args.includes(flag));
   assert.ok(args.includes('65534:65534')); assert.ok(args.some(x => x.endsWith('target=/workspace,readonly')));
   assert.equal(args.some(x => /OPENAI_API_KEY|docker.sock/.test(x)), false);

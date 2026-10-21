@@ -31,7 +31,7 @@ test('edição exige autorização e writeRoots; arquivos de controle protegidos
   const read = await ws.read('src/eligibility.js');
   await assert.rejects(ws.replace({ path: read.path, expected_sha256: read.sha256, old_text: 'age > 18', new_text: 'true' }), /allow-write/);
   const writable = new Workspace(root, config, { allowWrite: true });
-  for (const file of ['README.md', 'src/WZZY.md', 'src/AGENTS.md', 'evaluations/grader.js']) await assert.rejects(writable.create({ path: file, content: 'x' }));
+  for (const file of ['README.md', 'src/YZZY.md', 'src/AGENTS.md', 'evaluations/grader.js']) await assert.rejects(writable.create({ path: file, content: 'x' }));
 });
 test('hash obsoleto preserva alteração humana; substituição ambígua é rejeitada', async () => {
   const { ws, root } = await setup(); const before = await ws.read('src/eligibility.js');
@@ -52,7 +52,7 @@ test('create_file não sobrescreve e snapshot exclui credenciais e estado', asyn
   const { ws, root } = await setup();
   await assert.rejects(ws.create({ path: 'src/eligibility.js', content: 'overwrite' }), { code: 'EEXIST' });
   await writeFile(path.join(root, '.env'), 'CANARY_SECRET=abc');
-  await mkdir(path.join(root, '.wzzy')); await writeFile(path.join(root, '.wzzy/state'), 'private');
+  await mkdir(path.join(root, '.yzzy')); await writeFile(path.join(root, '.yzzy/state'), 'private');
   const snapshot = await ws.snapshot(); assert.equal(snapshot.files, 1);
   const old = snapshot.revision; await ws.create({ path: 'src/new.js', content: 'new' });
   assert.notEqual((await ws.snapshot()).revision, old);

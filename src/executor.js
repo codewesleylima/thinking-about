@@ -6,12 +6,12 @@ import { randomUUID } from 'node:crypto';
 import { invariant, bounded, abortIfNeeded } from './util.js';
 
 // argv direto, sem shell. Esta função só é usada pelo controlador e scripts de validação.
-export function capture(executable, args, { signal, timeoutMs = 10000, maxBytes = 32768 } = {}) {
+export function capture(executable, args, { signal, timeoutMs = 10000, maxBytes = 32768, env, cwd } = {}) {
   return new Promise((resolve, reject) => {
     abortIfNeeded(signal);
     let output = ''; let bytes = 0; let timedOut = false; let truncated = false;
     const started = Date.now();
-    const child = spawn(executable, args, { shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(executable, args, { env, cwd, shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
     const stop = () => child.kill('SIGKILL');
     const timer = setTimeout(() => { timedOut = true; stop(); }, timeoutMs);
     const abort = () => stop(); signal?.addEventListener('abort', abort, { once: true });
@@ -35,8 +35,8 @@ export function dockerArgs(config, snapshot, name, argv) {
 export async function runDocker(workspace, commandName, { signal, runner = capture, onEvent = () => {} } = {}) {
   const config = workspace.config;
   invariant(Object.hasOwn(config.commands, commandName), 'Comando desconhecido');
-  const staging = await mkdtemp(path.join(tmpdir(), 'wzzy-snapshot-'));
-  const name = `wzzy-${randomUUID()}`; let cleanupKnown = false;
+  const staging = await mkdtemp(path.join(tmpdir(), 'yzzy-snapshot-'));
+  const name = `yzzy-${randomUUID()}`; let cleanupKnown = false;
   try {
     abortIfNeeded(signal);
     const snapshot = await workspace.snapshot(staging);
@@ -57,7 +57,7 @@ export async function runDocker(workspace, commandName, { signal, runner = captu
     }
     // Somente o diretório exato criado por mkdtemp, nunca um caminho do modelo.
     const resolved = path.resolve(staging);
-    invariant(path.dirname(resolved).toLowerCase() === path.resolve(tmpdir()).toLowerCase() && path.basename(resolved).startsWith('wzzy-snapshot-'), 'Diretório temporário fora do escopo');
+    invariant(path.dirname(resolved).toLowerCase() === path.resolve(tmpdir()).toLowerCase() && path.basename(resolved).startsWith('yzzy-snapshot-'), 'Diretório temporário fora do escopo');
     await rm(resolved, { recursive: true, force: true });
   }
 }

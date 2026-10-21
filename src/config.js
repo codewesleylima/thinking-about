@@ -2,7 +2,8 @@ import { readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { invariant, canonical, hash } from './util.js';
-export const templatePath = fileURLToPath(new URL('../wzzy.config.json', import.meta.url));
+import { readOptional } from './errors.js';
+export const templatePath = fileURLToPath(new URL('../yzzy.config.json', import.meta.url));
 export const defaults = JSON.parse(await readFile(templatePath, 'utf8'));
 const only = (value, allowed, where) => {
   invariant(value && typeof value === 'object' && !Array.isArray(value), `${where}: objeto esperado`);
@@ -10,12 +11,15 @@ const only = (value, allowed, where) => {
 };
 export function validateConfig(c) {
   only(c, Object.keys(defaults), 'config');
-  invariant(['ollama', 'openai', 'scripted'].includes(c.provider), 'Provedor inválido');
+  invariant(['codex', 'ollama', 'openai', 'scripted'].includes(c.provider), 'Provedor inválido');
   invariant(typeof c.model === 'string' && typeof c.baseUrl === 'string', 'model/baseUrl inválidos');
+  only(c.documentation, ['allowedHosts'], 'documentation');
+  invariant(Array.isArray(c.documentation.allowedHosts) && c.documentation.allowedHosts.length <= 64
+    && c.documentation.allowedHosts.every(host => typeof host === 'string' && host.length <= 253 && /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}$/.test(host)), 'Domínios de documentação devem ser hostnames exatos, sem wildcard');
   const url = new URL(c.baseUrl);
   invariant(!url.username && !url.password && !url.search && !url.hash, 'URL não pode conter credenciais/query/fragmento');
   if (c.provider === 'openai') invariant(url.origin === 'https://api.openai.com' && /^\/v1\/?$/.test(url.pathname), 'OpenAI exige https://api.openai.com/v1');
-  if (c.provider === 'ollama') invariant(['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) && ['http:', 'https:'].includes(url.protocol) && /^\/?$/.test(url.pathname), 'Ollama exige endpoint loopback sem path');
+  if (['ollama', 'codex'].includes(c.provider)) invariant(['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) && ['http:', 'https:'].includes(url.protocol) && /^\/?$/.test(url.pathname), 'Endpoint local exige loopback sem path');
   invariant(Array.isArray(c.writeRoots) && c.writeRoots.every(x => typeof x === 'string' && x.length && !path.isAbsolute(x) && !x.split(/[\\/]/).some(p => p === '..' || p === '.' || !p)), 'writeRoots exige caminhos relativos explícitos');
   only(c.limits, Object.keys(defaults.limits), 'limits');
   for (const key of Object.keys(defaults.limits)) invariant(Number.isSafeInteger(c.limits[key]) && c.limits[key] > 0, `Limite inválido: ${key}`);
@@ -38,15 +42,17 @@ export function validateConfig(c) {
 }
 export async function loadConfig(workspace, filename, env = process.env) {
   const root = await realpath(path.resolve(workspace));
-  let supplied = {};
-  const configPath = path.resolve(filename || path.join(root, 'wzzy.config.json'));
-  try { supplied = JSON.parse(await readFile(configPath, 'utf8')); }
-  catch (error) { if (error.code !== 'ENOENT' || filename) throw error; }
+  let configPath = path.resolve(filename || path.join(root, 'yzzy.config.json'));
+  const read = () => readFile(configPath, 'utf8');
+  let raw = filename ? await read() : await readOptional(read, null);
+  if (raw === null) { configPath = path.join(root, 'wzzy.config.json'); raw = await readOptional(read, '{}'); }
+  const supplied = JSON.parse(raw);
   const c = { ...structuredClone(defaults), ...supplied,
-    limits: { ...defaults.limits, ...supplied.limits }, docker: { ...defaults.docker, ...supplied.docker } };
-  if (env.WZZY_PROVIDER) c.provider = env.WZZY_PROVIDER;
-  if (env.WZZY_MODEL) c.model = env.WZZY_MODEL;
-  if (env.WZZY_BASE_URL) c.baseUrl = env.WZZY_BASE_URL;
+    limits: { ...defaults.limits, ...supplied.limits }, docker: { ...defaults.docker, ...supplied.docker },
+    documentation: { ...structuredClone(defaults.documentation), ...supplied.documentation } };
+  if (env.YZZY_PROVIDER || env.WZZY_PROVIDER) c.provider = env.YZZY_PROVIDER || env.WZZY_PROVIDER;
+  if (env.YZZY_MODEL || env.WZZY_MODEL) c.model = env.YZZY_MODEL || env.WZZY_MODEL;
+  if (env.YZZY_BASE_URL || env.WZZY_BASE_URL) c.baseUrl = env.YZZY_BASE_URL || env.WZZY_BASE_URL;
   else if (c.provider === 'openai' && c.baseUrl === defaults.baseUrl) c.baseUrl = 'https://api.openai.com/v1';
   validateConfig(c);
   return { config: c, root, configPath, fingerprint: hash(canonical(c)) };

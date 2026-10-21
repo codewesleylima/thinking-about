@@ -4,6 +4,8 @@ import { defaults, validateConfig, loadConfig } from '../src/config.js';
 import { Budget } from '../src/budget.js';
 import { validateCall, decide } from '../src/tools.js';
 import { makeFixture } from '../src/demo.js';
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
 const paid = () => ({ ...structuredClone(defaults), provider: 'openai', baseUrl: 'https://api.openai.com/v1', pricing: { input: 2000000, output: 10000000, source: 'https://example.com/pricing', asOf: '2026-10-20' } });
 const state = () => ({ modelCalls: 0, spent: 0, held: 0 });
 test('config estrita rejeita campos errados, URLs remotas Ollama e escapes', () => {
@@ -14,8 +16,25 @@ test('config estrita rejeita campos errados, URLs remotas Ollama e escapes', () 
 });
 test('ambiente troca provedor sem incluir a chave no config', async () => {
   const { root } = await makeFixture();
-  const { config } = await loadConfig(root, undefined, { WZZY_PROVIDER: 'openai', WZZY_MODEL: 'selected', OPENAI_API_KEY: 'not-stored' });
+  const { config } = await loadConfig(root, undefined, { YZZY_PROVIDER: 'openai', YZZY_MODEL: 'selected', OPENAI_API_KEY: 'not-stored' });
   assert.equal(config.baseUrl, 'https://api.openai.com/v1'); assert.equal(config.model, 'selected'); assert.equal(JSON.stringify(config).includes('not-stored'), false);
+});
+test('config padrão ausente usa defaults, mas config explícita ausente e JSON inválido falham', async () => {
+  const { root } = await makeFixture();
+  const { config } = await loadConfig(root, undefined, {}); assert.equal(config.provider, defaults.provider);
+  await assert.rejects(loadConfig(root, path.join(root, 'missing.json'), {}), { code: 'ENOENT' });
+  await writeFile(path.join(root, 'yzzy.config.json'), '{');
+  await assert.rejects(loadConfig(root, undefined, {}), SyntaxError);
+});
+
+test('compatibilidade lê configuração legada sem prevalecer sobre nome e ambiente novos', async () => {
+  const { root } = await makeFixture();
+  await writeFile(path.join(root, 'wzzy.config.json'), JSON.stringify({ provider: 'ollama', model: 'legacy' }));
+  assert.equal((await loadConfig(root, undefined, {})).config.model, 'legacy');
+  await writeFile(path.join(root, 'yzzy.config.json'), JSON.stringify({ provider: 'codex', model: 'current' }));
+  const result = await loadConfig(root, undefined, { WZZY_MODEL: 'old-env', YZZY_MODEL: 'new-env' });
+  assert.equal(result.config.model, 'new-env'); assert.equal(result.config.provider, 'codex');
+  assert.equal(path.basename(result.configPath), 'yzzy.config.json');
 });
 test('reserva é anterior à chamada; preço ausente e teto impedem despacho', () => {
   const c = paid(), s = state(), b = new Budget(c, s);

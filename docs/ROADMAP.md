@@ -1,10 +1,14 @@
 # Estado do produto e evolução
 
-## Versão 0.1.0 implementada
+## Versão 0.3.0 implementada
 
-CLI `init`, `doctor`, `demo`, `run`, `chat`, `resume`, `sessions` e `inspect`; eventos JSONL; modelos via Ollama e OpenAI Responses; busca literal, leitura por linhas, criação e substituição com integridade; política de leitura/escrita/execução; snapshots somente leitura em Docker; cancelamento, limites, orçamento com reserva, detecção de repetição e journal encadeado; perguntas e retomada conservadora; suíte automatizada, manifesto e CI.
+Dezenove perfis internos, plano heurístico revisável, consultas sequenciais separadas e coordenação pelo host com orçamento agregado. Leitura de documentação HTTPS por autorização e allowlist, com DNS/endereço fixado, redirects, limites e proveniência. O [estudo detalhado](codex/README.md) inclui fontes públicas do Codex fixadas por commit, Java e engenharia reversa. Essas extensões não implementam colaboração nativa, concorrência, retomada transacional da equipe, debugger JVM, LSP ou busca aberta.
 
-A execução offline é funcional. Inferência depende de modelo instalado ou credencial disponível. Testes de integração com simuladores não constituem execução real de provedor; o relatório registra essa diferença.
+## Versão 0.2.0 implementada
+
+CLI global `yzzy`, chat sem subcomando, login oficial e inferência Codex, catálogo de modelos, perfis internos/personalizados, preferências de dúvidas/tom/idioma/detalhamento, histórico, exportação, resumo e compactação extrativos. Mantém `init`, `doctor`, `demo`, `run`, `resume`, `sessions`, `inspect`, JSONL, backends Ollama/Responses, oito ferramentas, políticas, hashes, snapshots Docker, cancelamento, limites, detecção de repetição, journal e retomada conservadora. Recuperação de ENOENT não amplia autoridade. Instalação Windows inclui ajuste revisável do PATH do usuário.
+
+A inferência real via Codex autenticado foi observada, incluindo leitura/edição e grader independente em Docker. O ledger financeiro pertence à API direta; a cota Codex é gerida pelo produto. Isso ainda não é benchmark de qualidade geral nem paridade com todas as funções de um CLI comercial.
 
 ## Próximos marcos e critérios
 
@@ -12,12 +16,12 @@ A execução offline é funcional. Inferência depende de modelo instalado ou cr
 |---|---|---|
 | Piloto com LLM real | Medir capacidade antes de otimizar | Tarefas representativas, múltiplas tentativas, falhas publicadas e gasto reconciliado |
 | Recuperação estrutural/LSP | Busca literal insuficiente em projetos maiores | Ganho pareado em localização de consumidores e correção entre arquivos |
-| Compactação validada | Tarefas excedem teto de contexto | Preservar contrato, autoridade, restrições, evidências e efeitos incertos em testes adversariais |
+| Memória semântica e avaliação ampliada | Complementar o extrator já implementado | Medir perda de informação e ganho pareado sem apagar autoridade/efeitos incertos |
 | Retomada transacional avançada | Recuperar sem abandonar sessões incertas | Idempotência e consulta de estado por ferramenta, crash em pontos do protocolo sem duplicação |
 | Catálogo de preços/modelos | Vários perfis e faixas de cobrança | Fonte, vigência, capacidades, tokenizador validado e reconciliação financeira |
 | Autenticidade de logs | Operação compartilhada/auditoria | Assinatura ou armazenamento externo com retenção e controle de acesso |
 | MCP e editor | Necessidade concreta de ferramenta/IDE | Revisão de protocolo fixada, autenticação, capacidades restritas e regressões de política |
-| Revisão/subagentes | Gargalo mensurável e tarefas independentes | Escopos separados, reserva global, conflitos controlados e ganho superior ao custo |
+| Equipes concorrentes e retomada | Evoluir o coordenador sequencial já implementado | Isolamento por escopo, reserva global atômica, recuperação de fases, conflitos controlados e ganho medido superior ao custo |
 | Fine-tuning | Falha de comportamento recorrente com dataset autorizado | Baseline, holdout por origem, licença/dados documentados e ganho reproduzível |
 | Pesos próprios | Objetivo de pesquisa e orçamento específico | Plano de dados, compute, arquitetura, treinamento e avaliação independente |
 

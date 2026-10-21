@@ -3,9 +3,9 @@ import { lstat, readdir, readFile, realpath, mkdir, open, rename, unlink, chmod 
 import { randomUUID } from 'node:crypto';
 import { hash, invariant } from './util.js';
 
-const deniedDirs = new Set(['.git', '.wzzy', '.aws', '.ssh', '.azure', '.config', '.agents', '.codex', '.github', 'node_modules', 'coverage', '.venv', 'venv', '__pycache__']);
+const deniedDirs = new Set(['.git', '.yzzy', '.wzzy', '.aws', '.ssh', '.azure', '.config', '.agents', '.codex', '.github', 'node_modules', 'coverage', '.venv', 'venv', '__pycache__']);
 const sensitive = /(^\.env($|\.)|^\.npmrc$|^\.pypirc$|^credentials($|\.)|^id_rsa|^id_ed25519|\.(pem|key|p12|pfx)$|secret|private[-_]?key)/i;
-const protectedNames = new Set(['wzzy.config.json', 'wzzy.md', 'agents.md']);
+const protectedNames = new Set(['yzzy.config.json', 'yzzy.md', 'wzzy.config.json', 'wzzy.md', 'agents.md']);
 
 export class Workspace {
   constructor(root, config, { allowWrite = false, configPath } = {}) {
@@ -103,7 +103,7 @@ export class Workspace {
     const next = before.content.replace(old_text, () => new_text);
     invariant(Buffer.byteLength(next) <= this.config.limits.maxFileBytes, 'Edição excede maxFileBytes');
     const mode = (await lstat(target)).mode;
-    const temp = `${target}.wzzy-${randomUUID()}.tmp`;
+    const temp = `${target}.yzzy-${randomUUID()}.tmp`;
     try {
       const handle = await open(temp, 'wx', mode);
       try { await handle.writeFile(next, 'utf8'); await handle.sync(); } finally { await handle.close(); }

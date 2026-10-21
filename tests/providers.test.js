@@ -36,6 +36,6 @@ test('Ollama traduz ferramentas, usa loopback e devolve contagem de tokens', asy
   assert.equal(ollamaInput('sys', [{ role: 'tool', name: 'list_files', result: { files: [] } }])[1].tool_name, 'list_files');
 });
 test('exige modelo e chave; redirect é bloqueado pelo cliente', () => {
-  assert.throws(() => createProvider({ ...cfg('ollama'), model: '' }), /WZZY_MODEL/);
+  assert.throws(() => createProvider({ ...cfg('ollama'), model: '' }), /YZZY_MODEL/);
   assert.throws(() => createProvider(cfg('openai'), { apiKey: '' }), /OPENAI_API_KEY/);
 });

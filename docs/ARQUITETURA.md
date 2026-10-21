@@ -2,9 +2,9 @@
 
 ```mermaid
 flowchart LR
-  U[CLI e autorização humana] --> C[Controlador WZZY]
+  U[CLI, perfil e autorização humana] --> C[Controlador YZZY BLACK]
   C --> B[Admissão e reserva]
-  B --> M[Ollama ou OpenAI Responses]
+  B --> M[Codex App Server, Ollama ou OpenAI Responses]
   M --> P[Validação e política]
   P --> F[Ferramentas de arquivo]
   P --> D[Snapshot e Docker]
@@ -19,10 +19,19 @@ flowchart LR
 
 | Arquivo | Responsabilidade e motivo |
 |---|---|
-| `bin/wzzy.js` | CLI, chat, eventos JSONL, diagnóstico e cancelamento |
+| `bin/yzzy.js` | CLI, chat, eventos JSONL, diagnóstico e cancelamento |
+| `src/terminal.js`, `src/version.js` | Apresentação humana segura, progresso, largura/cor adaptativas e versão única do pacote |
+| `src/globe.js` | Projeção ortográfica, continentes estilizados e grade geográfica da abertura cyber; cálculo local sem inferência |
+| `src/live-display.js` | Cabeçalho e atividade persistentes, rolagem do corpo, edição preservada em resize e restauração da tela no encerramento |
 | `src/config.js` | Defaults, validação estrita, ambiente e fingerprint |
+| `src/errors.js` | Ausência opcional, diagnóstico estruturado e orientação de recuperação sem ampliar autoridade |
 | `src/agent.js` | Ciclo sequencial, checkpoints, correlação, limites e conclusão |
 | `src/providers.js` | Contratos HTTP específicos, sem executar propostas |
+| `src/codex-rpc.js`, `src/codex-provider.js` | App Server e inferência em JSON; ferramentas continuam no host |
+| `src/profiles.js` | Perfis, preferências validadas e identidade congelada por sessão |
+| `src/specialists.js`, `src/team.js` | Especialidades, roteamento revisável, consultas sequenciais e coordenação com recursos agregados |
+| `src/documentation.js` | Leitura HTTPS autorizada, validação DNS, conexão fixada, limites e proveniência |
+| `src/memory.js` | Resumos extrativos e projeção de contexto preservando transcript |
 | `src/tools.js` | Schema canônico e autorização por capacidade |
 | `src/workspace.js` | Caminhos, busca, hashes, edição e snapshots |
 | `src/executor.js` | Docker, captura limitada e limpeza do container |
@@ -33,16 +42,20 @@ flowchart LR
 
 ## Um turno
 
+O fluxo de equipe envolve várias sessões desse mesmo ciclo: consultas de leitura em contextos separados, pareceres identificados e um coordenador final. Não usa colaboração nativa do Codex. A conta global subtrai recursos consumidos antes de cada fase. Uma falha/pergunta interrompe o conjunto. Veja a [arquitetura detalhada da equipe](codex/04-EQUIPE-E-ORQUESTRACAO.md).
+
 1. Carregar configuração, canonicalizar workspace e obter lock exclusivo.
 2. Criar sessão ou validar configuração, autoridade e estado da retomada.
-3. Montar contexto com instruções persistidas, schema e transcript completo.
+3. Montar contexto com instruções persistidas, perfil, preferências, schema e transcript ou projeção extrativa registrada.
 4. Conferir limites e reservar o custo antes de enviar a requisição.
 5. Aguardar resposta íntegra; validar IDs, formato e argumentos.
 6. Registrar decisão de política, checkpoint de início e resultado de cada ferramenta.
 7. Retornar observações ao modelo. Em pergunta, suspender para resposta humana.
-8. Quando o modelo encerra, comparar a revisão atual às evidências reais e registrar o status do controlador.
+8. Quando o modelo encerra, comparar a revisão atual às evidências existentes e registrar o status. Sem evidência nem avaliador independente, não é necessário inventariar a pasta para concluir uma conversa; o status permanece `completed_unverified`.
 
 Chamadas são sequenciais mesmo se um provedor emitir um lote. IDs correlacionam cada resultado à proposta. Um lote com `ask_user` e outras ferramentas é rejeitado antes de executar efeitos. Não há retries automáticos: uma falha de rede pode ter custo desconhecido. A retomada explícita permite nova tentativa mantendo as reservas e limites anteriores.
+
+Falhas de ferramenta retornam ao modelo como observação. `ENOENT` inclui código, operação, caminho e orientação para localizar o arquivo antes de tentar de novo. A ausência de configuração padrão ou de `YZZY.md` é esperada e usa fallback; arquivos explicitamente exigidos, erros de formato e acesso negado continuam sendo sinalizados. A orientação de recuperação não muda concessões, não cria arquivos e não transforma a operação malsucedida em sucesso.
 
 ## Estados finais
 
@@ -61,7 +74,7 @@ Um código de saída 0 também pode corresponder a `completed_unverified`: ele i
 
 ## Contexto e persistência
 
-`WZZY.md` da raiz é carregado como orientação de projeto e congelado na sessão. Não há descoberta recursiva de `AGENTS.md`, LSP, embeddings, índice vetorial, skills executáveis ou resumo automático. `read_lines` e busca literal permitem selecionar conteúdo. Ao exceder o teto em bytes, o runtime para preservando o histórico. A aplicação não promete estimativa exata da janela em tokens de cada modelo.
+`YZZY.md` da raiz é carregado e congelado com perfil e preferências. Não há descoberta recursiva de `AGENTS.md`, LSP, embeddings, índice vetorial ou skills executáveis. A memória extrativa pode projetar resumo e blocos recentes, sem apagar o histórico. `read_lines` e busca literal selecionam conteúdo. Se o contexto projetado exceder o teto total, o runtime para preservando o histórico. Não há estimativa exata da janela em tokens de cada modelo. Consulte [agentes e memória](AGENTES-E-MEMORIA.md).
 
 Cada evento contém sequência, hash do anterior, timestamp, dados e checkpoint. SHA-256 encadeado detecta alteração acidental/inconsistência, sem oferecer autenticidade contra quem pode reescrever todos os arquivos. O journal persiste o transcript necessário à retomada; OpenAI conserva os itens nativos, incluindo conteúdo opaco necessário à continuidade de modelos de raciocínio. O programa não solicita nem mostra cadeia de pensamento privada; Ollama usa `think:false`.
 

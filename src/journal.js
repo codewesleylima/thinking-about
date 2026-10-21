@@ -3,9 +3,9 @@ import { mkdir, lstat, open, readFile, readdir, unlink } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto';
 import { canonical, hash, invariant, redact } from './util.js';
 export async function stateDirectory(root) {
-  const dir = path.join(root, '.wzzy');
+  const dir = path.join(root, '.yzzy');
   await mkdir(dir, { recursive: true, mode: 0o700 });
-  invariant((await lstat(dir)).isDirectory() && !(await lstat(dir)).isSymbolicLink(), '.wzzy deve ser diretório real');
+  invariant((await lstat(dir)).isDirectory() && !(await lstat(dir)).isSymbolicLink(), '.yzzy deve ser diretório real');
   const sessions = path.join(dir, 'sessions');
   await mkdir(sessions, { mode: 0o700 }).catch(e => { if (e.code !== 'EEXIST') throw e; });
   invariant((await lstat(sessions)).isDirectory() && !(await lstat(sessions)).isSymbolicLink(), 'sessions deve ser diretório real');
@@ -13,10 +13,10 @@ export async function stateDirectory(root) {
 }
 export async function lockWorkspace(root) {
   await stateDirectory(root);
-  const file = path.join(root, '.wzzy', 'workspace.lock');
+  const file = path.join(root, '.yzzy', 'workspace.lock');
   let handle;
   try { handle = await open(file, 'wx', 0o600); }
-  catch (error) { if (error.code === 'EEXIST') throw new Error('Workspace ocupado: .wzzy/workspace.lock existe. Após crash, confira o PID no arquivo e remova o lock somente se o processo terminou.'); throw error; }
+  catch (error) { if (error.code === 'EEXIST') throw new Error('Workspace ocupado: .yzzy/workspace.lock existe. Após crash, confira o PID no arquivo e remova o lock somente se o processo terminou.'); throw error; }
   await handle.writeFile(JSON.stringify({ pid: process.pid, created: new Date().toISOString() }));
   return async () => { await handle.close(); await unlink(file); };
 }

@@ -4,17 +4,23 @@
 
 O operador escolhe workspace, arquivo de configuração, modelo, escopo e permissões. O modelo recebe ferramentas de capacidade limitada. Texto de arquivo, resposta de provedor ou saída de teste não ativa flags nem adiciona comandos. Schemas são validados localmente, mesmo quando o fornecedor oferece modo estrito.
 
-O modo padrão permite apenas leitura de caminhos autorizados, busca e perguntas. Escrita exige `--allow-write` e um prefixo de `writeRoots`. Execução exige `--allow-exec` e nome cadastrado. Não há shell arbitrário, ferramenta de rede, provisionamento, push, publicação, mensagem externa ou instalação de pacotes controlada pelo modelo.
+O modo padrão permite apenas leitura de caminhos autorizados, busca e perguntas. Escrita exige `--allow-write` e um prefixo de `writeRoots`. Execução exige `--allow-exec` e nome cadastrado. Consulta externa exige `--allow-network` e domínio exato em `documentation.allowedHosts`. Não há shell arbitrário, busca aberta, provisionamento, push, publicação, mensagem externa ou instalação de pacotes controlada pelo modelo.
+
+## Pesquisa externa e equipes
+
+`read_documentation` admite HTTPS público sem credenciais/query/fragmento, valida hostname e todos os IPs resolvidos, fixa o endereço na conexão e revalida cada redirect. Baixa somente tipos textuais suportados, com prazo e limites. A extração de HTML não executa JavaScript e não torna o conteúdo confiável. URLs, trechos e proveniência entram no histórico e podem ser enviados ao modelo. A política não garante disponibilidade da fonte nem detecta todo segredo em uma URL. Consulte [pesquisa e fronteiras](codex/07-PESQUISA-E-VALIDACAO.md).
+
+Na equipe, cada consulta recebe escrita e execução negadas. A síntese conserva as reduções do perfil humano, sem aumentar autoridade ao trocar para coordenador. Pareceres são dados não confiáveis. Limites de chamadas, ferramentas, tempo e gasto são agregados; Codex permanece sujeito à modalidade de cobrança do produto. Sessões de equipe não retomam isoladamente porque os recursos restantes podem ter sido transferidos à síntese. Os relatórios ficam em `.yzzy/teams`, sem assinatura própria; journals de sessões conservam o encadeamento. O lock é por sessão/gravação e não impede um editor humano de alterar arquivos entre fases.
 
 ## Filesystem
 
-As ferramentas rejeitam caminhos absolutos, traversal, barras invertidas, ADS, caracteres de controle, nomes Windows reservados, links simbólicos, junctions, arquivos especiais e hardlinks. `.git`, `.wzzy`, `.aws`, `.ssh`, `.agents`, `.codex`, `.github`, dependências e outros diretórios de controle são excluídos. Nomes de credenciais comuns e extensões de chave são bloqueados.
+As ferramentas rejeitam caminhos absolutos, traversal, barras invertidas, ADS, caracteres de controle, nomes Windows reservados, links simbólicos, junctions, arquivos especiais e hardlinks. `.git`, `.yzzy`, `.aws`, `.ssh`, `.agents`, `.codex`, `.github`, dependências e outros diretórios de controle são excluídos. Nomes de credenciais comuns e extensões de chave são bloqueados.
 
 Não se trata de detecção universal de segredos: `data.txt` pode conter uma chave desconhecida. O operador deve usar um workspace preparado sem dados não autorizados. Esta versão não interpreta `.gitignore` arbitrário como política de confidencialidade. Arquivos ocultos não reconhecidos podem ser lidos/copiedos. Nomes bloqueados podem produzir falsos positivos, por exemplo `secrets-guide.md`.
 
-`WZZY.md`, `AGENTS.md`, `wzzy.config.json`, configuração explicitamente selecionada e `evaluations/` são protegidos contra escrita pelas ferramentas. O controlador possui acesso aos seus próprios arquivos de estado. `WZZY.md` só é carregado da raiz, como orientação subordinada. Não há plugins ou hooks executáveis.
+`YZZY.md`, `AGENTS.md`, `yzzy.config.json`, configuração explicitamente selecionada e `evaluations/` são protegidos contra escrita pelas ferramentas. O controlador possui acesso aos seus próprios arquivos de estado. `YZZY.md` só é carregado da raiz, como orientação subordinada. Não há plugins ou hooks executáveis.
 
-A edição checa revisão e usa rename, mas a implementação Node portável não oferece proteção absoluta contra trocas de path entre syscalls por um processo host malicioso. O lock exclui instâncias cooperativas de WZZY, não editores humanos nem outros programas. Para arquivos host sob ataque ativo, execute todo o controlador em uma VM isolada. Não apresente o confinamento de ferramentas como sandbox de sistema operacional do controlador.
+A edição checa revisão e usa rename, mas a implementação Node portável não oferece proteção absoluta contra trocas de path entre syscalls por um processo host malicioso. O lock exclui instâncias cooperativas de YZZY BLACK, não editores humanos nem outros programas. Para arquivos host sob ataque ativo, execute todo o controlador em uma VM isolada. Não apresente o confinamento de ferramentas como sandbox de sistema operacional do controlador.
 
 ## Execução de código
 
@@ -36,7 +42,7 @@ Retenção padrão é local e sem expiração automática. Para excluir uma sess
 
 ## Orçamento e confiabilidade
 
-Reservas precedem chamadas pagas. O runtime conserva saldo retido em erros de cobrança desconhecida e não repete requisições automaticamente. O teto depende de estimativas e preços corretos; o limite financeiro do provedor deve complementar o software. Mudanças de preço ou tokenização podem exceder a reserva e resultar em interrupção posterior, sem desfazer gasto já incorrido.
+Na API OpenAI direta, reservas precedem chamadas pagas. O runtime conserva saldo retido em erros de cobrança desconhecida e não repete requisições automaticamente. O teto depende de estimativas e preços corretos; limites do provedor devem complementar o software. Mudanças de preço/tokenização podem exceder reservas sem desfazer gasto incorrido. No Codex, cobrança e cota são geridas pelo produto autenticado, sem teto financeiro em microUSD imposto pelo host. Leia a [fronteira da integração](CODEX.md): processo nativo e cache oficial de autenticação fazem parte da base de confiança.
 
 A aplicação limita contexto e saída, mas não garante ausência de alucinação, solução correta, ausência de prompt injection semântico ou conclusão de qualquer tarefa. O status do controlador é independente do texto final. A ferramenta pode negar a exfiltração direta de um arquivo `.env` e ainda receber informação sensível embutida em outro documento permitido. A segurança observada é delimitada pelos cenários testados.
 

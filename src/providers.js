@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { invariant } from './util.js';
+import { createCodexProvider } from './codex-provider.js';
 
 export function openaiInput(messages) {
   return messages.flatMap(message => {
@@ -31,7 +32,8 @@ async function post(url, body, { signal, headers = {}, fetchImpl = fetch }) {
   return { data: JSON.parse(Buffer.concat(chunks).toString('utf8')), requestId: response.headers.get('x-request-id') };
 }
 export function createProvider(config, { fetchImpl = fetch, apiKey = process.env.OPENAI_API_KEY } = {}) {
-  invariant(config.model.trim(), 'Defina WZZY_MODEL ou model na configuração');
+  if (config.provider === 'codex') return createCodexProvider(config);
+  invariant(config.model.trim(), 'Defina YZZY_MODEL ou model na configuração');
   if (config.provider === 'openai') {
     invariant(apiKey, 'OPENAI_API_KEY não definida');
     return {

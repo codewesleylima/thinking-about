@@ -1,13 +1,14 @@
-import { mkdtemp } from 'node:fs/promises';
+import { mkdtemp, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import assert from 'node:assert/strict';
 import { capture } from '../src/executor.js';
-const directory = await mkdtemp(path.join(tmpdir(), 'wzzy-package-'));
-const archive = path.resolve(process.argv[2] || 'wzzy-ai-0.1.0.tgz');
+const directory = await mkdtemp(path.join(tmpdir(), 'yzzy-package-'));
+const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+const archive = path.resolve(process.argv[2] || `${pkg.name}-${pkg.version}.tgz`);
 const extraction = await capture('tar', ['-xf', archive, '-C', directory]);
 assert.equal(extraction.exitCode, 0, extraction.output);
-const result = await capture(process.execPath, [path.join(directory, 'package/bin/wzzy.js'), 'demo', '--json']);
+const result = await capture(process.execPath, [path.join(directory, 'package/bin/yzzy.js'), 'demo', '--json']);
 assert.equal(result.exitCode, 0, result.output);
 const events = result.output.trim().split('\n').map(line => JSON.parse(line));
 assert.equal(events.at(-1).status, 'verified');

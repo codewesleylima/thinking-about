@@ -17,7 +17,7 @@ export async function eligibilityGrader(workspace) {
   } catch (error) { return { passed: false, error: error.message, sha256 }; }
 }
 export async function makeFixture() {
-  const root = await realpath(await mkdtemp(path.join(tmpdir(), 'wzzy-demo-')));
+  const root = await realpath(await mkdtemp(path.join(tmpdir(), 'yzzy-demo-')));
   await mkdir(path.join(root, 'src'));
   await writeFile(path.join(root, 'src', 'eligibility.js'), fixtureSource);
   const config = structuredClone(defaults); config.provider = 'scripted'; config.model = 'offline-fixture-v1';

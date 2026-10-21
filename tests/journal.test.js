@@ -22,8 +22,8 @@ test('lock exclui controladores concorrentes e sessões são listadas', async ()
   await assert.rejects(Journal.load(root, '../../x'), /ID/);
 });
 test('redige credenciais conhecidas e remove controles do terminal', () => {
-  process.env.WZZY_TEST_SECRET = 'unique-canary-12345';
+  process.env.YZZY_TEST_SECRET = 'unique-canary-12345';
   try { assert.equal(redact('value=unique-canary-12345'), 'value=[REDACTED]'); }
-  finally { delete process.env.WZZY_TEST_SECRET; }
+  finally { delete process.env.YZZY_TEST_SECRET; }
   assert.equal(clean('\x1b[31mred\x1b[0m\x00'), 'red');
 });

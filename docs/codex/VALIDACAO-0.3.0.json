@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-21",
+  "product": "YZZY BLACK",
+  "version": "0.3.0",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "codexPackage": "0.163.0",
+  "offline": {
+    "testsPassed": 90,
+    "testsTotal": 90,
+    "syntaxModules": 49,
+    "deterministicScenariosPassed": 8,
+    "deterministicScenariosTotal": 8,
+    "measuresRealModelQuality": false
+  },
+  "publicSource": {
+    "tag": "rust-v0.163.0",
+    "commit": "83086188ae0614bd882818ff1aa23f3194962012",
+    "verifiedFiles": 15,
+    "manifest": "UPSTREAM.json"
+  },
+  "httpsSmoke": {
+    "url": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javap.html",
+    "retrievedAt": "2026-10-21T11:35:06.103Z",
+    "sha256": "c757845951d681a168992f03a3cca4096e14481ba6ca080fe8e46482f4d062c9",
+    "truncated": false,
+    "outputBytes": 5593,
+    "usesLanguageModel": false
+  },
+  "liveTeam": {
+    "id": "52609f79-f4ca-4e74-841a-ce3356301bb9",
+    "started": "2026-10-21T11:37:48.048Z",
+    "finished": "2026-10-21T11:38:39.720Z",
+    "resolvedModel": "gpt-6.1-sol",
+    "billing": "managed_by_codex",
+    "profiles": ["java", "tester", "orchestrator"],
+    "sessions": [
+      "e430b0b6-4642-4a09-bb5a-d1251579812b",
+      "2323d092-136a-4191-8329-a1dfd75c8abc",
+      "dca9b93b-768d-454a-864b-5bb3e5a43b38"
+    ],
+    "status": "completed_unverified",
+    "modelCalls": 6,
+    "toolCalls": 3,
+    "tools": ["read_file"],
+    "input": "final class Sample { static int twice(int x) { return x + 1; } }",
+    "sampleUnchanged": true,
+    "commandsExecuted": 0,
+    "observation": "O coordenador identificou incremento em vez de dobro, recomendou 2*x, propôs x=2 como caso discriminante e declarou que nenhum teste foi executado.",
+    "interpretation": "Smoke de integração com modelo real; não é benchmark de competência Java, build ou debugger."
+  }
+}

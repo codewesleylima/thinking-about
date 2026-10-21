@@ -1,17 +1,45 @@
 {
-  "name": "wzzy-ai",
-  "version": "0.1.0",
-  "description": "WZZY AI — agente CLI observável com ferramentas e verificação",
+  "name": "yzzy-black",
+  "version": "0.3.0",
+  "description": "YZZY BLACK — agente CLI observável com ferramentas e verificação",
   "type": "module",
   "private": true,
-  "engines": { "node": ">=24" },
-  "bin": { "wzzy": "bin/wzzy.js" },
-  "scripts": {
-    "start": "node bin/wzzy.js", "demo": "node bin/wzzy.js demo",
-    "test": "node --test", "check": "node scripts/check.js",
-    "evaluate": "node evaluations/run.js", "test:docker": "node scripts/docker-smoke.js",
-    "test:live": "node scripts/live-smoke.js", "test:package": "node scripts/package-smoke.js"
+  "engines": {
+    "node": ">=24"
   },
-  "files": ["bin/", "src/", "docs/", "wzzy.config.json", "WZZY.md", "README.md", "estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md"],
-  "license": "UNLICENSED"
+  "bin": {
+    "yzzy": "bin/yzzy.js"
+  },
+  "scripts": {
+    "start": "node bin/yzzy.js",
+    "install:cmd": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/install-path.ps1",
+    "demo": "node bin/yzzy.js demo",
+    "preview:terminal": "node scripts/preview-terminal.js",
+    "test": "node --test",
+    "check": "node scripts/check.js",
+    "study:codex": "node scripts/study-codex-source.js --refresh",
+    "study:codex:verify": "node scripts/study-codex-source.js --verify",
+    "evaluate": "node evaluations/run.js",
+    "test:docker": "node scripts/docker-smoke.js",
+    "test:live": "node scripts/live-smoke.js",
+    "test:codex": "node scripts/codex-smoke.js",
+    "test:codex:edit": "node scripts/codex-smoke.js --edit",
+    "test:codex:cli": "node scripts/codex-cli-smoke.js",
+    "test:package": "node scripts/package-smoke.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "docs/",
+    "scripts/install-path.ps1",
+    "yzzy.config.json",
+    "YZZY.md",
+    "README.md",
+    "estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md",
+    "GUIA_CIENTIFICO_DE_REPLICACAO.md"
+  ],
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@openai/codex": "0.163.0"
+  }
 }
