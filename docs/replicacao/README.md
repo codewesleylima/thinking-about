@@ -1,5 +1,7 @@
 # Manual de construção e replicação de agentes CLI
 
+**Extensão 0.5.0 — aprendizado persistente:** leia também [Aprendizado com `/elevar`](../APRENDIZADO-COM-ELEVAR.md). O capítulo ensina como pesquisar páginas oficiais, conferir proveniência, guardar procedimentos e recuperá-los sem ampliar autoridade. R28 passou de planejado para parcial: recuperação lexical existe; embeddings e avaliação de ganho ainda não. A geração de réplica inclui os módulos, testes e documentação desse ciclo, preservando vazio o estado privado do destino.
+
 **YZZY BLACK 0.4.0 — estudo aplicado de 21/10/2026.** Público: pessoas e agentes de IA autorizados a construir um runtime semelhante dentro de outro projeto. Este manual transforma o estudo em decisões, contratos, sequência de implementação e critérios verificáveis. Ele complementa a pesquisa; não substitui suas limitações nem converte propostas em resultados.
 
 ## 1. Base científica preservada

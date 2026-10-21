@@ -1,5 +1,15 @@
 # YZZY BLACK
 
+**Versão 0.5.0:** `/elevar [tema]` estuda documentação da internet e guarda aprendizados com fontes para tarefas futuras. `/aprendizados` consulta e `/esquecer <id>` remove. A memória é local por projeto, expira em 30 dias e não altera os pesos do backend. O estudo usa leitura HTTPS nos hosts configurados, sem edição ou shell. Veja o [guia completo de aprendizado e replicação](docs/APRENDIZADO-COM-ELEVAR.md).
+
+```text
+yzzy
+/elevar investigar bibliotecas Java com javap e testes de contrato
+/aprendizados
+```
+
+Em automação: `yzzy elevar "tema" --json`. Sem tema, estuda técnicas para melhorar suas capacidades como agente CLI. A pesquisa escolhe páginas oficiais para leitura; ainda não existe buscador geral da internet. [Validação da versão](docs/replicacao/VALIDACAO-0.5.0.json).
+
 **Versão 0.4.0:** manual para outros agentes implementarem uma réplica, especificação com 30 requisitos rastreáveis, gerador de runtime independente e shell CMD/sh do host por concessão explícita. Comece por [REPLICAR.md](REPLICAR.md) e pelo [manual detalhado](docs/replicacao/README.md). Mantém equipe com 19 perfis, orçamento agregado e documentação HTTPS autorizada. O [estudo do Codex](docs/codex/README.md) preserva a pesquisa pública fixada por commit/hashes.
 
 Agente de programação no terminal com perfis, preferências, histórico e guardrails próprios, baseado no [estudo científico do projeto](estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md). O backend padrão usa o Codex com autenticação oficial. Digite `yzzy` no CMD para conversar.

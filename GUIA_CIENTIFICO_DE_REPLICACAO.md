@@ -577,3 +577,11 @@ yzzy --agent mentor
 ```
 
 Os [guias de agentes/memória](docs/AGENTES-E-MEMORIA.md), [configuração](docs/CONFIGURACAO.md) e [segurança](docs/SEGURANCA.md) completam o contrato. Replicar implica conservar e reavaliar guardrails; mudar somente o nome da CLI não transfere evidência ou qualidade.
+
+## Extensão 0.5.0: o agente ensina suas execuções futuras
+
+O comando `/elevar [tema]` implementa estudo online e aprendizado por memória externa. O motor lê fontes permitidas, sintetiza procedimentos estruturados e o host confere referências e trechos contra resultados de ferramentas realmente observados. As lições ficam em `.yzzy/learning.json`, com origem, hash, data, sessão, expiração e status de validação de proveniência. Não há atualização de pesos ou reescrita automática do runtime.
+
+Pedidos posteriores recuperam até três lições por relevância lexical e orçamento de contexto. Elas entram como dados não confiáveis; a compactação não as classifica como instruções humanas. O estudo não herda shell, execução ou escrita. A pessoa pode consultar e esquecer o conhecimento. Aplicar uma técnica aprendida continua exigindo ferramentas autorizadas e evidências da tarefa.
+
+Outro projeto deve replicar o ciclo inteiro: leitura externa limitada, catálogo de estudo reduzido no controlador, schema de lição, confronto com fontes observadas, persistência protegida, recuperação limitada, expiração, correção/remoção e avaliação separada de origem e de qualidade. O [capítulo detalhado](docs/APRENDIZADO-COM-ELEVAR.md) contém contratos, algoritmo, limites, roteiro de implementação, testes e fontes. A especificação R28 agora é parcial: memória lexical com proveniência existe; embeddings e avaliação pareada de ganho permanecem pendentes.

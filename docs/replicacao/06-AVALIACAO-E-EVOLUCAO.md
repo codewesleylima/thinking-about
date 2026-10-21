@@ -84,7 +84,7 @@ Uma biblioteca madura pode economizar implementação, mas cria dependências e 
 
 ## 6.8 Backlog técnico explícito
 
-R24–R29 são planejados: recuperação estrutural, MCP, execução durável, concorrência, memória semântica e telemetria externa. R23/R30 são parciais: há perfis/receitas e alguns ensaios, mas falta automação completa do domínio Java e avaliação de qualidade geral.
+R24–R27 e R29 são planejados: recuperação estrutural, MCP, execução durável, concorrência e telemetria externa. Desde 0.5.0, R28 é parcial: `/elevar` implementa memória com fontes, recuperação lexical, expiração e remoção; embeddings e avaliação pareada de ganho continuam pendentes. R23/R30 são parciais: há perfis/receitas e alguns ensaios, mas falta automação completa do domínio Java e avaliação de qualidade geral.
 
 Para cada extensão, escreva entrada, efeito, política, credenciais, falhas, estado persistido, cleanup e critério. Implemente uma fatia vertical e compare com o baseline. Não deixe um checkbox de documentação substituir o código ou o experimento.
 

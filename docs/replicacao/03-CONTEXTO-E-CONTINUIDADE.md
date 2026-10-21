@@ -1,5 +1,7 @@
 # 3. Contexto, comportamento, investigação e continuidade
 
+Extensão 0.5.0: a continuidade entre sessões agora inclui [aprendizados de `/elevar`](../APRENDIZADO-COM-ELEVAR.md). Implemente a memória externa separada do resumo da conversa: proveniência observada, expiração, recuperação limitada e remoção. Ela nunca deve virar instrução humana durante compactação nem conceder capacidades ao agente.
+
 ## 3.1 O que significa ensinar um agente
 
 Este repositório ensina um procedimento de engenharia por instruções, contratos, exemplos, código e testes. O modelo conectado interpreta esse material em seu contexto. Isso não altera pesos automaticamente, não cria conhecimento permanente em toda instalação e não concede ferramentas inexistentes.

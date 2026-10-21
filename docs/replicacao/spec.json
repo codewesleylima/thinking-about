@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "productVersion": "0.4.0",
+  "productVersion": "0.5.0",
   "study": { "path": "estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md", "sha256": "89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252", "sections": 32 },
   "meaning": "Especificação de referência. implemented indica código e testes locais, não paridade comercial. planned e partial não devem ser anunciados como funções completas.",
   "requirements": [
@@ -31,7 +31,7 @@
     { "id": "R25", "title": "MCP como capacidade revisada", "status": "planned", "studySections": [12,23], "dependsOn": ["R02","R03","R08"], "modules": [], "tests": [], "accept": "Fixar protocolo, identidade, autorização por ferramenta e destino, transporte, timeout e testes de injeção/SSRF." },
     { "id": "R26", "title": "Execução durável e reconciliação externa", "status": "planned", "studySections": [17], "dependsOn": ["R06","R14"], "modules": [], "tests": [], "accept": "Estado consultável, chave de idempotência e reconciliação por operação antes de replay; não prometer exactly-once genérico." },
     { "id": "R27", "title": "Concorrência isolada e reserva atômica", "status": "planned", "studySections": [18,20], "dependsOn": ["R17","R26"], "modules": [], "tests": [], "accept": "Worktree/sandbox por tarefa, autoridade filha subconjunto, ledger global atômico e integração de conflitos/evidências." },
-    { "id": "R28", "title": "Memória semântica com proveniência", "status": "planned", "studySections": [11], "dependsOn": ["R13"], "modules": [], "tests": [], "accept": "Origem, revisão, expiração/correção, autorização de dados e avaliação de recuperação vs perda e custo." },
+    { "id": "R28", "title": "Memória semântica com proveniência", "status": "partial", "studySections": [11], "dependsOn": ["R13"], "modules": ["src/learning.js","src/elevation.js"], "tests": ["tests/learning.test.js"], "accept": "Origem, revisão, expiração/correção e autorização de dados implementadas via /elevar e recuperação lexical. Embeddings e avaliação pareada de ganho/perda/custo ainda pendentes." },
     { "id": "R29", "title": "Telemetria GenAI externa", "status": "planned", "studySections": [21,26], "dependsOn": ["R06","R08"], "modules": [], "tests": [], "accept": "Fixar convenções, redigir atributos, amostrar e exportar sem prompts/segredos por padrão; correlacionar modelo/ferramenta/evidência." },
     { "id": "R30", "title": "Qualidade geral e capacidade de construir", "status": "partial", "studySections": [26,27,28], "dependsOn": ["R22"], "modules": ["evaluations/tasks.json","docs/replicacao/06-AVALIACAO-E-EVOLUCAO.md"], "tests": [], "accept": "Holdout, tentativas, regressões, custo/tempo e incerteza; não prometer resolver qualquer tarefa nem declarar equivalência sem benchmark." }
   ]

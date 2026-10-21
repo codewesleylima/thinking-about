@@ -1,5 +1,7 @@
 # Ensinar outro agente a construir um sistema semelhante
 
+**Extensão 0.5.0:** o guia [Aprendizado com `/elevar`](docs/APRENDIZADO-COM-ELEVAR.md) ensina estudo online, lições com fontes, memória entre sessões, expiração e remoção. Os módulos e testes já são incluídos pelo gerador de réplica; os aprendizados privados da origem não são copiados.
+
 **Versão 0.4.0, 21/10/2026.** Este arquivo é a entrada curta. O detalhamento, as decisões e os critérios estão no [manual de replicação](docs/replicacao/README.md). O [estudo original](estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md) permanece intacto; o [estudo do Codex](docs/codex/README.md) aprofunda a integração e Java.
 
 ## Para a IA que chegou a este repositório

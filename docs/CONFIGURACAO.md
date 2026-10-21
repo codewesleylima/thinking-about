@@ -1,5 +1,9 @@
 # Configuração e operação
 
+## Estudo e aprendizado (0.5.0)
+
+No chat, `/elevar [tema]`; em automação, `yzzy elevar "tema" --json`. O comando concede leitura externa somente para o estudo nos hosts exatos de `documentation.allowedHosts`, sem herdar escrita, execução ou shell. Não exige `--allow-network`. Usa os limites existentes com tetos próprios menores: dez chamadas de modelo, vinte de ferramentas, oito leituras externas e 180 segundos. `/aprendizados [id]` consulta e `/esquecer <id>` remove. A memória é local ao workspace, com validade inicial de 30 dias. [Operação, algoritmo e implementação](APRENDIZADO-COM-ELEVAR.md).
+
 ## Replicação e CMD (0.4.0)
 
 `yzzy replicate --output "C:/projetos/meu-agente" --name meu-agente --command meuai` gera uma base independente em diretório novo, sem copiar conta, cache ou sessões. O diretório pai precisa existir e o destino deve ficar fora da origem. O comando apenas gera arquivos; não instala nem autentica. Siga [a instalação da réplica](replicacao/04-REPLICA-EXECUTAVEL.md).

@@ -16,7 +16,7 @@ Esta matriz liga o [estudo original](../../estudo_agentes_ia_cli_arquitetura_imp
 | 8. Instruções | Definir descoberta, persona, preferências e precedência | `profiles.js`, `specialists.js`, AGENTS/YZZY; R03/R16 | Instrução orienta; política concede. Guidance do runtime é apenas raiz. |
 | 9. Guardrails | Fazer enforcement em ferramentas/ambiente e declarar confiança | `tools.js`, `workspace.js`, executores; R03/R07/R18/R20 | Modo host não herda confinamento do modo restrito. |
 | 10. Planejar/perguntar | Inventariar, criar critérios, buscar informação e perguntar o essencial | R04/R12; capítulo 3 | Pergunta é evento de estado, não autorização implícita. |
-| 11. Contexto/memória | Selecionar por relevância e preservar origem/restrições | `memory.js`; R04/R13; R24/R28 planejados | Extrator não é índice semântico; teste de preservação e perda. |
+| 11. Contexto/memória | Selecionar por relevância e preservar origem/restrições | `memory.js`, `learning.js`, `elevation.js`; R04/R13; R24 planejado, R28 parcial | Extrator e memória lexical com fontes existem; embeddings e avaliação pareada de ganho/perda pendentes. |
 | 12. Ferramentas | Um catálogo canônico, validação local e executor correspondente | `tools.js`; R02/R18/R20; R25 planejado | Nome e schema não criam capacidade; cada efeito tem política. |
 | 13. Edição | Ler, hash, substituir com integridade e criar exclusivamente | `workspace.js`; R05 | Conflito humano, BOM/CRLF, múltipla ocorrência e controle protegidos. |
 | 14. Execução | Escolher ambiente, prazo, captura, cancelamento e cleanup | `executor.js`, `host-shell.js`; R07/R20 | Testar a árvore e reconhecer incerteza; nada de replay cego. |

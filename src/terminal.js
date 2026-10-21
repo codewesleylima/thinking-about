@@ -241,7 +241,8 @@ export class Terminal {
     if (Array.isArray(value)) {
       if (!value.length) { this.note('Nenhum item por aqui ainda.'); return; }
       for (const item of value) {
-        if (item?.instructions && item.name) { this.text(`${item.name}  ${item.readOnly ? '· somente leitura' : ''}`, '1'); this.text(item.description, '2'); }
+        if (item?.title && item.id && item.expiresAt) { this.text(item.title, '1'); this.text(`${item.status === 'active' ? 'Ativo' : item.status === 'expired' ? 'Expirado' : item.status} · ${item.id}`, '2'); this.text(`Revalidar até ${item.expiresAt.slice(0, 10)}`, '2'); }
+        else if (item?.instructions && item.name) { this.text(`${item.name}  ${item.readOnly ? '· somente leitura' : ''}`, '1'); this.text(item.description, '2'); }
         else if (item?.id && item.status) { this.text(item.objective || 'Conversa', '1'); this.text(`${states[item.status] || item.status} · ${item.id}`, '2'); }
         else if (item?.model) { this.text(`${item.model}${item.default ? ' · padrão' : ''}`, '1'); if (item.description) this.text(item.description, '2'); }
         else this.present(item);

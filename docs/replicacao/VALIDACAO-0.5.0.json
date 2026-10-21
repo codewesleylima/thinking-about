@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "productVersion": "0.5.0",
+  "date": "2026-10-21",
+  "platform": "win32",
+  "node": "v24.19.0",
+  "automated": {
+    "command": "npm.cmd test",
+    "passed": 108,
+    "failed": 0,
+    "learningTests": 10,
+    "model": "scripted test providers; no live LLM calls in unit tests",
+    "check": { "command": "npm.cmd run check", "javascriptModules": 59, "replicationRequirements": 30, "passed": true },
+    "scenarios": { "command": "npm.cmd run evaluate", "passed": 8, "total": 8, "realModelCalls": 0 }
+  },
+  "live": {
+    "command": "node scripts/elevation-smoke.js",
+    "kind": "live_model_online_study_and_cross_session_memory",
+    "started": "2026-10-21T22:47:26.258Z",
+    "finished": "2026-10-21T22:47:50.099Z",
+    "model": "gpt-6.1-sol",
+    "backend": "codex",
+    "session": "6ba075e1-57ba-4419-9f25-fb4b2d293e78",
+    "followup": "38e2bddc-8db7-466f-bf30-7e5b9704b82e",
+    "modelCalls": 3,
+    "toolCalls": 1,
+    "learnedCount": 1,
+    "lesson": "Inspecionar assinaturas com javap",
+    "source": "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javap.html",
+    "sourceSha256": "c757845951d681a168992f03a3cca4096e14481ba6ca080fe8e46482f4d062c9",
+    "sourceRetrievedAt": "2026-10-21T22:47:33.526Z",
+    "truncated": false,
+    "validation": "provenance_only",
+    "status": "completed_unverified",
+    "observed": "Read public Oracle page, persisted one sourced lesson in a temporary workspace, retrieved it into a new real-model conversation and returned guidance citing its memory source.",
+    "environmentFailure": "First sandboxed attempt could not access the authenticated Codex profile (Windows error 5). Retried with approved escalation; successful execution recorded above.",
+    "limits": "One topic and one successful attempt after environmental retry. No Java program executed, no general capability benchmark, no evidence of weight updates or improved task success rate. Later error-message and whitespace comparison changes are covered by automated regression tests."
+  },
+  "defaultCliRegression": {
+    "command": "node scripts/elevation-smoke.js --default-cli",
+    "firstSession": "cb268664-fa5b-41d6-8d08-3ad3f6d5f2ff",
+    "firstStatus": "error",
+    "firstModelCalls": 6,
+    "firstToolCalls": 5,
+    "firstLearned": 0,
+    "observedFailure": "An authentic quotation was rejected because its whitespace/newlines differed from the source. All other words and punctuation matched; the whole batch was correctly left unpersisted by the then-strict validator.",
+    "fix": "Compare quotation/source after collapsing whitespace only. Preserve case, words and punctuation; persist exact versus whitespace_normalized match metadata. Added regression rejecting changed words.",
+    "retry": {
+      "session": "52e78d4d-b64c-41e4-ab68-e08f848edc8e",
+      "started": "2026-10-21T22:56:17.209Z",
+      "finished": "2026-10-21T22:57:17.028Z",
+      "model": "gpt-6.1-sol",
+      "modelCalls": 3,
+      "toolCalls": 2,
+      "learned": 5,
+      "status": "completed_unverified",
+      "observed": "Real CLI elevar without a topic read two allowed online documents and persisted five sourced lessons in a temporary workspace. No general search engine or software execution."
+    }
+  },
+  "package": { "command": "npm.cmd pack --ignore-scripts --json --cache .yzzy/npm-cache; npm.cmd run test:package", "passed": true, "replicaFiles": 106, "observed": "Extracted CLI demo, generated independent replica, replica demo and syntax/spec checks passed. Deterministic fixtures, no live inference." },
+  "globalCli": { "command": "C:/Users/Guste/AppData/Roaming/npm/yzzy.cmd --version", "observed": "YZZY BLACK 0.5.0", "note": "Existing global junction loads current checkout; no reinstall required. Checked outside the sandbox that hides the user profile PATH." },
+  "studySha256": "89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252"
+}

@@ -1,5 +1,9 @@
 # Arquitetura e decisões
 
+## Aprendizado entre sessões (0.5.0)
+
+`elevation.js` coordena estudo de leitura com orçamento reduzido; `learning.js` valida lições contra leituras observadas e administra `.yzzy/learning.json`. O `AgentRunner` restringe ferramentas no modo de estudo e, em tarefas normais, recupera conhecimento lexicalmente a cada turno. A recuperação entra como dado externo, separada das instruções de sistema e de `userInstructions` do resumo. A promoção usa lock e arquivo atômico depois do término da sessão; o resultado é registrado no journal. Leia os [contratos e limites](APRENDIZADO-COM-ELEVAR.md), inclusive a ausência de transação única entre journal e memória. Proveniência validada não é execução verificada.
+
 ```mermaid
 flowchart LR
   U[CLI, perfil e autorização humana] --> C[Controlador YZZY BLACK]

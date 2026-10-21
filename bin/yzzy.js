@@ -20,6 +20,8 @@ import { Terminal } from '../src/terminal.js';
 import { VERSION } from '../src/version.js';
 import { planTeam, runTeam, loadTeam } from '../src/team.js';
 import { createReplica } from '../src/replication.js';
+import { runElevation } from '../src/elevation.js';
+import { listLearnings, forgetLearning } from '../src/learning.js';
 
 const HELP = `YZZY BLACK ${VERSION} — seu agente no terminal
 Uso: yzzy [comando] [opções]             Sem comando: abre o chat.
@@ -42,12 +44,15 @@ Uso: yzzy [comando] [opções]             Sem comando: abre o chat.
   init | demo                          Inicialização de projeto ou demo offline
   replicate --output <dir-novo>         Gera runtime independente, testes e manual
             --name <pacote> --command <alias>  Personaliza pacote e comando npm
+  elevar ["tema"]                     Estuda documentação online e salva aprendizados
+  aprendizados [<id>]                  Lista aprendizados ou mostra detalhes
+  esquecer <id>                       Retira um aprendizado da memória ativa
 Opções: --workspace <dir> --config <json> --backend codex|openai|ollama --model <id>
         --agent <nome> --allow-write --allow-exec --allow-network --allow-host-shell --no-animation --json --help --version
 --allow-host-shell concede CMD/sh do host, sem isolamento de arquivos/rede. Padrão: desligado.
 Padrão: Codex como inferência; ferramentas e autorização pertencem à YZZY BLACK.
 Chat: /help /new /agent /agents /settings /set /history /resume /summary /compact
-      /team /model /status /permissions /clear /exit
+      /team /elevar /aprendizados /esquecer /model /status /permissions /clear /exit
 Saídas: 0 término operacional; 2 erro; 3 limite; 4 pergunta; 5 falha/incerteza; 130 cancelamento.`;
 const SLASH_HELP = `CONVERSA
   /new              Começar outra conversa
@@ -64,6 +69,12 @@ PERSONALIZAR
   /model [id]       Consultar ou trocar o modelo
   /team <objetivo>  Consultar equipe e coordenar a tarefa em novas sessões
 
+APRENDER
+  /elevar [tema]    Estudar na internet e guardar conhecimento com fontes
+  /aprendizados    Listar conhecimentos; acrescente um ID para detalhes
+  /esquecer <id>   Retirar um conhecimento da memória ativa
+  O estudo autoriza leitura HTTPS nos hosts configurados, sem shell ou edição.
+
 TERMINAL
   /status           Ver detalhes desta conversa
   /permissions      Consultar permissões
@@ -71,7 +82,7 @@ TERMINAL
   /exit             Sair
 
 Tab completa comandos. Ctrl+C cancela a operação; em espera, sai.`;
-const slashCommands = ['/help', '/new', '/history', '/resume', '/summary', '/compact', '/agents', '/agent', '/settings', '/set', '/model', '/team', '/status', '/permissions', '/clear', '/exit'];
+const slashCommands = ['/help', '/new', '/history', '/resume', '/summary', '/compact', '/agents', '/agent', '/settings', '/set', '/model', '/team', '/elevar', '/aprendizados', '/esquecer', '/status', '/permissions', '/clear', '/exit'];
 const codeFor = r => ({ error: 2, limited: 3, waiting_user: 4, failed: 5, blocked_uncertain: 5, cancelled: 130 })[r.state.status] || 0;
 
 async function main() {
@@ -121,6 +132,13 @@ async function main() {
     ...(values.backend ? { YZZY_PROVIDER: values.backend } : {}), ...(values.model ? { YZZY_MODEL: values.model } : {}) });
   const { root, config } = loaded;
   const permissions = { allowWrite: values['allow-write'], allowExec: values['allow-exec'], allowNetwork: values['allow-network'], allowHostShell: values['allow-host-shell'] };
+  const showLearnings = async id => {
+    const items = await listLearnings(root);
+    if (id) { const item = items.find(i => i.id === id); invariant(item, 'Aprendizado não encontrado'); print(item); }
+    else print(items.map(({ id, title, status, expiresAt }) => ({ id, title, status, expiresAt })));
+  };
+  if (command === 'aprendizados') { await showLearnings(positionals[1]); return; }
+  if (command === 'esquecer') { print(await forgetLearning(root, positionals[1])); return; }
   if (command === 'init') {
     const outcomes = [];
     for (const [file, content] of [['yzzy.config.json', JSON.stringify(defaults, null, 2) + '\n'], ['YZZY.md', '# Orientações para YZZY BLACK\n\nDescreva padrões, verificações e restrições deste projeto.\n']]) {
@@ -185,6 +203,24 @@ async function main() {
   const cancel = () => { if (activeAbort) activeAbort.abort(new Error('Cancelado pelo usuário')); else closing.abort(); };
   process.on('SIGINT', cancel);
   let profile = await getAgent(root, values.agent), preferences = await loadPreferences(root), compact = false;
+  const executeElevation = async topic => {
+    activeAbort = new AbortController();
+    if (!values.json) screen.note('Elevar · estudo online com fontes. Sem edição ou shell; aprendizado reutilizável por 30 dias.');
+    try {
+      const result = await runElevation({ ...loaded, topic, preferences, signal: activeAbort.signal, emit });
+      if (values.json) print({ type: 'elevation_result', session: result.id, status: result.state.status,
+        topic: result.topic, learned: result.learned, journal: result.file, error: result.error || null });
+      else {
+        screen.outcome(result);
+        if (result.learned.length) {
+          screen.text(`${result.learned.length} aprendizado(s) salvo(s) com fontes.`, '32;1');
+          for (const item of result.learned) { screen.text(item.title, '1'); screen.text(item.summary); }
+          screen.note('Use /aprendizados para consultar. A origem foi conferida; a aplicação ainda precisa de testes.');
+        }
+      }
+      return result;
+    } finally { activeAbort = undefined; screen.stop(); }
+  };
   const executeTeam = async objective => {
     activeAbort = new AbortController();
     try {
@@ -205,6 +241,7 @@ async function main() {
     } finally { activeAbort = undefined; compact = false; }
   };
   try {
+    if (command === 'elevar') { process.exitCode = codeFor(await executeElevation(positionals.slice(1).join(' '))); return; }
     if (command === 'team') {
       const action = positionals[1];
       if (action === 'inspect') print(await loadTeam(root, positionals[2]));
@@ -266,6 +303,9 @@ async function main() {
             else if (slash === '/compact') { compact = true; print('A próxima resposta usará contexto resumido a partir de oito mensagens. Histórico preservado.'); }
             else if (slash === '/model') { if (rest) { config.model = rest; id = undefined; } print({ model: config.model || 'padrão do Codex' }); }
             else if (slash === '/team') { await executeTeam(rest); id = undefined; }
+            else if (slash === '/elevar') { await executeElevation(rest); }
+            else if (slash === '/aprendizados') await showLearnings(rest);
+            else if (slash === '/esquecer') print(await forgetLearning(root, rest));
             else if (slash === '/status') {
               const saved = id ? await Journal.load(root, id) : null;
               print({ session: id || null, status: saved?.state.status, agent: profile.name, backend: config.provider,

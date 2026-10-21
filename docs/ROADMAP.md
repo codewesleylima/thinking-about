@@ -1,5 +1,9 @@
 # Estado do produto e evolução
 
+## Versão 0.5.0 implementada
+
+`/elevar` pesquisa documentação oficial pela ferramenta HTTPS, sintetiza lições com proveniência e persiste memória local entre sessões. Recuperação lexical, validade de 30 dias, consulta e remoção estão implementadas. O estudo recebe somente ferramentas de leitura e não altera os pesos ou código do agente. [Contratos e validação](APRENDIZADO-COM-ELEVAR.md). Embeddings, buscador geral, avaliação pareada de ganho e autodesenvolvimento com ativação/rollback continuam como evolução futura.
+
 ## Versão 0.4.0 implementada
 
 Manual de construção com fases e matriz das 32 seções do estudo, especificação rastreável de 30 requisitos, entrada AGENTS/REPLICAR e gerador de base independente com manifesto. Shell CMD/sh do host é uma concessão opt-in, sem sandbox de filesystem/rede e com resultado diagnóstico. A validação inclui comandos reais, negação de readonly, limites, efeito incerto e geração executável de réplica. Veja [o manual](replicacao/README.md).

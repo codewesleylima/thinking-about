@@ -1,5 +1,7 @@
 # Agentes, interação e memória
 
+Na versão 0.5.0, `/elevar [tema]` acrescenta memória de conhecimento entre sessões. Consulte o [guia do aprendizado](APRENDIZADO-COM-ELEVAR.md): estudo HTTPS com fontes, procedimentos estruturados, recuperação lexical, validade de 30 dias, `/aprendizados` e `/esquecer`. A memória extrativa descrita abaixo continua responsável pela continuidade da conversa; os aprendizados externos não são instruções humanas e não treinam os pesos do modelo.
+
 Desde 0.4.0, `--allow-host-shell` é uma concessão de CMD/sh do host, independente das flags de ferramentas restritas. Perfis readonly e consultas da equipe sempre a reduzem; o coordenador conserva o perfil humano. A memória registra `hostShellUsed`, e a sessão não obtém verificação independente depois desse canal. Veja [execução](replicacao/05-CMD-E-EXECUCAO.md) e [ensino de continuidade](replicacao/03-CONTEXTO-E-CONTINUIDADE.md).
 
 ## Perfis

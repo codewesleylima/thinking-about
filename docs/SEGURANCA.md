@@ -1,5 +1,9 @@
 # Segurança e fronteiras reais
 
+## Estudo e memória externa (0.5.0)
+
+`/elevar` é uma autorização humana para leitura HTTPS nos hosts configurados durante um estudo limitado. O modo reduz o catálogo no host a ferramentas de leitura e não herda escrita, Docker ou shell. Aprendizados são persistidos pelo controlador somente depois de validar schema e referências observadas; esse procedimento comprova proveniência, não correção semântica ou ausência de prompt injection. A recuperação os envia como dados não confiáveis, com expiração, limites de relevância/bytes e possibilidade de remoção. Arquivos de memória permanecem protegidos das ferramentas restritas de edição. Detalhes, fronteiras e limitações estão no [contrato de aprendizado](APRENDIZADO-COM-ELEVAR.md).
+
 ## Autoridade
 
 O operador escolhe workspace, arquivo de configuração, modelo, escopo e permissões. O modelo recebe ferramentas de capacidade limitada. Texto de arquivo, resposta de provedor ou saída de teste não ativa flags nem adiciona comandos. Schemas são validados localmente, mesmo quando o fornecedor oferece modo estrito.
