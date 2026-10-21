@@ -1,5 +1,7 @@
 # Estudo do Codex e equipe YZZY BLACK
 
+**Extensão 0.4.0:** o [manual de replicação](../replicacao/README.md) ensina a construção em outro repositório, com requisitos, fases e gerador independente. A nova capacidade `run_command` é shell do host por `--allow-host-shell`, sem as garantias do modo restrito. Este estudo conserva a descrição histórica 0.3.0 onde indicada; leia o [contrato atual de execução](../replicacao/05-CMD-E-EXECUCAO.md) para essa diferença.
+
 Este é o ponto de entrada da documentação detalhada solicitada para compreender como um agente de programação funciona e construir nossa própria aplicação. O estudo foi feito em **21/10/2026**. A extensão implementada é **YZZY BLACK 0.3.0**; o motor oficial continua fixado em **Codex 0.163.0**.
 
 O resultado tem três partes: estudo das superfícies públicas, implementação própria de comportamentos e mecanismos, e procedimentos reproduzíveis para engenharia de software. Cada parte tem um limite explícito. O modelo remoto permanece fornecido pela OpenAI. Não obtivemos pesos fechados, dataset de treinamento completo, prompts privados ou equivalência integral com o produto comercial.

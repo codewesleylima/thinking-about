@@ -1,6 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { checkReplication } from './check-replication.js';
 const directories = ['bin', 'src', 'scripts', 'tests', 'evaluations'];
 let checked = 0;
 async function walk(dir) {
@@ -18,3 +19,4 @@ async function walk(dir) {
 for (const dir of directories) await walk(dir);
 for (const file of ['package.json', 'package-lock.json', 'yzzy.config.json', 'evaluations/tasks.json']) JSON.parse(await readFile(file, 'utf8'));
 console.log(`Sintaxe: ${checked} módulos JavaScript; configurações JSON válidas.`);
+console.log('Replicação: ' + JSON.stringify(await checkReplication()));

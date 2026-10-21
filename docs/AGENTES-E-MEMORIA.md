@@ -1,5 +1,7 @@
 # Agentes, interação e memória
 
+Desde 0.4.0, `--allow-host-shell` é uma concessão de CMD/sh do host, independente das flags de ferramentas restritas. Perfis readonly e consultas da equipe sempre a reduzem; o coordenador conserva o perfil humano. A memória registra `hostShellUsed`, e a sessão não obtém verificação independente depois desse canal. Veja [execução](replicacao/05-CMD-E-EXECUCAO.md) e [ensino de continuidade](replicacao/03-CONTEXTO-E-CONTINUIDADE.md).
+
 ## Perfis
 
 Perfis combinam nome, descrição, instruções e restrição `readOnly` no mesmo controlador. Não são subagentes concorrentes. Desde 0.3.0 são 19 perfis, incluindo engenharia, arquitetura, padrões, Java, depuração, engenharia reversa, frontend, testes, integrações, segurança, performance, dados, operação e documentação. `reviewer`, `researcher` e `security` negam escrita/execução mesmo com `--allow-write --allow-exec`. Consulte o [catálogo e a orquestração](codex/04-EQUIPE-E-ORQUESTRACAO.md).

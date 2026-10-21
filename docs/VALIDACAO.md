@@ -1,5 +1,19 @@
 # Validação da YZZY BLACK
 
+## 0.4.0: ensino replicável, gerador independente e CMD
+
+Em **21/10/2026**, no Windows/Node v24.19.0, a suíte aprovou **98/98 testes**, sem ignorados. O check validou **55 módulos JavaScript**, configurações JSON e **30 requisitos rastreáveis**, incluindo dependências da especificação, referências locais e hash do estudo original. Os **8/8 cenários determinísticos** continuam conformes, sem inferência real. O [registro estruturado](replicacao/VALIDACAO-0.4.0.json) separa esses resultados.
+
+O arquivo de Downloads indicado pelo usuário e o estudo preservado na raiz tiveram SHA-256 idêntico: `89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252`. O original não foi alterado. O [manual novo](replicacao/README.md) acrescenta contratos, fases e matriz das 32 seções, com pesquisa primária atual, sem anunciar recursos planejados como implementados.
+
+O teste de replicação gerou pasta independente, personalizou pacote/alias, confirmou dependência Codex fixada e exclusão de dados locais, executou demo e especificação, e recusou sobrescrever um arquivo humano. O pacote npm foi extraído em pasta limpa e **gerou outra réplica**, cuja demo e check completo passaram. Um ensaio adicional da réplica também aprovou os 98 testes; a ausência inicial do lockfile no artefato foi diagnosticada e corrigida com um asset de resolução portátil e adaptação apenas da identidade raiz. O check final da réplica valida esse lock e o hash do estudo. Não houve instalação automática nem cópia de credenciais.
+
+Os testes de CMD/sh executaram comandos reais de echo/redirecionamento/exit code em pastas temporárias. Cobriram capacidade separada, negação por readOnly e consulta de equipe, filtragem de variáveis conhecidas, limite de JSON, timeout/cancelamento, efeito incerto, ausência de avaliação independente e preservação de falha de check. A primeira espera infinita encontrou a limitação do runner restrito para encerrar descendentes: os três PIDs exatos do ensaio foram identificados e finalizados com autorização; as fixtures passaram a ser autolimitadas. O produto não alega limpeza absoluta de processos destacados ou serviços.
+
+**Integração real com modelo:** sessão `5dc2fb3d-8e12-4cd0-9414-6ecd9582710b`, `gpt-6.1-sol` via Codex, duas chamadas e uma ferramenta. O modelo propôs `echo YZZY_SHELL_READY`, o CMD retornou essa saída com exit code 0 e o modelo a relatou. O estado foi `completed_unverified`, conforme o contrato diagnóstico. O ensaio restrito inicial não conseguiu acessar o estado oficial do Codex; a execução real ocorreu com a permissão de ambiente correspondente. Isso não alterou o default nem as concessões do produto.
+
+`--allow-host-shell` permite comandos com privilégios do usuário, sem confinamento por paths/egress; as garantias do modo restrito não são generalizadas a ele. O ensaio de echo não demonstra construir qualquer software, depurar toda biblioteca ou ausência de falhas. Não houve novo build Java, debugger, LSP, MCP ou Docker real nesta rodada. Os limites estão em [CMD e execução](replicacao/05-CMD-E-EXECUCAO.md), [avaliação](replicacao/06-AVALIACAO-E-EVOLUCAO.md) e na especificação.
+
 ## 0.3.0: estudo público, especialistas, equipe e documentação HTTPS
 
 Validação realizada em **21/10/2026**, Windows/Node v24.19.0. O [registro estruturado](codex/VALIDACAO-0.3.0.json) contém os identificadores dos ensaios reais; o [estudo detalhado](codex/README.md) diferencia implementação, receita e capacidade ausente.

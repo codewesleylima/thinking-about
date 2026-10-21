@@ -31,6 +31,8 @@ flowchart LR
 | `src/profiles.js` | Perfis, preferências validadas e identidade congelada por sessão |
 | `src/specialists.js`, `src/team.js` | Especialidades, roteamento revisável, consultas sequenciais e coordenação com recursos agregados |
 | `src/documentation.js` | Leitura HTTPS autorizada, validação DNS, conexão fixada, limites e proveniência |
+| `src/host-shell.js` | CMD/sh do host por concessão separada; prazo/saída/cancelamento e diagnóstico, sem sandbox de arquivos/rede |
+| `src/replication.js` | Cópia independente em destino novo com alias, fontes, testes, documentação e manifesto |
 | `src/memory.js` | Resumos extrativos e projeção de contexto preservando transcript |
 | `src/tools.js` | Schema canônico e autorização por capacidade |
 | `src/workspace.js` | Caminhos, busca, hashes, edição e snapshots |
@@ -71,6 +73,8 @@ Falhas de ferramenta retornam ao modelo como observação. `ENOENT` inclui códi
 | `cancelled` / `error` | Interrupção humana ou falha de infraestrutura/contrato |
 
 Um código de saída 0 também pode corresponder a `completed_unverified`: ele indica término operacional, não correção científica. Automações devem ler o status JSON. O controlador não transforma uma alegação textual de sucesso em `verified`.
+
+Desde 0.4.0, usar `run_command` marca `hostShellUsed`. Essa sessão não recebe promoção a `checks_passed`/`verified` pelo caminho controlado; falhas conhecidas de checks permanecem `failed`. A capacidade ampla do usuário é distinta do worker isolado. O [manual arquitetural](replicacao/01-ARQUITETURA-E-ORGANIZACAO.md) detalha contratos e organização para réplicas.
 
 ## Contexto e persistência
 

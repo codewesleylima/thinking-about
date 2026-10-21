@@ -1,6 +1,6 @@
 # YZZY BLACK
 
-**Versão 0.3.0:** equipe coordenada com 19 perfis de especialidade, consultas sequenciais, orçamento agregado e leitura de documentação HTTPS autorizada. O estudo detalhado do Codex público, incluindo Java e engenharia reversa, começa em [docs/codex](docs/codex/README.md). O recorte de fontes upstream é fixado por commit e hashes, com script de reprodução.
+**Versão 0.4.0:** manual para outros agentes implementarem uma réplica, especificação com 30 requisitos rastreáveis, gerador de runtime independente e shell CMD/sh do host por concessão explícita. Comece por [REPLICAR.md](REPLICAR.md) e pelo [manual detalhado](docs/replicacao/README.md). Mantém equipe com 19 perfis, orçamento agregado e documentação HTTPS autorizada. O [estudo do Codex](docs/codex/README.md) preserva a pesquisa pública fixada por commit/hashes.
 
 Agente de programação no terminal com perfis, preferências, histórico e guardrails próprios, baseado no [estudo científico do projeto](estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md). O backend padrão usa o Codex com autenticação oficial. Digite `yzzy` no CMD para conversar.
 
@@ -9,6 +9,13 @@ O chat 0.2.3 mantém o globo cyber girando no cabeçalho enquanto você conversa
 A YZZY BLACK é um **runtime de agente com modelos substituíveis**. Não contém pesos próprios treinados nem pressupõe equivalência a produtos comerciais. Distingue resposta do modelo, ação executada e verificação independente.
 
 Para entender como outro projeto pode construir um sistema semelhante preservando os controles, leia o [Guia científico de replicação](GUIA_CIENTIFICO_DE_REPLICACAO.md), na raiz: fundamentos, contratos, guardrails, roteiro de implementação e critérios de avaliação.
+
+```bat
+yzzy replicate --output "C:/projetos/meu-agente" --name meu-agente --command meuai
+yzzy --agent java --allow-host-shell
+```
+
+O primeiro comando gera código, testes e documentação em diretório novo, sem credenciais ou sessões. O segundo autoriza comandos livres do host: **acesso de arquivos/rede com os privilégios do usuário, sem sandbox por `writeRoots`**. Sem essa opção, permanece o modo restrito. Perfis somente leitura e consultas da equipe continuam sem shell. Consulte [execução e confiança](docs/replicacao/05-CMD-E-EXECUCAO.md).
 
 ## Começar agora
 

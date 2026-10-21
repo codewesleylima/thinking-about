@@ -8,7 +8,7 @@ Este capítulo transforma o perfil especialista em Java em um procedimento de in
 
 O YZZY lê código e relatórios de texto com `list_files`, `search`, `read_file` e `read_lines`. Pode propor alterações sujeitas à permissão de escrita, e solicitar um comando previamente cadastrado com `run_check`, sujeito à permissão de execução. Consulte [tools.js](../../src/tools.js), [executor.js](../../src/executor.js) e [configuração](../../yzzy.config.json).
 
-Ele **não possui shell livre, debugger interativo, leitor especializado de JAR, decompilador, cliente de repositório Maven ou anexação a JVM**. O modelo pode interpretar relatórios exportados em texto e formular receitas; isso não equivale a ter executado essas ferramentas.
+No modo restrito descrito pelo baseline 0.3.0, ele **não possui shell livre, debugger interativo, leitor especializado de JAR, decompilador, cliente de repositório Maven ou anexação a JVM**. Desde 0.4.0, `--allow-host-shell` permite comandos CMD/sh e programas instalados com os privilégios do usuário; isso não instala toolchain nem cria um debugger embutido. As receitas abaixo só viram evidência após execução real. Leia [o contrato atual](../replicacao/05-CMD-E-EXECUCAO.md).
 
 O executor atual cria um snapshot e inicia Docker com rede desabilitada, imagem já presente (`--pull=never`), usuário sem privilégios, diretório `/workspace` somente leitura, sistema de arquivos raiz somente leitura e `/tmp` limitado a 64 MiB, com `noexec`. A imagem padrão contém Node, não um ambiente Java preparado. O contêiner de verificação não alcança automaticamente o processo Java de um servidor ou do computador hospedeiro.
 

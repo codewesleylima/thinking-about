@@ -46,11 +46,11 @@ const toolLabels = {
   read_file: ['Lendo arquivo', 'Arquivo lido'], read_lines: ['Lendo trecho', 'Trecho lido'],
   replace_text: ['Aplicando alteração', 'Alteração aplicada'], create_file: ['Criando arquivo', 'Arquivo criado'],
   run_check: ['Executando verificação', 'Verificação encerrada'], ask_user: ['Preparando pergunta', 'Pergunta preparada'],
-  read_documentation: ['Consultando documentação', 'Documentação consultada']
+  read_documentation: ['Consultando documentação', 'Documentação consultada'], run_command: ['Executando no host', 'Comando do host encerrado']
 };
 const labels = { language: 'Idioma', verbosity: 'Detalhamento', tone: 'Tom', clarification: 'Esclarecimentos', autoSummary: 'Resumo automático',
   session: 'Conversa', agent: 'Agente', backend: 'Motor', model: 'Modelo', workspace: 'Pasta', allowWrite: 'Escrita', allowExec: 'Execução', allowNetwork: 'Documentação externa',
-  profileReadOnly: 'Perfil somente leitura', writeRoots: 'Pastas editáveis', status: 'Estado', error: 'Detalhe', exported: 'Exportado para' };
+  profileReadOnly: 'Perfil somente leitura', allowHostShell: 'Shell do host confiável', writeRoots: 'Pastas editáveis', status: 'Estado', error: 'Detalhe', exported: 'Exportado para' };
 const states = { completed_unverified: 'Conversa concluída', checks_passed: 'Verificações aprovadas', waiting_user: 'Aguardando sua resposta',
   verified: 'Avaliação independente aprovada', failed: 'Verificação reprovada', limited: 'Limite atingido', cancelled: 'Cancelado',
   blocked_uncertain: 'Efeito incerto: precisa de revisão', running: 'Em andamento', error: 'Não foi possível concluir', corrupt: 'Histórico inconsistente' };
@@ -162,9 +162,9 @@ export class Terminal {
   details({ root, provider, model, profile, permissions }) {
     if (this.width < 56 || this.live?.layout.headerHeight <= 6) this.text(`YZZY BLACK  v${VERSION}`, '1');
     if (!this.live) this.line('  ' + this.paint('35;2', '─'.repeat(Math.min(this.width, 72))));
-    const readOnly = profile.readOnly || !permissions.allowWrite;
+    const readOnly = profile.readOnly || (!permissions.allowWrite && !permissions.allowHostShell);
     for (const [label, value] of [['Pasta', root], ['Modelo', model || (provider === 'codex' ? 'Codex · automático' : provider)],
-      ['Agente', ({ general: 'Geral', coder: 'Programação', reviewer: 'Revisão', researcher: 'Pesquisa' })[profile.name] || profile.name], ['Acesso', `${readOnly ? 'Somente leitura' : 'Escrita autorizada'}${permissions.allowExec && !profile.readOnly ? ' · verificações autorizadas' : ''}`]]) {
+      ['Agente', ({ general: 'Geral', coder: 'Programação', reviewer: 'Revisão', researcher: 'Pesquisa' })[profile.name] || profile.name], ['Acesso', permissions.allowHostShell && !profile.readOnly ? 'Shell do host autorizado · arquivos/rede sem isolamento' : `${readOnly ? 'Somente leitura' : 'Escrita autorizada'}${permissions.allowExec && !profile.readOnly ? ' · verificações autorizadas' : ''}`]]) {
       this.text(`${label.padEnd(8)} ${value}`, label === 'Pasta' ? '2' : undefined);
     }
     this.line();

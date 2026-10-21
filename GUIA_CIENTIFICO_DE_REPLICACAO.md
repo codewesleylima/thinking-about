@@ -1,6 +1,6 @@
 # Como construir um agente semelhante à YZZY BLACK preservando seus controles
 
-**Guia científico e de engenharia para outros projetos.** Versão documental: 3.0, de 21/10/2026, para YZZY BLACK 0.3.0. O [commit `7e1ee77`](https://github.com/codewesleylima/thinking-about/tree/7e1ee7741fb9a7330cd67a0f0bf27e92421af235) é o baseline histórico sob o nome anterior WZZY AI. ENOENT, Codex, perfis, memória e equipe são evoluções posteriores; registre a revisão ou o diff efetivamente usado ao reproduzi-los. A seção 20 explica a primeira CLI com inferência real. O [estudo detalhado em docs/codex](docs/codex/README.md) descreve a extensão com especialistas, pesquisa externa e leitura do código público fixado por commit, sem acesso a pesos ou regras privadas.
+**Guia científico e de engenharia para outros projetos.** Versão documental: 4.0, de 21/10/2026, para YZZY BLACK 0.4.0. O [commit `7e1ee77`](https://github.com/codewesleylima/thinking-about/tree/7e1ee7741fb9a7330cd67a0f0bf27e92421af235) é o baseline histórico sob o nome anterior WZZY AI. ENOENT, Codex, perfis, memória e equipe são evoluções posteriores; registre a revisão ou o diff usado. O [manual de implementação](docs/replicacao/README.md) transforma as 32 seções do estudo original em fases, 30 requisitos e uma base gerável por `yzzy replicate`. O [estudo do Codex](docs/codex/README.md) preserva a pesquisa pública. A extensão CMD é opt-in e muda a confiança: shell do host não oferece as garantias do modo restrito.
 
 ## Resumo
 
@@ -151,14 +151,14 @@ Uma orientação textual pode influenciar o modelo a tratar arquivos como dados,
 | `--allow-write` e `writeRoots` | Política e `Workspace.resolve` | Exigir simultaneamente capacidade e caminho dentro do escopo |
 | `--allow-exec` e comando cadastrado | Política e executor | Modelo seleciona nome permitido; operador define os argumentos reais |
 | Orientação não concede autoridade | Prompt operacional, configuração e executor | Texto de `YZZY.md`, arquivo ou resultado não modifica concessões |
-| Catálogo fechado de nove ferramentas | `tools` e `validateCall` | Ferramentas desconhecidas e campos extras falham antes do efeito |
+| Catálogo fechado de dez ferramentas | `tools` e `validateCall` | Ferramentas desconhecidas e campos extras falham antes do efeito |
 | Correlação de chamadas | Controlador e adaptador | IDs não vazios/duplicados e resultado associado à proposta correta |
 | Propostas íntegras | Adaptadores | Rejeitar resposta incompleta e JSON parcial; não executar fragmentos |
 | Pergunta isolada | Controlador | `ask_user` suspende; resposta humana não é simulada por arquivo/ferramenta |
 | Sem retry automático | Adaptadores/controlador | Falha não pode gerar reenvio silencioso com possível custo/efeito duplicado |
 | Saída tratada como não confiável | `clean`, `redact` e CLI | Filtrar controles no terminal e manter JSONL separado de apresentação |
 
-O catálogo atual contém `list_files`, `search`, `read_file`, `read_lines`, `replace_text`, `create_file`, `run_check` e `ask_user`. Não há ferramenta de remoção, shell livre, push, publicação, mensagem externa ou provisionamento de nuvem. Adicionar qualquer uma delas altera o modelo de ameaças e exige política e ensaio próprios.
+O catálogo atual contém `list_files`, `search`, `read_file`, `read_lines`, `replace_text`, `create_file`, `run_check`, `ask_user`, `read_documentation` e `run_command`. A última exige `--allow-host-shell` e permite comandos com privilégios do usuário, inclusive efeitos que as ferramentas restritas não oferecem. Não possui confinamento por paths/egress; não é um atalho que preserve a sandbox. O [contrato de execução](docs/replicacao/05-CMD-E-EXECUCAO.md) explica política, ensaios e efeito incerto. Sem essa concessão, permanece o modo restrito.
 
 O prompt em `SYSTEM` orienta leitura antes de edição, evidência, preservação de alterações humanas, adaptação após erro e comunicação de limitações. `YZZY.md` da raiz é orientação adicional, congelada na sessão. Não há descoberta recursiva de instruções, hooks, skills executáveis ou plugins. Ao portar, preserve essa distinção entre orientação comportamental e poder de execução.
 

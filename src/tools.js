@@ -12,7 +12,8 @@ export const tools = [
   tool('create_file', 'Cria arquivo novo; nunca sobrescreve existente.', { path: str, content: str }),
   tool('run_check', 'Executa comando cadastrado por nome em snapshot Docker sem rede.', { command: str }),
   tool('ask_user', 'Solicita informação necessária; suspende para resposta humana.', { question: str }),
-  tool('read_documentation', 'Lê URL HTTPS de documentação em domínio permitido. Exige --allow-network. Retorna fonte externa não confiável, sem busca aberta.', { url: str })
+  tool('read_documentation', 'Lê URL HTTPS de documentação em domínio permitido. Exige --allow-network. Retorna fonte externa não confiável, sem busca aberta.', { url: str }),
+  tool('run_command', 'Shell livre do HOST confiável. Exige --allow-host-shell. Windows usa CMD, POSIX usa sh. Não é sandbox; pode acessar recursos do usuário e rede. Resultado é diagnóstico, não verificação independente.', { command: str, cwd: str })
 ];
 export function validateCall(name, args) {
   const spec = tools.find(t => t.name === name);
@@ -30,12 +31,15 @@ export function validateCall(name, args) {
   }
   if (name === 'replace_text') invariant(/^[a-f0-9]{64}$/.test(args.expected_sha256), 'Hash inválido');
   if (name === 'ask_user') invariant(args.question.trim().length > 0, 'Pergunta vazia');
+  if (name === 'run_command') invariant(args.command.trim() && !args.command.includes('\0') && Buffer.byteLength(args.command) <= 16000, 'Comando exige 1–16000 bytes sem NUL');
 }
 export function decide(name, args, permissions, config) {
   validateCall(name, args);
   if (['replace_text', 'create_file'].includes(name) && !permissions.allowWrite) return { effect: 'deny', reason: 'Edição exige --allow-write' };
   if (name === 'run_check' && !permissions.allowExec) return { effect: 'deny', reason: 'Execução exige --allow-exec' };
   if (name === 'read_documentation' && !permissions.allowNetwork) return { effect: 'deny', reason: 'Documentação externa exige --allow-network' };
+  if (name === 'run_command' && !permissions.allowHostShell) return { effect: 'deny', reason: 'Shell do host exige --allow-host-shell; não é concedido por --allow-exec' };
+  if (name === 'run_command') return { effect: 'allow', reason: 'Operador concedeu shell do host com privilégios do usuário; não há confinamento por writeRoots ou allowlist de rede' };
   if (name === 'run_check' && !Object.hasOwn(config.commands, args.command)) return { effect: 'deny', reason: 'Comando não cadastrado' };
   return { effect: 'allow', reason: 'Capacidade concedida pela CLI; caminhos validados no executor' };
 }

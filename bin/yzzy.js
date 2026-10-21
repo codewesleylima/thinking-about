@@ -19,6 +19,7 @@ import { summarize } from '../src/memory.js';
 import { Terminal } from '../src/terminal.js';
 import { VERSION } from '../src/version.js';
 import { planTeam, runTeam, loadTeam } from '../src/team.js';
+import { createReplica } from '../src/replication.js';
 
 const HELP = `YZZY BLACK ${VERSION} — seu agente no terminal
 Uso: yzzy [comando] [opções]             Sem comando: abre o chat.
@@ -39,8 +40,11 @@ Uso: yzzy [comando] [opções]             Sem comando: abre o chat.
   resume <id> ["orientação"]            Retoma a conversa; sem texto abre chat
   export <id> --output conversa.md      Exporta histórico redigido sem sobrescrever
   init | demo                          Inicialização de projeto ou demo offline
+  replicate --output <dir-novo>         Gera runtime independente, testes e manual
+            --name <pacote> --command <alias>  Personaliza pacote e comando npm
 Opções: --workspace <dir> --config <json> --backend codex|openai|ollama --model <id>
-        --agent <nome> --allow-write --allow-exec --allow-network --no-animation --json --help --version
+        --agent <nome> --allow-write --allow-exec --allow-network --allow-host-shell --no-animation --json --help --version
+--allow-host-shell concede CMD/sh do host, sem isolamento de arquivos/rede. Padrão: desligado.
 Padrão: Codex como inferência; ferramentas e autorização pertencem à YZZY BLACK.
 Chat: /help /new /agent /agents /settings /set /history /resume /summary /compact
       /team /model /status /permissions /clear /exit
@@ -79,6 +83,8 @@ async function main() {
     'read-only': { type: 'boolean', default: false }, output: { type: 'string' },
     'allow-write': { type: 'boolean', default: false }, 'allow-exec': { type: 'boolean', default: false },
     'allow-network': { type: 'boolean', default: false }, specialists: { type: 'string' },
+    'allow-host-shell': { type: 'boolean', default: false },
+    name: { type: 'string' }, command: { type: 'string' },
     'device-auth': { type: 'boolean', default: false }, json: { type: 'boolean', default: false },
     'no-animation': { type: 'boolean', default: false },
     version: { type: 'boolean', short: 'v' }, help: { type: 'boolean', short: 'h' }
@@ -89,6 +95,7 @@ async function main() {
   if (values.version) { print(`YZZY BLACK ${VERSION}`); return; }
   if (values.help) { print(HELP); return; }
   const command = positionals[0] || 'chat';
+  if (command === 'replicate') { print(await createReplica({ directory: values.output, name: values.name, command: values.command })); return; }
   const emit = event => {
     if (values.json) return print(event);
     screen.event(event);
@@ -113,7 +120,7 @@ async function main() {
   const loaded = await loadConfig(values.workspace, values.config, { ...process.env,
     ...(values.backend ? { YZZY_PROVIDER: values.backend } : {}), ...(values.model ? { YZZY_MODEL: values.model } : {}) });
   const { root, config } = loaded;
-  const permissions = { allowWrite: values['allow-write'], allowExec: values['allow-exec'], allowNetwork: values['allow-network'] };
+  const permissions = { allowWrite: values['allow-write'], allowExec: values['allow-exec'], allowNetwork: values['allow-network'], allowHostShell: values['allow-host-shell'] };
   if (command === 'init') {
     const outcomes = [];
     for (const [file, content] of [['yzzy.config.json', JSON.stringify(defaults, null, 2) + '\n'], ['YZZY.md', '# Orientações para YZZY BLACK\n\nDescreva padrões, verificações e restrições deste projeto.\n']]) {

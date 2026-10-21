@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-21",
+  "product": "YZZY BLACK",
+  "version": "0.4.0",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "studySha256": "89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252",
+  "offline": { "testsPassed": 98, "testsTotal": 98, "syntaxModules": 55, "traceableRequirements": 30, "deterministicScenariosPassed": 8, "deterministicScenariosTotal": 8 },
+  "replication": {
+    "independentDirectoryGenerated": true,
+    "overwriteRejected": true,
+    "credentialsAndSessionsExcluded": true,
+    "dependencyResolutionsPreserved": true,
+    "customNpmAliasValidated": true,
+    "packagedCliDemo": "verified_fixture_only",
+    "replicaFromPackage": "generated_demo_and_check_verified",
+    "checkIncludesOriginalStudyHashAndDependencyLock": true
+  },
+  "liveHostShell": {
+    "session": "5dc2fb3d-8e12-4cd0-9414-6ecd9582710b",
+    "started": "2026-10-21T17:07:29.716Z",
+    "finished": "2026-10-21T17:07:39.338Z",
+    "model": "gpt-6.1-sol",
+    "provider": "codex",
+    "billing": "managed_by_codex",
+    "modelCalls": 2,
+    "toolCalls": 1,
+    "tool": "run_command",
+    "command": "echo YZZY_SHELL_READY",
+    "cwd": ".",
+    "execution": "trusted-host-cmd",
+    "exitCode": 0,
+    "output": "YZZY_SHELL_READY\r\n",
+    "status": "completed_unverified",
+    "interpretation": "Uma ação CMD real proposta por modelo, observada pelo host. Não é benchmark, teste de software ou prova de sandbox."
+  },
+  "limitations": [
+    "Shell do host permite privilégios do usuário e rede fora do workspace; não é sandbox.",
+    "Timeout/cancelamento deixam cleanup incerto e impedem replay automático.",
+    "O primeiro teste com espera infinita exigiu limpeza dos três PIDs exatos fora da sandbox; testes usam agora espera autolimitada.",
+    "Um ensaio da réplica expôs ausência de package-lock em tarball; o asset de resolução e o lock adaptado corrigem o contrato.",
+    "Não houve instalação de toolchain Java, debugger, MCP, LSP ou infraestrutura distribuída."
+  ]
+}

@@ -8,6 +8,7 @@ export function summarize(state) {
   return { version: 1, kind: 'extractive', objective: state.objective,
     userInstructions: state.messages.filter(m => m.role === 'user').map(m => m.text),
     agent: state.agent || 'general', permissions: state.permissions,
+    hostShellUsed: Boolean(state.hostShellUsed),
     changedFiles: changed, evidence: state.evidence.map(e => ({ id: e.id, command: e.command, passed: e.passed, revision: e.revision })),
     errors: tools.filter(m => !m.result.ok).slice(-8).map(m => ({ invocation: m.id, tool: m.name, error: m.result.error, code: m.result.code })),
     lastResponses: state.messages.filter(m => m.role === 'assistant' && m.text).slice(-4).map(m => bounded(m.text, 1600)),

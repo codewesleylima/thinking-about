@@ -1,5 +1,13 @@
 # Configuração e operação
 
+## Replicação e CMD (0.4.0)
+
+`yzzy replicate --output "C:/projetos/meu-agente" --name meu-agente --command meuai` gera uma base independente em diretório novo, sem copiar conta, cache ou sessões. O diretório pai precisa existir e o destino deve ficar fora da origem. O comando apenas gera arquivos; não instala nem autentica. Siga [a instalação da réplica](replicacao/04-REPLICA-EXECUTAVEL.md).
+
+`--allow-host-shell` habilita `run_command` em CMD no Windows e `sh` em POSIX. Essa concessão não depende de `--allow-exec`, `--allow-write` ou `--allow-network`: permite os direitos do usuário no host, inclusive arquivos/rede fora do escopo restrito. Não há sandbox por path. Perfis readonly/consultas continuam negando shell. Tempo/saída/cancelamento e efeitos incertos permanecem controlados; o resultado é diagnóstico. Leia [CMD e execução](replicacao/05-CMD-E-EXECUCAO.md).
+
+O [manual de replicação](replicacao/README.md), [spec.json](replicacao/spec.json) e [AGENTS.md](../AGENTS.md) ensinam o que implementar em outra stack. `npm.cmd run check` também verifica o hash do estudo original e as referências da especificação.
+
 ## Equipes e documentação externa (0.3.0)
 
 `yzzy team plan "objetivo"` não chama modelo. `yzzy team run "objetivo" --specialists architect,java,tester` executa consultas sequenciais e coordenação. `--specialists` aceita de um a oito nomes distintos; sem a opção, regras por palavras-chave selecionam até seis. `team inspect <id>` lê o relatório. O [guia de equipe](codex/04-EQUIPE-E-ORQUESTRACAO.md) explica cotas, interrupções e ausência de retomada isolada.

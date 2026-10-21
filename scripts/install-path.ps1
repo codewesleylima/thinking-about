@@ -1,9 +1,10 @@
+param([ValidatePattern('^[a-z][a-z0-9-]{1,39}$')][string]$CommandName = 'yzzy')
 # Run after npm.cmd install --global . ; changes only this user's PATH.
 $ErrorActionPreference = 'Stop'
 $yzzyPrefix = (& npm.cmd prefix --global).Trim()
 if ($LASTEXITCODE -ne 0 -or -not [IO.Path]::IsPathRooted($yzzyPrefix)) { throw 'Cannot resolve npm global prefix.' }
 $yzzyPrefix = [IO.Path]::GetFullPath($yzzyPrefix)
-if (-not (Test-Path -LiteralPath (Join-Path $yzzyPrefix 'yzzy.cmd') -PathType Leaf)) { throw 'Install YZZY BLACK globally before configuring PATH.' }
+if (-not (Test-Path -LiteralPath (Join-Path $yzzyPrefix ($CommandName + '.cmd')) -PathType Leaf)) { throw 'Install the agent globally before configuring PATH.' }
 $yzzyUserPath = [Environment]::GetEnvironmentVariable('Path', 'User')
 $yzzyEntries = @($yzzyUserPath -split ';' | Where-Object { $_.Trim() })
 if (-not ($yzzyEntries | Where-Object { $_.Trim().TrimEnd('\') -ieq $yzzyPrefix.TrimEnd('\') })) {
@@ -22,6 +23,6 @@ public static class YzzyEnvironmentNotice {
 $yzzyNoticeResult = [UIntPtr]::Zero
 [void][YzzyEnvironmentNotice]::SendMessageTimeout([IntPtr]0xffff, 0x1a, [UIntPtr]::Zero, 'Environment', 2, 3000, [ref]$yzzyNoticeResult)
 $env:Path = "$env:Path;$yzzyPrefix"
-& cmd.exe /d /c 'yzzy --version'
+& (Join-Path $yzzyPrefix ($CommandName + '.cmd')) --version
 if ($LASTEXITCODE -ne 0) { throw 'The installed command did not respond.' }
-Write-Output 'Open a new CMD and run yzzy.'
+Write-Output "Open a new CMD and run $CommandName."

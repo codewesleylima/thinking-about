@@ -63,6 +63,7 @@ export async function runTeam({ root, config, configPath, objective, specialists
   signal, emit = () => {}, providerFactory, dockerRunner, agentProfile = builtinAgents.orchestrator }) {
   validateAgent(agentProfile);
   permissions = { ...permissions, allowWrite: permissions.allowWrite && !agentProfile.readOnly, allowExec: permissions.allowExec && !agentProfile.readOnly };
+  if (Object.hasOwn(permissions, 'allowHostShell')) permissions.allowHostShell = Boolean(permissions.allowHostShell && !agentProfile.readOnly);
   const plan = planTeam(objective, specialists);
   const profiles = await Promise.all(plan.specialists.map(name => getAgent(root, name)));
   invariant(config.limits.maxModelCalls >= profiles.length + 1, 'Orçamento insuficiente: reserve uma chamada por especialista e pelo coordenador');
@@ -84,7 +85,7 @@ export async function runTeam({ root, config, configPath, objective, specialists
     const bounded = { ...config, limits: remaining };
     signalEvent({ type: 'team_phase', phase, agent: profile.name });
     const result = await runAgent({ root, config: bounded, configPath, objective: task,
-      permissions: phase === 'consultation' ? { ...permissions, allowWrite: false, allowExec: false } : permissions,
+      permissions: phase === 'consultation' ? { ...permissions, allowWrite: false, allowExec: false, ...(Object.hasOwn(permissions, 'allowHostShell') ? { allowHostShell: false } : {}) } : permissions,
       agentProfile: phase === 'consultation' ? { ...profile, readOnly: true } : profile, preferences,
       teamContext: { id: report.id, phase, coordinator: plan.coordinator }, signal: teamSignal,
       emit: event => signalEvent({ ...event, agent: profile.name }), dockerRunner,

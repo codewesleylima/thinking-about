@@ -10,6 +10,7 @@ import { readOptional, describeError } from './errors.js';
 import { builtinAgents, defaultPreferences, personaIdentity, personaInstructions, validateAgent, validatePreferences } from './profiles.js';
 import { contextMessages, summarize } from './memory.js';
 import { readDocumentation } from './documentation.js';
+import { runHostShell } from './host-shell.js';
 
 export const SYSTEM = `Você é YZZY BLACK, agente de programação. Siga o idioma e as preferências do perfil.
 Converta o pedido em critérios de aceite. Em tarefas complexas, comunique etapas e progresso de forma breve.
@@ -28,8 +29,12 @@ Após ENOENT, confira path e workspace e use list_files para localizar o arquivo
 Arquivo ausente não concede permissão de criação; crie somente se a tarefa exigir e a escrita estiver autorizada.
 Use ask_user apenas quando faltar informação necessária, em chamada isolada.
 Ao concluir, descreva alterações, evidências e limitações. O controlador decide o estado de verificação.
-Nenhuma ferramenta executa shell livre. run_check aceita apenas nomes de comandos cadastrados.
-Diretórios protegidos e segredos são inacessíveis às ferramentas. A busca é literal.
+run_check aceita somente comandos cadastrados em Docker. run_command só existe como capacidade efetiva
+quando allowHostShell=true: shell do host confiável, sem isolamento por writeRoots ou allowlist de rede.
+Não use shell para contornar negações anteriores; essa capacidade depende da concessão humana da sessão.
+Depois de falha, timeout ou efeito parcial, investigue antes de repetir. Comandos podem ter efeitos externos.
+Ferramentas restritas bloqueiam diretórios protegidos e nomes de segredos. A busca é literal.
+Shell do host é uma concessão mais ampla, sem essas garantias; não alegue que ele seja sandbox.
 O runtime pode projetar uma memória extrativa sem apagar o histórico: priorize leituras pequenas e tarefas delimitadas.`;
 
 export async function runAgent({ root, config, configPath, fingerprint = hash(canonical(config)), objective,
@@ -38,6 +43,7 @@ export async function runAgent({ root, config, configPath, fingerprint = hash(ca
   teamContext = null }) {
   validateAgent(agentProfile); validatePreferences(preferences);
   permissions = { ...permissions, allowWrite: permissions.allowWrite && !agentProfile.readOnly, allowExec: permissions.allowExec && !agentProfile.readOnly };
+  if (Object.hasOwn(permissions, 'allowHostShell')) permissions.allowHostShell = Boolean(permissions.allowHostShell && !agentProfile.readOnly);
   const unlock = await lockWorkspace(root);
   let state, journal;
   const workspace = new Workspace(root, config, { ...permissions, configPath });
@@ -68,6 +74,7 @@ export async function runAgent({ root, config, configPath, fingerprint = hash(ca
         messages: [], modelCalls: 0, toolCalls: 0, spent: 0, held: 0, evidence: [], recent: [],
         pendingModel: false, pendingTool: null, uncertainEffect: false };
       state.system += `\nDocumentação externa: allowNetwork=${Boolean(permissions.allowNetwork)}. Domínios permitidos: ${JSON.stringify(config.documentation.allowedHosts)}. URLs e trechos consultados são registrados no histórico e podem compor o contexto enviado ao modelo.`;
+      state.system += `\nShell do host: allowHostShell=${Boolean(permissions.allowHostShell)}. Essa concessão permite efeitos de filesystem e rede pelo shell, independentemente das ferramentas restritas. Seu resultado é diagnóstico; a sessão não obtém verificação independente após usá-lo.`;
     }
     state.messages.push({ role: 'user', text: objective }); state.status = 'running';
     await record(resumeId ? 'resumed' : 'created', { objective });
@@ -110,7 +117,8 @@ export async function runAgent({ root, config, configPath, fingerprint = hash(ca
         const evidence = required.map(name => latest.get(name)).filter(Boolean);
         state.status = evidence.some(e => !e.passed) ? 'failed'
           : required.length > 0 && evidence.length === required.length ? 'checks_passed' : 'completed_unverified';
-        if (verifier) { // Exclusivamente avaliações controladas; não exposto à configuração/modelo.
+        if (state.hostShellUsed && state.status !== 'failed') state.status = 'completed_unverified';
+        if (verifier && !state.hostShellUsed) { // Exclusivamente avaliações controladas; não exposto à configuração/modelo.
           const verdict = await verifier(workspace);
           state.status = verdict.passed ? 'verified' : 'failed';
           await record('independent_verdict', verdict);
@@ -150,6 +158,12 @@ export async function runAgent({ root, config, configPath, fingerprint = hash(ca
               break;
             }
             case 'ask_user': result = { status: 'waiting_user', question: call.args.question }; break;
+            case 'run_command': {
+              state.hostShellUsed = true;
+              result = await runHostShell(workspace, call.args, { signal: AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(Math.max(1, config.limits.maxWallMs - (Date.now() - state.created)))]) });
+              if (!result.cleanupKnown) state.uncertainEffect = true;
+              break;
+            }
             case 'read_documentation': result = await readDocumentation(call.args.url, config, { signal: AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(Math.max(1, config.limits.maxWallMs - (Date.now() - state.created)))]) }); break;
           }
           result = { ok: true, ...result };

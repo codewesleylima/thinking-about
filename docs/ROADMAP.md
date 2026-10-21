@@ -1,5 +1,9 @@
 # Estado do produto e evolução
 
+## Versão 0.4.0 implementada
+
+Manual de construção com fases e matriz das 32 seções do estudo, especificação rastreável de 30 requisitos, entrada AGENTS/REPLICAR e gerador de base independente com manifesto. Shell CMD/sh do host é uma concessão opt-in, sem sandbox de filesystem/rede e com resultado diagnóstico. A validação inclui comandos reais, negação de readonly, limites, efeito incerto e geração executável de réplica. Veja [o manual](replicacao/README.md).
+
 ## Versão 0.3.0 implementada
 
 Dezenove perfis internos, plano heurístico revisável, consultas sequenciais separadas e coordenação pelo host com orçamento agregado. Leitura de documentação HTTPS por autorização e allowlist, com DNS/endereço fixado, redirects, limites e proveniência. O [estudo detalhado](codex/README.md) inclui fontes públicas do Codex fixadas por commit, Java e engenharia reversa. Essas extensões não implementam colaboração nativa, concorrência, retomada transacional da equipe, debugger JVM, LSP ou busca aberta.

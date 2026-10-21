@@ -73,7 +73,7 @@ Escrita e execução começam desabilitadas. As concessões de CLI são reduzida
 
 O comando `/team` preserva essa restrição do perfil humano: selecionar `reviewer` e consultar a equipe não transforma o coordenador em escritor. As consultas especializadas são sempre de leitura e sem execução, independentemente das permissões que o operador concedeu ao coordenador. Rede é uma capacidade separada, desabilitada por padrão e condicionada à lista de domínios da configuração.
 
-Não existe ferramenta de shell livre no núcleo. `run_check` recebe o **nome** de um comando registrado, e não uma string livre de terminal. O operador deve tratar o cadastro desses comandos como configuração confiável.
+O modo restrito não oferece shell livre. `run_check` recebe o **nome** de um comando registrado, e não uma string livre de terminal. Desde 0.4.0, a concessão separada `--allow-host-shell` permite `run_command` com privilégios do usuário, sem confinamento por paths/rede e com resultado diagnóstico. Leia [CMD e execução](../replicacao/05-CMD-E-EXECUCAO.md). O operador deve tratar o cadastro de comandos e a concessão host como decisões confiáveis.
 
 ### 3.5.3 Caminhos e arquivos
 

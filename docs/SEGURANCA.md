@@ -4,7 +4,15 @@
 
 O operador escolhe workspace, arquivo de configuração, modelo, escopo e permissões. O modelo recebe ferramentas de capacidade limitada. Texto de arquivo, resposta de provedor ou saída de teste não ativa flags nem adiciona comandos. Schemas são validados localmente, mesmo quando o fornecedor oferece modo estrito.
 
-O modo padrão permite apenas leitura de caminhos autorizados, busca e perguntas. Escrita exige `--allow-write` e um prefixo de `writeRoots`. Execução exige `--allow-exec` e nome cadastrado. Consulta externa exige `--allow-network` e domínio exato em `documentation.allowedHosts`. Não há shell arbitrário, busca aberta, provisionamento, push, publicação, mensagem externa ou instalação de pacotes controlada pelo modelo.
+O modo padrão permite apenas leitura de caminhos autorizados, busca e perguntas. Escrita pelas ferramentas restritas exige `--allow-write` e um prefixo de `writeRoots`. Checks Docker exigem `--allow-exec` e nome cadastrado. Consulta HTTPS exige `--allow-network` e domínio exato em `documentation.allowedHosts`. Shell do host exige outra concessão, `--allow-host-shell`, desligada por padrão.
+
+## Shell do host confiável (0.4.0)
+
+`run_command` executa CMD/sh com os privilégios do usuário, sem confinamento por `writeRoots`, diretórios bloqueados ou allowlist HTTPS. Pode acessar rede, arquivos externos, programas autenticados e efeitos de instalação/publicação se solicitados. Remover variáveis sensíveis conhecidas reduz herança acidental, mas não impede leitura de credenciais no disco. Não descreva esta sessão como sandbox nem use uma denylist de strings para alegar isolamento.
+
+Perfis somente leitura e consultas da equipe perdem essa capacidade. O coordenador conserva o perfil efetivo de origem. A execução tem prazo, captura limitada, tentativa de terminar árvore/grupo e registro; interrupção deixa limpeza/efeitos incertos e bloqueia replay. `cwd` é apenas o diretório inicial. Background, serviços e processos destacados não têm lifecycle garantido. O resultado é diagnóstico, sem promoção a `verified`/`checks_passed` após uso de shell; falhas de checks existentes são preservadas. Veja [o contrato completo](replicacao/05-CMD-E-EXECUCAO.md).
+
+As garantias de filesystem, snapshot e egress descritas abaixo pertencem às ferramentas restritas e ao worker Docker. Elas não abrangem o shell do host deliberadamente concedido. Para executar código não confiável com isolamento global, use um ambiente de SO/VM/worker apropriado.
 
 ## Pesquisa externa e equipes
 

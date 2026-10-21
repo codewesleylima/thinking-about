@@ -12,4 +12,12 @@ const result = await capture(process.execPath, [path.join(directory, 'package/bi
 assert.equal(result.exitCode, 0, result.output);
 const events = result.output.trim().split('\n').map(line => JSON.parse(line));
 assert.equal(events.at(-1).status, 'verified');
-console.log(JSON.stringify({ kind: 'packaged_cli_smoke', archive, directory, status: events.at(-1).status }));
+const replica = path.join(directory, 'replica');
+const generated = await capture(process.execPath, [path.join(directory, 'package/bin/yzzy.js'), 'replicate', '--output', replica, '--name', 'package-agent', '--command', 'packageai', '--json']);
+assert.equal(generated.exitCode, 0, generated.output);
+const replicaDemo = await capture(process.execPath, [path.join(replica, 'bin/yzzy.js'), 'demo', '--json']);
+assert.equal(replicaDemo.exitCode, 0, replicaDemo.output);
+assert.equal(JSON.parse(replicaDemo.output.trim().split('\n').at(-1)).status, 'verified');
+const replicaCheck = await capture(process.execPath, ['scripts/check.js'], { cwd: replica, timeoutMs: 30000 });
+assert.equal(replicaCheck.exitCode, 0, replicaCheck.output);
+console.log(JSON.stringify({ kind: 'packaged_cli_smoke', archive, directory, status: events.at(-1).status, replica: 'generated_demo_and_check_verified', files: JSON.parse(generated.output).files }));
