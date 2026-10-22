@@ -1,5 +1,7 @@
 # Aprendizado persistente com `/elevar`
 
+**Compatibilidade 0.6.0:** este capítulo registra o mecanismo de memória entregue na 0.5.0. Para executar somente esse mecanismo na versão atual, substitua `/elevar` por `/estudar` e `yzzy elevar` por `yzzy estudar` nos exemplos abaixo. O novo `/elevar` também edita módulos, verifica e publica; consulte [Autoevolução](AUTOEVOLUCAO.md). As evidências históricas da 0.5.0 preservam os nomes usados na época.
+
 Implementação YZZY BLACK 0.5.0, de 21/10/2026. Este capítulo explica operação, algoritmo, contratos, controles e como implementar o mesmo mecanismo em outro projeto. As evidências de execução ficam em [VALIDACAO-0.5.0.json](replicacao/VALIDACAO-0.5.0.json).
 
 ## O significado de aprender nesta versão

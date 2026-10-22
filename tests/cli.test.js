@@ -6,6 +6,11 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { capture } from '../src/executor.js';
 const cli = fileURLToPath(new URL('../bin/yzzy.js', import.meta.url));
+test('CLI elevar despacha autoevolução e perfil somente leitura não a inicia', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'yzzy-self-cli-'));
+  const r = await capture(process.execPath, [cli, 'elevar', '--agent', 'reviewer', '--workspace', root, '--json']);
+  assert.equal(r.exitCode, 2); assert.match(r.output, /Perfil somente leitura/);
+});
 test('CLI demo JSONL termina em status estruturado e journal inspecionável', async () => {
   const r = await capture(process.execPath, [cli, 'demo', '--json']); assert.equal(r.exitCode, 0, r.output);
   const events = r.output.trim().split('\n').map(x => JSON.parse(x)); const result = events.at(-1);

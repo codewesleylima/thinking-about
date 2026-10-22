@@ -11,7 +11,7 @@ const f = await makeFixture(); f.config.provider = 'codex'; f.config.model = '';
 const started = new Date().toISOString();
 if (process.argv.includes('--default-cli')) {
   const cli = fileURLToPath(new URL('../bin/yzzy.js', import.meta.url));
-  const observed = await capture(process.execPath, [cli, 'elevar', '--workspace', f.root, '--json'], { timeoutMs: 200000, maxBytes: 131072 });
+  const observed = await capture(process.execPath, [cli, 'estudar', '--workspace', f.root, '--json'], { timeoutMs: 200000, maxBytes: 131072 });
   // Mostra metadados de execução; os textos completos das fontes ficam no journal.
   for (const line of observed.output.trim().split('\n')) {
     try { const e = JSON.parse(line); if (['model_completed', 'tool_completed'].includes(e.type)) console.log(line); } catch { /* assertion below includes diagnostics */ }

@@ -19,6 +19,7 @@ Responda em português. Este projeto é um runtime de agente, não um modelo com
 - Não invente execução nem exponha raciocínio privado. Explique decisões com evidência verificável.
 - `--allow-host-shell` é uma concessão humana separada: o shell tem privilégios do usuário e não oferece confinamento por `writeRoots`/allowlist de rede. Não ative essa opção automaticamente nem a confunda com `--allow-exec`.
 - Perfis somente leitura e consultas da equipe não recebem shell. Efeito incerto não tem replay automático.
+- `/elevar` é uma capacidade explícita de autoevolução; leia docs/AUTOEVOLUCAO.md ao alterá-la. Preserve alvo do runtime, controles/testes congelados, orçamento agregado, candidata, manifesto e publicação sem force. `/estudar` mantém estudo somente leitura. Verificações Node no host não são sandbox.
 - Execute `npm.cmd test`, `npm.cmd run check` e verificações proporcionais. Demos roteirizadas não são avaliação de LLM.
 - Atualize documentação e a especificação quando mudar contratos. Mantenha receitas distintas de resultados observados.
 

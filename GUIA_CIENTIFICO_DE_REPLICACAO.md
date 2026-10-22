@@ -1,5 +1,7 @@
 # Como construir um agente semelhante à YZZY BLACK preservando seus controles
 
+**Extensão 0.6.0 — autoengenharia:** `/elevar` agora implementa mudanças no próprio runtime em candidata Git, verifica baseline e regressões e publica o hash aprovado. O mecanismo exige separar inferência, efeitos e publicação; congelar testes originais e controles; compartilhar orçamento; preservar mudanças humanas; e interromper efeitos incertos sem replay. `/estudar` conserva o ciclo de memória da edição 0.5.0. O [capítulo completo](docs/AUTOEVOLUCAO.md) contém algoritmo, contratos, controles, estados Git, execução no host e roteiro para outros repositórios implementarem a mesma arquitetura.
+
 **Guia científico e de engenharia para outros projetos.** Versão documental: 4.0, de 21/10/2026, para YZZY BLACK 0.4.0. O [commit `7e1ee77`](https://github.com/codewesleylima/thinking-about/tree/7e1ee7741fb9a7330cd67a0f0bf27e92421af235) é o baseline histórico sob o nome anterior WZZY AI. ENOENT, Codex, perfis, memória e equipe são evoluções posteriores; registre a revisão ou o diff usado. O [manual de implementação](docs/replicacao/README.md) transforma as 32 seções do estudo original em fases, 30 requisitos e uma base gerável por `yzzy replicate`. O [estudo do Codex](docs/codex/README.md) preserva a pesquisa pública. A extensão CMD é opt-in e muda a confiança: shell do host não oferece as garantias do modo restrito.
 
 ## Resumo

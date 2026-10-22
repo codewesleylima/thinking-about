@@ -113,7 +113,7 @@ export async function rememberStudy(root, { topic, state, config, signal }) {
   } finally { await unlock(); }
 }
 
-const stops = new Set('para como uma que com por dos das este esta isso sobre quero faça usar meus suas nosso nossa mesmo projeto'.split(' '));
+const stops = new Set('para como uma que com por dos das este esta isso sobre quero faca usar meus suas nosso nossa mesmo projeto'.split(' '));
 const tokens = value => new Set((value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().match(/[a-z0-9]{3,}/g) || [])
   .filter(t => !stops.has(t)).slice(0, 80));
 

@@ -22,6 +22,7 @@ import { planTeam, runTeam, loadTeam } from '../src/team.js';
 import { createReplica } from '../src/replication.js';
 import { runElevation } from '../src/elevation.js';
 import { listLearnings, forgetLearning } from '../src/learning.js';
+import { runSelfImprovement, runtimeRoot } from '../src/self-improvement.js';
 
 const HELP = `YZZY BLACK ${VERSION} — seu agente no terminal
 Uso: yzzy [comando] [opções]             Sem comando: abre o chat.
@@ -44,7 +45,8 @@ Uso: yzzy [comando] [opções]             Sem comando: abre o chat.
   init | demo                          Inicialização de projeto ou demo offline
   replicate --output <dir-novo>         Gera runtime independente, testes e manual
             --name <pacote> --command <alias>  Personaliza pacote e comando npm
-  elevar ["tema"]                     Estuda documentação online e salva aprendizados
+  elevar ["tema"]                     Estuda, melhora o próprio runtime, testa, commit e push
+  estudar ["tema"]                    Estuda e salva conhecimento sem editar código
   aprendizados [<id>]                  Lista aprendizados ou mostra detalhes
   esquecer <id>                       Retira um aprendizado da memória ativa
 Opções: --workspace <dir> --config <json> --backend codex|openai|ollama --model <id>
@@ -52,7 +54,7 @@ Opções: --workspace <dir> --config <json> --backend codex|openai|ollama --mode
 --allow-host-shell concede CMD/sh do host, sem isolamento de arquivos/rede. Padrão: desligado.
 Padrão: Codex como inferência; ferramentas e autorização pertencem à YZZY BLACK.
 Chat: /help /new /agent /agents /settings /set /history /resume /summary /compact
-      /team /elevar /aprendizados /esquecer /model /status /permissions /clear /exit
+      /team /elevar /estudar /aprendizados /esquecer /model /status /permissions /clear /exit
 Saídas: 0 término operacional; 2 erro; 3 limite; 4 pergunta; 5 falha/incerteza; 130 cancelamento.`;
 const SLASH_HELP = `CONVERSA
   /new              Começar outra conversa
@@ -70,10 +72,12 @@ PERSONALIZAR
   /team <objetivo>  Consultar equipe e coordenar a tarefa em novas sessões
 
 APRENDER
-  /elevar [tema]    Estudar na internet e guardar conhecimento com fontes
+  /elevar [tema]    Melhorar o próprio runtime, verificar e publicar por Git
+  /estudar [tema]   Estudar e guardar conhecimento sem editar código
   /aprendizados    Listar conhecimentos; acrescente um ID para detalhes
   /esquecer <id>   Retirar um conhecimento da memória ativa
-  O estudo autoriza leitura HTTPS nos hosts configurados, sem shell ou edição.
+  /elevar autoriza edição em candidata, verificações Node no host e commit/push.
+  /estudar autoriza somente leitura HTTPS nos hosts configurados.
 
 TERMINAL
   /status           Ver detalhes desta conversa
@@ -82,7 +86,7 @@ TERMINAL
   /exit             Sair
 
 Tab completa comandos. Ctrl+C cancela a operação; em espera, sai.`;
-const slashCommands = ['/help', '/new', '/history', '/resume', '/summary', '/compact', '/agents', '/agent', '/settings', '/set', '/model', '/team', '/elevar', '/aprendizados', '/esquecer', '/status', '/permissions', '/clear', '/exit'];
+const slashCommands = ['/help', '/new', '/history', '/resume', '/summary', '/compact', '/agents', '/agent', '/settings', '/set', '/model', '/team', '/elevar', '/estudar', '/aprendizados', '/esquecer', '/status', '/permissions', '/clear', '/exit'];
 const codeFor = r => ({ error: 2, limited: 3, waiting_user: 4, failed: 5, blocked_uncertain: 5, cancelled: 130 })[r.state.status] || 0;
 
 async function main() {
@@ -221,6 +225,27 @@ async function main() {
       return result;
     } finally { activeAbort = undefined; screen.stop(); }
   };
+  const executeSelfImprovement = async topic => {
+    activeAbort = new AbortController();
+    try {
+      const self = await loadConfig(runtimeRoot, undefined, { ...process.env,
+        ...(values.backend ? { YZZY_PROVIDER: values.backend } : {}), ...(values.model ? { YZZY_MODEL: values.model } : {}) });
+      if (!values.json) {
+        screen.note(`Elevar · autoevolução do runtime em ${self.root}`);
+        screen.note('Estudo → edição em cópia Git → verificações Node no host → commit e push em origin.');
+      }
+      const result = await runSelfImprovement({ ...self, topic, preferences, agentProfile: profile, signal: activeAbort.signal, emit });
+      if (values.json) print({ type: 'self_improvement_result', id: result.id, status: result.report.status,
+        commit: result.report.commit, pushed: result.report.pushed, report: result.file, candidate: result.report.candidate, error: result.error || null });
+      else {
+        screen.outcome(result);
+        if (result.report.pushed) screen.note(`Publicado: ${result.report.commit}. Reinicie o YZZY para carregar a revisão nova.`);
+        if (result.report.status === 'no_changes') screen.note('Nenhuma alteração concreta foi produzida; nenhum commit ou push.');
+        if (result.file) screen.note(`Relatório: ${result.file}`);
+      }
+      return result;
+    } finally { activeAbort = undefined; screen.stop(); }
+  };
   const executeTeam = async objective => {
     activeAbort = new AbortController();
     try {
@@ -241,7 +266,8 @@ async function main() {
     } finally { activeAbort = undefined; compact = false; }
   };
   try {
-    if (command === 'elevar') { process.exitCode = codeFor(await executeElevation(positionals.slice(1).join(' '))); return; }
+    if (command === 'elevar') { process.exitCode = codeFor(await executeSelfImprovement(positionals.slice(1).join(' '))); return; }
+    if (command === 'estudar') { process.exitCode = codeFor(await executeElevation(positionals.slice(1).join(' '))); return; }
     if (command === 'team') {
       const action = positionals[1];
       if (action === 'inspect') print(await loadTeam(root, positionals[2]));
@@ -303,7 +329,8 @@ async function main() {
             else if (slash === '/compact') { compact = true; print('A próxima resposta usará contexto resumido a partir de oito mensagens. Histórico preservado.'); }
             else if (slash === '/model') { if (rest) { config.model = rest; id = undefined; } print({ model: config.model || 'padrão do Codex' }); }
             else if (slash === '/team') { await executeTeam(rest); id = undefined; }
-            else if (slash === '/elevar') { await executeElevation(rest); }
+            else if (slash === '/elevar') { await executeSelfImprovement(rest); }
+            else if (slash === '/estudar') { await executeElevation(rest); }
             else if (slash === '/aprendizados') await showLearnings(rest);
             else if (slash === '/esquecer') print(await forgetLearning(root, rest));
             else if (slash === '/status') {

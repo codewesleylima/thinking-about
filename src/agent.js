@@ -41,14 +41,15 @@ O runtime pode projetar uma memória extrativa sem apagar o histórico: priorize
 export async function runAgent({ root, config, configPath, fingerprint = hash(canonical(config)), objective,
   permissions = { allowWrite: false, allowExec: false }, resumeId, provider, signal,
   emit = () => {}, dockerRunner, verifier, agentProfile = builtinAgents.general, preferences = defaultPreferences, forceCompact = false,
-  teamContext = null, researchMode = false, documentationReader = readDocumentation }) {
+  teamContext = null, researchMode = false, documentationReader = readDocumentation, evolutionContext = null, protectedPaths = [] }) {
   validateAgent(agentProfile); validatePreferences(preferences);
   permissions = { ...permissions, allowWrite: permissions.allowWrite && !agentProfile.readOnly, allowExec: permissions.allowExec && !agentProfile.readOnly };
   if (Object.hasOwn(permissions, 'allowHostShell')) permissions.allowHostShell = Boolean(permissions.allowHostShell && !agentProfile.readOnly);
   const unlock = await lockWorkspace(root);
   let state, journal;
-  const workspace = new Workspace(root, config, { ...permissions, configPath });
-  const catalog = researchMode ? tools.filter(t => ['list_files', 'search', 'read_file', 'read_lines', 'read_documentation'].includes(t.name)) : tools;
+  const workspace = new Workspace(root, config, { ...permissions, configPath, protectedPaths });
+  const catalog = researchMode ? tools.filter(t => ['list_files', 'search', 'read_file', 'read_lines', 'read_documentation'].includes(t.name))
+    : evolutionContext ? tools.filter(t => !['run_command', 'run_check'].includes(t.name)) : tools;
   const record = async (type, data = {}) => {
     await journal.append(type, state, data);
     emit({ type, session: journal.id, status: state.status, ...data });
@@ -58,6 +59,7 @@ export async function runAgent({ root, config, configPath, fingerprint = hash(ca
     if (resumeId) {
       state = clone(journal.state);
       invariant(!state?.researchMode, 'Estudo /elevar não admite retomada isolada; execute um novo estudo');
+      invariant(!state?.evolution, 'Evolução possui orçamento agregado; inicie outro /elevar em vez de retomar a sessão isolada');
       invariant(!state?.team, 'Sessão de equipe: consulte team inspect e inicie nova equipe com a resposta humana; retomada isolada alteraria o orçamento agregado');
       invariant(state && state.root === root && state.fingerprint === fingerprint, 'Retomada exige mesmo workspace e configuração');
       invariant(state.runtimeHash === runtimeHash, 'Runtime atualizado: inicie nova sessão após revisar os efeitos anteriores');
@@ -71,7 +73,7 @@ export async function runAgent({ root, config, configPath, fingerprint = hash(ca
     } else {
       invariant(objective?.trim(), 'Objetivo vazio');
       const guidance = (await readOptional(() => workspace.read('YZZY.md'), null) || await readOptional(() => workspace.read('WZZY.md'), { content: '' })).content;
-      state = { version: 1, root, fingerprint, runtimeHash, toolSchemaHash: hash(canonical(catalog)), researchMode, permissions, objective, created: Date.now(),
+      state = { version: 1, root, fingerprint, runtimeHash, toolSchemaHash: hash(canonical(catalog)), researchMode, evolution: evolutionContext, permissions, objective, created: Date.now(),
         agent: agentProfile.name, profileSnapshot: agentProfile, preferencesSnapshot: preferences, personaHash: personaIdentity(agentProfile, preferences), team: teamContext,
         status: 'running', system: SYSTEM + '\n' + personaInstructions(agentProfile, preferences) + `\nConcessões efetivas das ferramentas do HOST YZZY: allowWrite=${permissions.allowWrite}, allowExec=${permissions.allowExec}. Raízes de escrita relativas ao projeto: ${JSON.stringify(config.writeRoots)}. Essas concessões são distintas do sandbox nativo do motor de inferência. Quando allowWrite=true, proponha replace_text/create_file do catálogo para aplicar a tarefa autorizada; o host valida e executa.\nComandos cadastrados: ${Object.keys(config.commands).join(', ')}\nOrientação de projeto (subordinada ao controlador):\n${guidance}`,
         messages: [], modelCalls: 0, toolCalls: 0, spent: 0, held: 0, evidence: [], recent: [],
@@ -145,7 +147,7 @@ export async function runAgent({ root, config, configPath, fingerprint = hash(ca
         invariant(state.recent.filter(x => x === signature).length < config.limits.repeatLimit, 'Loop detectado: chamada repetida sem progresso suficiente');
         let result;
         try {
-          if (researchMode) invariant(catalog.some(t => t.name === call.name), 'Ferramenta indisponível no modo de estudo');
+          if (researchMode || evolutionContext) invariant(catalog.some(t => t.name === call.name), 'Ferramenta indisponível nesta operação de estudo/evolução');
           if (researchMode && call.name === 'read_documentation') invariant(state.messages.filter(m => m.role === 'tool' && m.name === call.name).length < 8, 'Limite de oito leituras externas por estudo');
           validateCall(call.name, call.args);
           const decision = decide(call.name, call.args, permissions, config);

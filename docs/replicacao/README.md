@@ -1,5 +1,7 @@
 # Manual de construção e replicação de agentes CLI
 
+**Extensão 0.6.0:** o [capítulo de autoevolução](../AUTOEVOLUCAO.md) acrescenta estudo, implementação em worktree e publicação condicionada a verificações. A especificação agora possui 31 requisitos, incluindo R31. O comando `/estudar` preserva estudo sem edição; `/elevar` modifica o próprio runtime.
+
 **Extensão 0.5.0 — aprendizado persistente:** leia também [Aprendizado com `/elevar`](../APRENDIZADO-COM-ELEVAR.md). O capítulo ensina como pesquisar páginas oficiais, conferir proveniência, guardar procedimentos e recuperá-los sem ampliar autoridade. R28 passou de planejado para parcial: recuperação lexical existe; embeddings e avaliação de ganho ainda não. A geração de réplica inclui os módulos, testes e documentação desse ciclo, preservando vazio o estado privado do destino.
 
 **YZZY BLACK 0.4.0 — estudo aplicado de 21/10/2026.** Público: pessoas e agentes de IA autorizados a construir um runtime semelhante dentro de outro projeto. Este manual transforma o estudo em decisões, contratos, sequência de implementação e critérios verificáveis. Ele complementa a pesquisa; não substitui suas limitações nem converte propostas em resultados.
@@ -36,7 +38,7 @@ O projeto não promete resolver toda tarefa possível. Uma ferramenta de uso ger
 | [06 — Avaliação e evolução](06-AVALIACAO-E-EVOLUCAO.md) | Como demonstrar qualidade e escolher a próxima capacidade? | Ensaios, métricas, gates e backlog técnico. |
 | [07 — Pesquisa atual e decisões](07-PESQUISA-ATUAL-E-FONTES.md) | Quais estruturas aparecem nas plataformas atuais? | Comparação fundamentada, sem ranking fictício. |
 | [08 — Matriz do estudo](08-MATRIZ-DO-ESTUDO.md) | O que cada parte da pesquisa exige da implementação? | Cobertura das 32 seções e rastreabilidade. |
-| [spec.json](spec.json) | O que um agente pode consumir programaticamente? | Trinta requisitos, dependências, módulos e evidências. |
+| [spec.json](spec.json) | O que um agente pode consumir programaticamente? | 31 requisitos, dependências, módulos e evidências. |
 
 O [AGENTS.md](../../AGENTS.md) da raiz aponta essa sequência para agentes que chegam ao repositório. Ele é orientação, não uma sandbox. Nosso runtime continua carregando `YZZY.md` da raiz como guidance; não alegamos que a presença de AGENTS crie descoberta recursiva no produto.
 

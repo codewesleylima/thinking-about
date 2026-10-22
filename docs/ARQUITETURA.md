@@ -1,5 +1,9 @@
 # Arquitetura e decisões
 
+## Autoevolução (0.6.0)
+
+`self-improvement.js` separa estudo, implementação e publicação determinística. Resolve o checkout do runtime, cria worktree e congela controles/testes originais; o implementador só usa ferramentas restritas de leitura/escrita. O host executa baseline e verificações Node, associa o resultado a um manifesto e integra/publica o hash aprovado sem force. As fases partilham limites, o workspace original é revalidado sob lock e efeitos incertos ficam sem replay. `/estudar` conserva a fase de memória isolada. [Contratos e fronteiras de execução](AUTOEVOLUCAO.md).
+
 ## Aprendizado entre sessões (0.5.0)
 
 `elevation.js` coordena estudo de leitura com orçamento reduzido; `learning.js` valida lições contra leituras observadas e administra `.yzzy/learning.json`. O `AgentRunner` restringe ferramentas no modo de estudo e, em tarefas normais, recupera conhecimento lexicalmente a cada turno. A recuperação entra como dado externo, separada das instruções de sistema e de `userInstructions` do resumo. A promoção usa lock e arquivo atômico depois do término da sessão; o resultado é registrado no journal. Leia os [contratos e limites](APRENDIZADO-COM-ELEVAR.md), inclusive a ausência de transação única entre journal e memória. Proveniência validada não é execução verificada.

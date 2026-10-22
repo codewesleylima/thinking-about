@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "productVersion": "0.5.0",
+  "productVersion": "0.6.0",
   "study": { "path": "estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md", "sha256": "89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252", "sections": 32 },
   "meaning": "Especificação de referência. implemented indica código e testes locais, não paridade comercial. planned e partial não devem ser anunciados como funções completas.",
   "requirements": [
@@ -33,6 +33,7 @@
     { "id": "R27", "title": "Concorrência isolada e reserva atômica", "status": "planned", "studySections": [18,20], "dependsOn": ["R17","R26"], "modules": [], "tests": [], "accept": "Worktree/sandbox por tarefa, autoridade filha subconjunto, ledger global atômico e integração de conflitos/evidências." },
     { "id": "R28", "title": "Memória semântica com proveniência", "status": "partial", "studySections": [11], "dependsOn": ["R13"], "modules": ["src/learning.js","src/elevation.js"], "tests": ["tests/learning.test.js"], "accept": "Origem, revisão, expiração/correção e autorização de dados implementadas via /elevar e recuperação lexical. Embeddings e avaliação pareada de ganho/perda/custo ainda pendentes." },
     { "id": "R29", "title": "Telemetria GenAI externa", "status": "planned", "studySections": [21,26], "dependsOn": ["R06","R08"], "modules": [], "tests": [], "accept": "Fixar convenções, redigir atributos, amostrar e exportar sem prompts/segredos por padrão; correlacionar modelo/ferramenta/evidência." },
-    { "id": "R30", "title": "Qualidade geral e capacidade de construir", "status": "partial", "studySections": [26,27,28], "dependsOn": ["R22"], "modules": ["evaluations/tasks.json","docs/replicacao/06-AVALIACAO-E-EVOLUCAO.md"], "tests": [], "accept": "Holdout, tentativas, regressões, custo/tempo e incerteza; não prometer resolver qualquer tarefa nem declarar equivalência sem benchmark." }
+    { "id": "R30", "title": "Qualidade geral e capacidade de construir", "status": "partial", "studySections": [26,27,28], "dependsOn": ["R22"], "modules": ["evaluations/tasks.json","docs/replicacao/06-AVALIACAO-E-EVOLUCAO.md"], "tests": [], "accept": "Holdout, tentativas, regressões, custo/tempo e incerteza; não prometer resolver qualquer tarefa nem declarar equivalência sem benchmark." },
+    { "id": "R31", "title": "Autoevolução de módulos com validação e publicação Git", "status": "implemented", "studySections": [21,24,26,28,30], "dependsOn": ["R03","R08","R14","R15","R18","R28"], "modules": ["src/self-improvement.js","src/agent.js","src/workspace.js"], "tests": ["tests/self-improvement.test.js"], "accept": "Comando humano inicia estudo e implementação em worktree do runtime; orçamento agregado, controles/testes originais congelados, baseline e verificações fixas, uma reparação, fast-forward e push sem force; divergência e efeitos incertos não recebem replay." }
   ]
 }

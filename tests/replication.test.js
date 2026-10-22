@@ -8,7 +8,7 @@ import { capture } from '../src/executor.js';
 import { checkReplication } from '../scripts/check-replication.js';
 
 test('especificação rastreável preserva hash do estudo e referências executáveis', async () => {
-  const checked = await checkReplication(); assert.equal(checked.requirements, 30);
+  const checked = await checkReplication(); assert.equal(checked.requirements, 31);
   assert.equal(checked.studySha256, '89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252');
 });
 
@@ -19,6 +19,7 @@ test('réplica é independente, mantém controles, personaliza alias e funciona 
   assert.equal(pkg.name, 'sample-agent'); assert.deepEqual(pkg.bin, { sampleai: 'bin/yzzy.js' });
   assert.match(pkg.scripts['install:cmd'], /-CommandName sampleai/);
   assert.equal(pkg.dependencies['@openai/codex'], '0.163.0');
+  assert.match(await readFile(path.join(directory, '.gitattributes'), 'utf8'), /\*\.md text eol=lf/);
   const lock = JSON.parse(await readFile(path.join(directory, 'package-lock.json'), 'utf8'));
   assert.equal(lock.name, 'sample-agent'); assert.equal(lock.packages[''].bin.sampleai, 'bin/yzzy.js');
   assert.equal(lock.packages['node_modules/@openai/codex'].version, '0.163.0');

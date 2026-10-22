@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "productVersion": "0.6.0",
+  "date": "2026-10-22",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "automated": {
+    "command": "npm.cmd test",
+    "passed": 119,
+    "failed": 0,
+    "selfImprovementTests": 9,
+    "check": { "command": "npm.cmd run check", "javascriptModules": 63, "replicationRequirements": 31, "passed": true },
+    "scenarios": { "command": "npm.cmd run evaluate", "passed": 8, "total": 8, "realModelCalls": 0 },
+    "interpretation": "Unit tests use scripted providers. Publication tests use real Git worktrees and temporary bare remotes with simulated Node check responses; the live test below uses actual Node checks."
+  },
+  "live": {
+    "command": "node scripts/self-improvement-smoke.js",
+    "id": "19309fea-20f2-4330-a59b-8f6138e11203",
+    "started": "2026-10-22T05:20:48.458Z",
+    "finished": "2026-10-22T05:24:03.349Z",
+    "backend": "codex",
+    "model": "gpt-6.1-sol",
+    "studySession": "8db9d3b7-7d46-4a04-8a3b-c1ecd536ad15",
+    "implementationSession": "e2741e4f-bb59-4103-ac9a-6b89a9d60877",
+    "modelCalls": 16,
+    "toolCalls": 14,
+    "learned": 1,
+    "source": {
+      "url": "https://developers.openai.com/cookbook/examples/agents_sdk/building_reliable_agents_memory_compaction.md",
+      "sha256": "090c2cb2e8895a295c915887df728cc34d314841daaf1f3b7c268043c9214972",
+      "retrievedAt": "2026-10-22T05:21:17.142Z"
+    },
+    "change": "Normalized the accented Portuguese stopword faça to faca, matching the lexical tokenizer and preventing unrelated memory retrieval. Added tests for accented, unaccented and uppercase queries plus relevant-query preservation.",
+    "changed": ["src/learning.js", "tests/learning-stopwords.test.js"],
+    "checks": [
+      { "phase": "baseline", "argv": ["--test"], "passed": true },
+      { "phase": "baseline", "argv": ["scripts/check.js"], "passed": true },
+      { "phase": "baseline", "argv": ["evaluations/run.js"], "passed": true },
+      { "phase": "candidate", "argv": ["--test"], "passed": true },
+      { "phase": "candidate", "argv": ["scripts/check.js"], "passed": true },
+      { "phase": "candidate", "argv": ["evaluations/run.js"], "passed": true }
+    ],
+    "candidateManifest": "7611c8484d4d7c891568274ce814d34d5ad9abe27970d0e7dc35c523df051805",
+    "commit": "750b763f7a8f9f6c3f79b96cc314221fda60da29",
+    "status": "published",
+    "pushed": true,
+    "remote": "Temporary local bare Git origin, not the production GitHub origin.",
+    "review": "The generated patch was inspected and applied to the project. Test cleanup received an additional absolute temporary-directory check. Source-workspace integration locking and protected-budget/profile coverage were subsequently strengthened and covered by deterministic tests.",
+    "limits": "One directed bug fix, not autonomous discovery of an unspecified research program, a holdout benchmark or weight training. No general quality improvement rate inferred."
+  },
+  "negativeObservation": {
+    "id": "b8eb3571-50a9-4a3c-8d81-f39c40a0cd3d",
+    "started": "2026-10-22T05:19:12.301Z",
+    "finished": "2026-10-22T05:19:28.614Z",
+    "status": "error",
+    "modelCalls": 0,
+    "pushed": false,
+    "reason": "The baseline detected scientific-study hash divergence after a Windows Git checkout because the replica lacked .gitattributes. The replica generator/package now preserve .gitattributes; baseline then passed."
+  },
+  "package": { "command": "npm.cmd pack --ignore-scripts --cache .yzzy/npm-cache --silent; npm.cmd run test:package", "passed": true, "replicaFiles": 113, "observed": "Packaged CLI demo, independent generated replica, replica demo and syntax/spec checks passed. The generator now includes .gitattributes." },
+  "globalCli": { "observed": "YZZY BLACK 0.6.0", "reinstallRequired": false },
+  "studySha256": "89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252"
+}

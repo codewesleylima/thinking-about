@@ -1,14 +1,18 @@
 # YZZY BLACK
 
-**Versão 0.5.0:** `/elevar [tema]` estuda documentação da internet e guarda aprendizados com fontes para tarefas futuras. `/aprendizados` consulta e `/esquecer <id>` remove. A memória é local por projeto, expira em 30 dias e não altera os pesos do backend. O estudo usa leitura HTTPS nos hosts configurados, sem edição ou shell. Veja o [guia completo de aprendizado e replicação](docs/APRENDIZADO-COM-ELEVAR.md).
+**Versão 0.6.0 — autoevolução:** `/elevar [tema]` pesquisa melhorias de agentes de IA, edita os próprios módulos em um worktree Git, executa baseline/testes/checks e faz commit e push da revisão aprovada. O alvo é o checkout de instalação do runtime, com árvore limpa e `origin` sincronizado. O modelo não recebe shell/Git; o controlador publica sem force e preserva controles/testes originais. As verificações Node executam no host, sem sandbox de sistema operacional. [Funcionamento e replicação](docs/AUTOEVOLUCAO.md).
+
+**Migração da 0.5.0:** o antigo estudo sem edição agora se chama `/estudar` ou `yzzy estudar "tema" --json`. `/elevar` passa a autorizar estudo, implementação, verificações no host e publicação Git. Reinicie o CLI após atualizar ou autopublicar.
+
+**Memória persistente, introduzida na 0.5.0:** `/estudar [tema]` estuda documentação da internet e guarda aprendizados com fontes para tarefas futuras. `/aprendizados` consulta e `/esquecer <id>` remove. A memória é local por projeto, expira em 30 dias e não altera os pesos do backend. O estudo usa leitura HTTPS nos hosts configurados, sem edição ou shell. Veja o [guia completo de aprendizado e replicação](docs/APRENDIZADO-COM-ELEVAR.md).
 
 ```text
 yzzy
-/elevar investigar bibliotecas Java com javap e testes de contrato
+/estudar investigar bibliotecas Java com javap e testes de contrato
 /aprendizados
 ```
 
-Em automação: `yzzy elevar "tema" --json`. Sem tema, estuda técnicas para melhorar suas capacidades como agente CLI. A pesquisa escolhe páginas oficiais para leitura; ainda não existe buscador geral da internet. [Validação da versão](docs/replicacao/VALIDACAO-0.5.0.json).
+Em automação: `yzzy estudar "tema" --json`. Sem tema, estuda técnicas para melhorar suas capacidades como agente CLI. A pesquisa escolhe páginas oficiais para leitura; ainda não existe buscador geral da internet. [Validação histórica da memória](docs/replicacao/VALIDACAO-0.5.0.json).
 
 **Versão 0.4.0:** manual para outros agentes implementarem uma réplica, especificação com 30 requisitos rastreáveis, gerador de runtime independente e shell CMD/sh do host por concessão explícita. Comece por [REPLICAR.md](REPLICAR.md) e pelo [manual detalhado](docs/replicacao/README.md). Mantém equipe com 19 perfis, orçamento agregado e documentação HTTPS autorizada. O [estudo do Codex](docs/codex/README.md) preserva a pesquisa pública fixada por commit/hashes.
 

@@ -1,5 +1,9 @@
 # Configuração e operação
 
+## Autoevolução (0.6.0)
+
+`/elevar [tema]` usa a configuração do próprio checkout instalado, e não a configuração do projeto aberto no chat. `--backend` e `--model` continuam podendo selecionar o motor. Exige branch ativa, árvore limpa, upstream `origin/<branch>` e sincronismo remoto. Usa limites agregados e verifica/publica automaticamente a candidata aprovada. `/estudar` mantém a operação de memória descrita abaixo para 0.5.0. Leia [escopo, execução no host e recuperação](AUTOEVOLUCAO.md).
+
 ## Estudo e aprendizado (0.5.0)
 
 No chat, `/elevar [tema]`; em automação, `yzzy elevar "tema" --json`. O comando concede leitura externa somente para o estudo nos hosts exatos de `documentation.allowedHosts`, sem herdar escrita, execução ou shell. Não exige `--allow-network`. Usa os limites existentes com tetos próprios menores: dez chamadas de modelo, vinte de ferramentas, oito leituras externas e 180 segundos. `/aprendizados [id]` consulta e `/esquecer <id>` remove. A memória é local ao workspace, com validade inicial de 30 dias. [Operação, algoritmo e implementação](APRENDIZADO-COM-ELEVAR.md).

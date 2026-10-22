@@ -1,5 +1,9 @@
 # Segurança e fronteiras reais
 
+## Autoevolução (0.6.0)
+
+`/elevar` autoriza um controlador de publicação específico: estudo HTTPS, edição em candidata Git, verificações Node no host, commit e push sem force. Não ativa `--allow-host-shell` para o modelo. Congela controles e testes originais e revalida a revisão antes de integrar. Executar testes no host permite efeitos com permissões do usuário; worktree não é sandbox. São preservados diagnósticos/candidatas e não há replay automático de integração ou push incertos. O modo de estudo somente leitura da seção histórica abaixo agora é `/estudar`. [Contrato completo](AUTOEVOLUCAO.md).
+
 ## Estudo e memória externa (0.5.0)
 
 `/elevar` é uma autorização humana para leitura HTTPS nos hosts configurados durante um estudo limitado. O modo reduz o catálogo no host a ferramentas de leitura e não herda escrita, Docker ou shell. Aprendizados são persistidos pelo controlador somente depois de validar schema e referências observadas; esse procedimento comprova proveniência, não correção semântica ou ausência de prompt injection. A recuperação os envia como dados não confiáveis, com expiração, limites de relevância/bytes e possibilidade de remoção. Arquivos de memória permanecem protegidos das ferramentas restritas de edição. Detalhes, fronteiras e limitações estão no [contrato de aprendizado](APRENDIZADO-COM-ELEVAR.md).

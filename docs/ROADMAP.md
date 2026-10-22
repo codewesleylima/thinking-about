@@ -1,5 +1,9 @@
 # Estado do produto e evolução
 
+## Versão 0.6.0 implementada
+
+Autoevolução em worktree: `/elevar` estuda, modifica módulos permitidos, cria regressões, valida baseline/candidata e publica por Git quando aprovado. Pesquisa, implementação e uma correção compartilham orçamento. `/estudar` mantém memória sem edição. O publicador não altera pesos, dependências, controles congelados ou avaliadores originais. [Contrato e limitações](AUTOEVOLUCAO.md). Sandbox de verificações e avaliação pareada de ganho geral continuam como evolução futura.
+
 ## Versão 0.5.0 implementada
 
 `/elevar` pesquisa documentação oficial pela ferramenta HTTPS, sintetiza lições com proveniência e persiste memória local entre sessões. Recuperação lexical, validade de 30 dias, consulta e remoção estão implementadas. O estudo recebe somente ferramentas de leitura e não altera os pesos ou código do agente. [Contratos e validação](APRENDIZADO-COM-ELEVAR.md). Embeddings, buscador geral, avaliação pareada de ganho e autodesenvolvimento com ativação/rollback continuam como evolução futura.

@@ -8,9 +8,10 @@ const sensitive = /(^\.env($|\.)|^\.npmrc$|^\.pypirc$|^credentials($|\.)|^id_rsa
 const protectedNames = new Set(['yzzy.config.json', 'yzzy.md', 'wzzy.config.json', 'wzzy.md', 'agents.md']);
 
 export class Workspace {
-  constructor(root, config, { allowWrite = false, configPath } = {}) {
+  constructor(root, config, { allowWrite = false, configPath, protectedPaths = [] } = {}) {
     this.root = root; this.config = config; this.allowWrite = allowWrite;
     this.configPath = configPath && path.resolve(configPath);
+    this.protectedPaths = new Set(protectedPaths.map(p => p.toLowerCase()));
   }
   normalize(relative) {
     invariant(typeof relative === 'string' && relative.length && relative.length <= 1024, 'Caminho inválido');
@@ -27,6 +28,7 @@ export class Workspace {
     invariant(inside && !inside.startsWith('..') && !path.isAbsolute(inside), 'Caminho fora do workspace');
     if (write) {
       invariant(this.allowWrite, 'Edição exige --allow-write');
+      invariant(!this.protectedPaths.has(rel.toLowerCase()), 'Arquivo congelado pelo controlador desta operação');
       invariant(!rel.split('/').some(p => protectedNames.has(p.toLowerCase())) && target !== this.configPath && !rel.startsWith('evaluations/'), 'Arquivo de controle/avaliação protegido');
       invariant(this.config.writeRoots.some(base => rel === base.replaceAll('\\', '/') || rel.startsWith(base.replaceAll('\\', '/') + '/')), 'Edição fora de writeRoots');
     }
