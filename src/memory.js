@@ -1,5 +1,18 @@
 import { bounded } from './util.js';
 
+// Índice histórico, não cache de conteúdo nem prova da revisão atual.
+function readReferences(tools) {
+  const reads = tools.filter(m => m.result.ok && ['read_file', 'read_lines'].includes(m.name));
+  return { omitted: Math.max(0, reads.length - 24), items: reads.slice(-24).map(m => {
+    const { path, sha256, start_line, total_lines, content, more } = m.result;
+    const reference = { invocation: m.id, tool: m.name, path, sha256 };
+    if (m.name === 'read_file') return { ...reference, scope: 'full' };
+    const count = content.length ? content.split('\n').length : 0;
+    return { ...reference, scope: 'lines', start_line,
+      end_line: count ? start_line + count - 1 : null, total_lines, more };
+  }) };
+}
+
 // Resumo extrativo: preserva requisitos humanos literalmente e referencia evidências.
 // Não é treinamento nem alegação de resumo semântico por um LLM.
 export function summarize(state) {
@@ -10,6 +23,7 @@ export function summarize(state) {
     learningIds: state.learningIds || [],
     agent: state.agent || 'general', permissions: state.permissions,
     hostShellUsed: Boolean(state.hostShellUsed),
+    readReferences: readReferences(tools),
     changedFiles: changed, evidence: state.evidence.map(e => ({ id: e.id, command: e.command, passed: e.passed, revision: e.revision })),
     errors: tools.filter(m => !m.result.ok).slice(-8).map(m => ({ invocation: m.id, tool: m.name, error: m.result.error, code: m.result.code })),
     lastResponses: state.messages.filter(m => m.role === 'assistant' && m.text).slice(-4).map(m => bounded(m.text, 1600)),
