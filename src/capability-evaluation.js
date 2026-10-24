@@ -6,6 +6,7 @@ import { hash, canonical, invariant, abortIfNeeded } from './util.js';
 import { runEvolutionSandbox } from './evolution-sandbox.js';
 
 // O contrato é público; entradas aleatórias por execução e respostas esperadas não são dadas ao implementador.
+export const capabilityProfile = 'memory-context-v2';
 export function buildCapabilitySuite({ seed = randomUUID(), now = Date.now() } = {}) {
   const word = label => 'marcador' + hash(seed + label).slice(0, 16);
   const url = 'https://docs.oracle.com/en/java/javase/25/docs/specs/man/javap.html';
@@ -30,6 +31,18 @@ export function buildCapabilitySuite({ seed = randomUUID(), now = Date.now() } =
   retrieval('expired', { title: word('expired'), expiresAt: new Date(now - 1).toISOString() }, word('expired'), false);
   retrieval('revoked_source', { title: word('revoked') }, word('revoked'), false, { hosts: [] });
   retrieval('context_budget', { title: word('budget') }, word('budget'), false, { contextBytes: 16 });
+  // Campos válidos podem conter mais de 80 tokens. O limite da consulta não corta a lição.
+  const noise = Array.from({ length: 85 }, (_, i) => `n${hash(seed).slice(0, 1)}${String(i).padStart(3, '0')}`).join(' ');
+  for (const field of ['topic', 'title', 'summary', 'steps', 'verification', 'limits']) {
+    const marker = word('late_' + field), value = noise + ' ' + marker;
+    const patch = field === 'title' ? { topic: noise, title: marker }
+      : { [field]: field === 'steps' ? [value] : value };
+    retrieval('late_' + field, patch, marker, true);
+  }
+  retrieval('repeated_primary_tokens', { topic: 'eco '.repeat(90) + word('after_repeats') }, word('after_repeats'), true);
+  retrieval('partial_additional_query', { limits: word('partial') }, word('partial') + ' ' + word('absent'), false);
+  retrieval('query_token_budget', { limits: word('query_tail') }, (word('query_noise') + ' ').repeat(80) + word('query_tail'), false);
+  retrieval('late_expired', { limits: noise + ' ' + word('late_expired'), expiresAt: new Date(now - 1).toISOString() }, word('late_expired'), false);
   const objective = 'Investigar ' + word('objective');
   const permissions = { allowWrite: false, allowExec: false, allowNetwork: false, allowHostShell: false };
   const pending = { id: word('pending'), name: 'create_file', args: { path: 'src/future.js', content: 'x' } };
@@ -43,7 +56,7 @@ export function buildCapabilitySuite({ seed = randomUUID(), now = Date.now() } =
   memory('human_authority', 'userInstructions', [objective]);
   memory('uncertain_effect', 'pending', { pendingTool: pending, uncertainEffect: true, permissions });
   memory('read_provenance', 'references', { path: 'src/a.js', sha256: hash('a'), start_line: 7, end_line: 8, more: true });
-  return { schema: 1, seedHash: hash(seed), input: { schema: 1, cases }, expected };
+  return { schema: 1, profile: capabilityProfile, seedHash: hash(seed), input: { schema: 1, cases }, expected };
 }
 
 export function gradeCapabilityOutput(output, suite) {
@@ -107,6 +120,7 @@ export async function compareEvolutionCapabilities({ baseline, candidate, config
       }
     }
     const metadata = {
+      profile: suite.profile,
       datasetHash: hash(canonical(suite.input)), seedHash: suite.seedHash,
       baselineRevision: baseline.revision, ...(candidate ? { candidateRevision: candidate.revision } : {}), image: config.evolution.image,
       durationMs: Object.fromEntries(Object.entries(samples).filter(([, values]) => values.length).map(([version, values]) => [version, values.flat().reduce((n, c) => n + c.durationMs, 0)])) };

@@ -114,18 +114,20 @@ export async function rememberStudy(root, { topic, state, config, signal }) {
 }
 
 const stops = new Set('para como uma que com por dos das este esta isso sobre quero faca usar meus suas nosso nossa mesmo projeto'.split(' '));
-const tokens = value => new Set((value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().match(/[a-z0-9]{3,}/g) || [])
-  .filter(t => !stops.has(t)).slice(0, 80));
+const tokens = value => (value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().match(/[a-z0-9]{3,}/g) || [])
+  .filter(t => !stops.has(t));
 
 export async function retrieveLearnings(root, objective, config, now = Date.now()) {
-  const query = tokens(objective), limit = Math.min(10000, Math.floor(config.limits.maxContextBytes / 8));
+  // O orçamento limita ocorrências relevantes da consulta, antes da deduplicação.
+  const query = new Set(tokens(objective).slice(0, 80)), limit = Math.min(10000, Math.floor(config.limits.maxContextBytes / 8));
   const ranked = (await listLearnings(root, now)).filter(item => item.status === 'active'
     && item.sources.every(s => { try { documentationUrl(s.url, config.documentation.allowedHosts); return true; } catch { return false; } }))
     .map(item => {
-      const score = [...tokens([item.topic, item.title, item.summary].join(' '))].filter(t => query.has(t)).length;
+      const primary = new Set(tokens([item.topic, item.title, item.summary].join(' ')));
+      const score = [...primary].filter(t => query.has(t)).length;
       if (score > 0 || query.size === 0) return { item, score };
       // Campos adicionais só recuperam a lição quando cobrem toda a consulta relevante.
-      const additional = new Set([...item.steps, item.verification, item.limits].flatMap(value => [...tokens(value)]));
+      const additional = new Set([...item.steps, item.verification, item.limits].flatMap(value => tokens(value)));
       return { item, score: [...query].every(t => additional.has(t)) ? query.size : 0 };
     })
     .filter(r => r.score >= 1).sort((a, b) => b.score - a.score || b.item.createdAt.localeCompare(a.item.createdAt));

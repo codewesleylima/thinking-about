@@ -1,6 +1,6 @@
 {
   "name": "yzzy-black",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "YZZY BLACK — agente CLI observável com ferramentas e verificação",
   "type": "module",
   "private": true,
@@ -29,7 +29,8 @@
     "test:evolution:docker": "node scripts/evolution-sandbox-smoke.js",
     "test:evolution:checkout": "node scripts/evolution-checkout-smoke.js",
     "test:capabilities:docker": "node scripts/capability-smoke.js",
-    "test:evolution:live": "node scripts/self-improvement-smoke.js"
+    "test:evolution:live": "node scripts/self-improvement-smoke.js",
+    "test:evolution:current": "node scripts/self-improvement-smoke.js --current"
   },
   "files": [
     ".gitattributes",

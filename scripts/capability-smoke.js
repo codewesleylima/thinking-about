@@ -18,8 +18,9 @@ const current = await createEvolutionSnapshot(root, files, config);
 let weakened;
 try {
   const file = path.join(root, 'src/learning.js'), original = await readFile(file, 'utf8');
-  assert.ok(original.includes('const query = tokens(objective), limit'));
-  await writeFile(file, original.replace('const query = tokens(objective), limit', 'const query = new Set(), limit'));
+  const query = /const query = (?:tokens\(objective\)|new Set\(tokens\(objective\)\.slice\(0, 80\)\)), limit/;
+  assert.match(original, query);
+  await writeFile(file, original.replace(query, 'const query = new Set(), limit'));
   weakened = await createEvolutionSnapshot(root, files, config);
   const gain = await compareEvolutionCapabilities({ baseline: weakened, candidate: current, config });
   const regression = await compareEvolutionCapabilities({ baseline: current, candidate: weakened, config });

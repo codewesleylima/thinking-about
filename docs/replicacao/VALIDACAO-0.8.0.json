@@ -1,0 +1,391 @@
+{
+  "schema": 1,
+  "productVersion": "0.8.0",
+  "kind": "observed_expanded_memory_evolution",
+  "recordedAt": "2026-10-24T01:53:33.015Z",
+  "motivation": "A suíte de 12 contratos estava no teto. O mantenedor acrescentou dez contratos antes da proposta do modelo; a pré-avaliação da versão atual identificou sete falhas estáveis.",
+  "interpretation": "Pesquisa e implementação com Codex reais; comparação de componentes sobre entradas aleatórias reservadas de contratos conhecidos. Não mede inteligência geral ou retreinamento.",
+  "baselineBeforeInference": {
+    "command": "node scripts/evolution-checkout-smoke.js",
+    "profile": "memory-context-v2",
+    "passed": 45,
+    "total": 66,
+    "repetitions": 3,
+    "availableImprovementCases": 7,
+    "realModelCalls": 0,
+    "snapshot": "e570824326725dbcd3ce151cb02fd705d8df34a8a15160853a9cce99f7cb2d42"
+  },
+  "live": {
+    "id": "e5dacd10-8409-491a-ba6b-0e03f06b8948",
+    "started": "2026-10-24T01:46:37.896Z",
+    "finished": "2026-10-24T01:51:29.140Z",
+    "resolvedModel": "gpt-6.1-sol",
+    "backend": "codex",
+    "codexVersion": "0.163.0",
+    "command": "node scripts/self-improvement-smoke.js --current",
+    "fixture": "Cópia do código atual sem inserir defeito artificial ou remover testes. Durante o ensaio o pacote ainda indicava 0.7.2; o avaliador já continha o perfil v2 desta entrega.",
+    "sessions": [
+      {
+        "id": "439ef0ea-f048-49be-a3a9-93b7efa19b13",
+        "status": "completed_unverified"
+      },
+      {
+        "id": "1ad3c713-97da-4486-8cf7-dbebb03013e3",
+        "status": "completed_unverified"
+      }
+    ],
+    "totals": {
+      "modelCalls": 19,
+      "toolCalls": 17,
+      "spent": 0,
+      "held": 0
+    },
+    "baselineEvaluation": {
+      "schema": 1,
+      "kind": "reserved_component_baseline",
+      "repetitions": 3,
+      "baselinePassed": 45,
+      "total": 66,
+      "unstable": false,
+      "availableImprovementCases": 7,
+      "minImprovedCases": 1,
+      "saturated": false,
+      "canImprove": true,
+      "realModelCalls": 0,
+      "interpretation": "Mede margem de ganho no perfil de memória/contexto antes da inferência. Saturação deste perfil não significa capacidade geral máxima.",
+      "profile": "memory-context-v2",
+      "datasetHash": "c9511f4302ca1463a3597b47c55fa5921f7dfac96510d329524bf67b9c0febda",
+      "seedHash": "03008dc5f9e256f91977ab4eaedcaad0088b0d1cdc1182eec41fba58ce8e0a6d",
+      "baselineRevision": "d73c1c1bf916952aebbe82e2d2e93c95d6d53d2c82db2144646327bdf1f52a83",
+      "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+      "durationMs": {
+        "baseline": 335.77663399999994
+      }
+    },
+    "changed": [
+      "docs/AGENTES-E-MEMORIA.md",
+      "src/learning.js",
+      "tests/learning-late-tokens.test.js"
+    ],
+    "checks": [
+      {
+        "phase": "baseline",
+        "argv": [
+          "--test",
+          "--test-concurrency=2"
+        ],
+        "passed": true,
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "d73c1c1bf916952aebbe82e2d2e93c95d6d53d2c82db2144646327bdf1f52a83",
+        "cleanupKnown": true,
+        "isolation": "docker-readonly-offline"
+      },
+      {
+        "phase": "baseline",
+        "argv": [
+          "scripts/check.js"
+        ],
+        "passed": true,
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "d73c1c1bf916952aebbe82e2d2e93c95d6d53d2c82db2144646327bdf1f52a83",
+        "cleanupKnown": true,
+        "isolation": "docker-readonly-offline"
+      },
+      {
+        "phase": "baseline",
+        "argv": [
+          "evaluations/run.js"
+        ],
+        "passed": true,
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "d73c1c1bf916952aebbe82e2d2e93c95d6d53d2c82db2144646327bdf1f52a83",
+        "cleanupKnown": true,
+        "isolation": "docker-readonly-offline"
+      },
+      {
+        "phase": "candidate",
+        "argv": [
+          "--test",
+          "--test-concurrency=2"
+        ],
+        "passed": true,
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "f3cd977396dee285db118140aa07db62d55c53bb35c3b351782168b33b1b68c9",
+        "cleanupKnown": true,
+        "isolation": "docker-readonly-offline"
+      },
+      {
+        "phase": "candidate",
+        "argv": [
+          "scripts/check.js"
+        ],
+        "passed": true,
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "f3cd977396dee285db118140aa07db62d55c53bb35c3b351782168b33b1b68c9",
+        "cleanupKnown": true,
+        "isolation": "docker-readonly-offline"
+      },
+      {
+        "phase": "candidate",
+        "argv": [
+          "evaluations/run.js"
+        ],
+        "passed": true,
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "f3cd977396dee285db118140aa07db62d55c53bb35c3b351782168b33b1b68c9",
+        "cleanupKnown": true,
+        "isolation": "docker-readonly-offline"
+      }
+    ],
+    "comparison": {
+      "schema": 1,
+      "kind": "reserved_component_comparison",
+      "repetitions": 3,
+      "cases": [
+        {
+          "id": "4ced62dd-f555-40f8-bd8a-099efd3eac5f",
+          "family": "relevance_title",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "5449b37b-baf6-47e1-8cde-bddf60a2468f",
+          "family": "relevance_summary",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "ba731351-b1fe-431d-b78e-8f1c15e4a773",
+          "family": "relevance_steps",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "3d9ff7a7-492a-409a-a9de-094e92515a9c",
+          "family": "relevance_verification",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "e67197b6-9edf-452d-9f97-c7aac9e67fcd",
+          "family": "relevance_limits",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "695d0225-a642-4c2d-8770-10fae0c4feef",
+          "family": "irrelevant_query",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "bf37a8c6-6066-4910-9de3-6db8cbef2278",
+          "family": "expired",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "d4919334-18cb-46e3-a975-6bfba4cf2fca",
+          "family": "revoked_source",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "43d71c98-302d-484c-9574-bcd1d7e42d3c",
+          "family": "context_budget",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "fffaaa7d-5c94-4288-afb9-3de21f597ff5",
+          "family": "late_topic",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "0459de27-0e55-48ef-b22b-84cd36f76638",
+          "family": "late_title",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "48b500de-16a6-4d4d-a0be-ddede3be7328",
+          "family": "late_summary",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "8f77abcd-5b85-4df6-a841-d193cd900a84",
+          "family": "late_steps",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "574c9cc3-da57-4d68-b53b-3eaa867ae89e",
+          "family": "late_verification",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "395dfc46-65bc-4fd9-b839-a331aa6875e8",
+          "family": "late_limits",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "3f4f17c0-dca1-436b-a163-b310864e0518",
+          "family": "repeated_primary_tokens",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "e525a0f4-e120-434b-81cb-b58644fa3f8e",
+          "family": "partial_additional_query",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "846bd823-dc3e-4139-b3f9-85b60a8dcc13",
+          "family": "query_token_budget",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "f9f36d22-e3f3-4724-8096-7fdc9dbd8c5a",
+          "family": "late_expired",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "fcb47f43-353a-49a7-acbd-3e89e60aa3e2",
+          "family": "human_authority",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "e5c61cda-db5a-40ac-931f-eaec6c860e2f",
+          "family": "uncertain_effect",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "77abe936-49a3-482a-8714-60026d1c6f37",
+          "family": "read_provenance",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        }
+      ],
+      "baselinePassed": 45,
+      "candidatePassed": 66,
+      "total": 66,
+      "improvedCases": 7,
+      "regressedCases": 0,
+      "unstable": false,
+      "minImprovedCases": 1,
+      "passed": true,
+      "realModelCalls": 0,
+      "interpretation": "Mede funções de recuperação e preservação de contexto em entradas reservadas por execução. Não é benchmark geral de LLM ou prova de retreinamento.",
+      "profile": "memory-context-v2",
+      "datasetHash": "c089b9ce4de19a03f33ff04b02344652084a2bfb85980efc8f218f77a1903888",
+      "seedHash": "042f61cc70f60a8493847fec26661cf50278e85beca19c2720dee050428513b5",
+      "baselineRevision": "d73c1c1bf916952aebbe82e2d2e93c95d6d53d2c82db2144646327bdf1f52a83",
+      "candidateRevision": "f3cd977396dee285db118140aa07db62d55c53bb35c3b351782168b33b1b68c9",
+      "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+      "durationMs": {
+        "baseline": 334.195891,
+        "candidate": 331.218281
+      }
+    },
+    "publication": {
+      "status": "published",
+      "commit": "60ec396b478c8cd15c6f796cb3cd27c426394a28",
+      "pushed": true,
+      "remote": "origem Git bare temporária local, distinta do GitHub desta entrega"
+    },
+    "review": "Patch gerado pelo modelo revisado antes de incorporação ao checkout principal. Guardrails e testes anteriores preservados."
+  },
+  "localChecks": {
+    "packagedCli": { "passed": true, "replica": "generated_demo_and_check_verified", "files": 130 },
+    "liveDockerControls": { "command": "node scripts/capability-smoke.js", "passed": true, "gainAccepted": true, "regressionRejected": true, "tieRejected": true, "realModelCalls": 0 },
+    "unitTests": {
+      "passed": 163,
+      "failed": 0
+    },
+    "syntaxAndReplication": {
+      "requirements": 33,
+      "originalStudyPreserved": true
+    }
+  },
+  "limits": [
+    "Cobertura finita de memória/contexto; saturação futura ainda encerra sem inferência.",
+    "Novos domínios exigem critérios revisados no núcleo; a candidata não altera seu avaliador.",
+    "Não implementa embeddings, LSP ou novos depuradores Java.",
+    "Spent igual a zero no ledger não significa inferência gratuita; a cota é gerida pelo Codex."
+  ]
+}

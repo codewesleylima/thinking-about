@@ -20,6 +20,13 @@ test('conversa humana não exibe eventos internos, JSON de resultado ou UUID', (
   assert.doesNotMatch(output(), /running|completed_unverified|111111|"status"|\x1b/);
 });
 
+test('pré-avaliação informa o perfil e a margem sem anunciar capacidade geral máxima', () => {
+  const { ui, output } = terminal();
+  ui.event({ type: 'evolution_baseline', profile: 'memory-context-v2', baselinePassed: 45, total: 66, availableImprovementCases: 7 });
+  assert.match(output(), /45\/66/); assert.match(output(), /memory-context-v2/);
+  assert.match(output(), /margem de ganho: 7/); assert.doesNotMatch(output(), /capacidade máxima/);
+});
+
 test('terminal filtra controles injetados em mensagem, ferramenta e diagnóstico mesmo com cor', () => {
   const { ui, output } = terminal(80, { FORCE_COLOR: '1' });
   const malicious = '\x1b[2J\x1b]0;MALICIOUS_TITLE\x07hello';

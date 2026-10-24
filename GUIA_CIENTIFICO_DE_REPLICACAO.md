@@ -592,3 +592,9 @@ Outro projeto deve replicar o ciclo inteiro: leitura externa limitada, catálogo
 ## Atualização 0.7.0: avaliar antes de autopublicar
 
 A autoevolução exige verificações em Docker offline e readonly, mais ganho estável em casos reservados de memória/contexto, com três repetições por revisão. Empate, regressão ou limpeza incerta bloqueiam publicação. Git e inferência continuam no controlador. Esta atualização substitui descrições anteriores de verificações da autoevolução no host. Não implementa LSP, debugger Java ou benchmark geral de inteligência. Consulte [o contrato e o passo a passo](docs/AVALIACAO-COMPARATIVA.md).
+
+## Ampliação de cobertura na 0.8.0
+
+Saturar uma avaliação pequena não demonstra ausência de defeitos. O perfil original passou todos os casos, mas uma inspeção posterior identificou perda de palavras após o corte de tokens em lições longas. O mantenedor definiu novos contratos no núcleo antes de pedir implementação ao modelo, preservando os casos anteriores, filtros de segurança e respostas esperadas fora da candidata. A versão ampliada mede 22 contratos, com três repetições. Isso permite medir um ganho delimitado sem redefinir sucesso para aprovar uma proposta pronta.
+
+Uma réplica deve versionar o perfil no relatório, respeitar os tamanhos reais dos dados, acrescentar controles negativos ao lado de cada cobertura nova e medir a versão anterior antes de inferir. Se não houver falha discriminante ou critério revisado, deve declarar a limitação e preservar a proposta para revisão. A candidata pode criar testes de regressão próprios, mas não mudar o avaliador que autoriza sua publicação. [Detalhes e reprodução](docs/AVALIACAO-COMPARATIVA.md).

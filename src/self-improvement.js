@@ -133,6 +133,7 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
     report.baselineEvaluation = await baselineEvaluator({ baseline: baselineSnapshot, config: remaining(), signal: deadline,
       auditDirectory: path.join(directory, 'baseline-evaluation') });
     await save();
+    emit({ type: 'evolution_baseline', ...report.baselineEvaluation });
     if (!report.baselineEvaluation.canImprove) {
       report.status = report.baselineEvaluation.saturated ? 'evaluation_saturated'
         : report.baselineEvaluation.unstable ? 'evaluation_unstable' : 'insufficient_headroom';

@@ -9,7 +9,7 @@ const result = (suite, corrupt = () => false) => JSON.stringify({ schema: 1,
   results: suite.expected.map(e => ({ id: e.id, value: corrupt(e) ? null : e.value, durationMs: 1 })) });
 test('casos reservados variam por execução; host confere observações, não um passed fornecido pelo candidato', () => {
   const a = buildCapabilitySuite(), b = buildCapabilitySuite();
-  assert.equal(a.expected.length, 12); assert.notEqual(a.seedHash, b.seedHash);
+  assert.equal(a.expected.length, 22); assert.equal(a.profile, 'memory-context-v2'); assert.notEqual(a.seedHash, b.seedHash);
   assert.equal(JSON.stringify(a.input).includes('expected'), false);
   assert.ok(gradeCapabilityOutput(result(a), a).every(c => c.passed));
   assert.ok(gradeCapabilityOutput(result(a, e => e.family === 'human_authority'), a).some(c => !c.passed));
@@ -52,7 +52,7 @@ test('pré-avaliação executa somente baseline com gabarito privado e não prec
         results: expected.map(e => ({ id: e.id, value: e.value, durationMs: 1 })) }) };
     } });
   assert.equal(calls, f.config.evolution.repetitions); assert.equal(r.saturated, true);
-  assert.equal(r.baselinePassed, 36); assert.equal(r.total, 36); assert.equal(r.realModelCalls, 0);
+  assert.equal(r.baselinePassed, 66); assert.equal(r.total, 66); assert.equal(r.realModelCalls, 0);
   assert.equal(r.candidateRevision, undefined);
 });
 

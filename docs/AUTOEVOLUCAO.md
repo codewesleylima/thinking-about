@@ -1,6 +1,6 @@
 # Autoevolução do runtime com `/elevar`
 
-YZZY BLACK 0.7.2. O comando estuda um assunto de agentes de IA, implementa uma melhoria nos próprios módulos, executa verificações e publica a revisão pelo Git quando os controles passam. Antes da pesquisa, mede se o perfil de avaliação tem margem para comprovar ganho. O ciclo de memória sem alteração de código continua disponível em `/estudar`.
+YZZY BLACK 0.8.0. O comando estuda um assunto de agentes de IA, implementa uma melhoria nos próprios módulos, executa verificações e publica a revisão pelo Git quando os controles passam. Antes da pesquisa, mede se o perfil de avaliação tem margem para comprovar ganho. O perfil `memory-context-v2` cobre 22 contratos de memória/contexto. O ciclo de memória sem alteração de código continua disponível em `/estudar`.
 
 A versão 0.7.1 corrige o bloqueio do template rastreado `.env.example` na preparação do snapshot. Ele é omitido, sem liberar arquivos sensíveis. O teste `npm run test:evolution:checkout` verifica os três checks em Docker sobre o checkout Git real, além das réplicas. [Evidência da correção](replicacao/VALIDACAO-0.7.1.json).
 
@@ -40,7 +40,7 @@ O modelo deve estudar conceitos relevantes ao objetivo, confrontar a fonte com o
 5. Execute o perfil de programação com ferramentas de leitura e edição por hash, dentro da candidata. Fontes e lições permanecem dados não confiáveis. O modelo não recebe `run_command` nem `run_check`; as verificações serão escolhidas pelo host.
 6. Examine o diff. Aceite somente módulos liberados em `src/`, documentação e testes novos. Exija mudança no runtime e teste de regressão novo. Recuse alteração dos controles ou dos testes originais.
 7. Calcule manifesto de conteúdo/modo e execute as três verificações fixas. Elas precisam retornar zero, com saída íntegra, sem interrupção e com limpeza conhecida. O manifesto deve ser o mesmo ao terminar.
-8. Compare base e candidata nos 12 casos reservados de memória/contexto, três repetições por revisão e gabarito fora do contêiner. Exija pelo menos um ganho estável sem regressão/instabilidade. Resultado estável abaixo do ganho mínimo encerra como `no_measured_gain`, sem nova inferência. Falhas de verificação, regressões ou instabilidade podem receber uma rodada de correção dentro do orçamento restante; a segunda reprovação interrompe o fluxo.
+8. Compare base e candidata nos 22 casos reservados de memória/contexto, três repetições por revisão e gabarito fora do contêiner. Exija pelo menos um ganho estável sem regressão/instabilidade. Resultado estável abaixo do ganho mínimo encerra como `no_measured_gain`, sem nova inferência. Falhas de verificação, regressões ou instabilidade podem receber uma rodada de correção dentro do orçamento restante; a segunda reprovação interrompe o fluxo.
 9. Sob lock do workspace original, revalide branch, HEAD e limpeza. Reconfira a candidata aprovada, faça commit dos caminhos exatos e verifique que hooks/commit não mudaram o conteúdo testado.
 10. Integre pelo `git merge --ff-only`, publique o hash exato para `origin` sem force e confirme o hash remoto por `ls-remote`.
 

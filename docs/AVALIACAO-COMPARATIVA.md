@@ -1,12 +1,14 @@
 # Comparação reservada e isolamento da autoevolução
 
-Contrato da versão 0.7.2. A entrega iniciada na 0.7.0 comprova uma melhoria delimitada antes de autopublicar e executa código candidato em ambiente isolado. Busca estrutural/LSP, debugger Java, contratos mais ricos entre especialistas e uma nova interface continuam como trabalhos separados.
+Contrato da versão 0.8.0. A entrega iniciada na 0.7.0 comprova uma melhoria delimitada antes de autopublicar e executa código candidato em ambiente isolado. Busca estrutural/LSP, debugger Java, contratos mais ricos entre especialistas e uma nova interface continuam como trabalhos separados.
 
 ## O que medimos
 
 O avaliador mede componentes reais de memória e contexto do runtime. Não pergunta ao modelo se ele melhorou. Executa as funções de duas revisões sobre entradas iguais e compara os resultados com respostas esperadas calculadas pelo controlador. Não mede inteligência geral, qualidade de geração de código nem mudança dos pesos do GPT.
 
-São 12 casos: recuperação por título, resumo, passos, verificação e limites; consulta irrelevante; lição vencida; origem revogada; orçamento insuficiente; separação entre aprendizado externo e instruções humanas; preservação de permissões/efeitos pendentes; preservação de referências de leitura. As lições desses casos são sintéticas e identificadas como tal, sem alegar pesquisa real.
+O perfil `memory-context-v2` possui 22 casos. Preserva os 12 contratos originais: recuperação por título, resumo, passos, verificação e limites; consulta irrelevante; lição vencida; origem revogada; orçamento insuficiente; separação entre aprendizado externo e instruções humanas; preservação de permissões/efeitos pendentes; preservação de referências de leitura. As lições são sintéticas e identificadas como tal, sem alegar pesquisa real.
+
+Os dez casos adicionais verificam termos tardios em cada um dos seis campos, repetição de palavras que esconde termos posteriores, consulta parcialmente coberta nos campos adicionais, preservação do limite de tokens da consulta e recusa de uma lição longa vencida. Os campos gerados respeitam os tamanhos aceitos pelo armazenamento: o título permanece curto, com um tema longo antes dele; passos longos ficam abaixo de 800 bytes. Esses contratos foram definidos no núcleo antes da proposta do modelo; a candidata continua impedida de alterar o avaliador. A mudança aumenta a cobertura do comportamento esperado, sem reduzir os controles para obter aprovação.
 
 `src/capability-evaluation.js` cria identificadores e termos aleatórios depois da implementação. O modelo conhece os contratos funcionais, mas não recebe as entradas reservadas nem o gabarito. O controlador grava entrada e gabarito em `.yzzy/evolutions/<id>/comparison-<tentativa>/`, fora da candidata. Consulte o caminho efetivo no relatório. Esses artefatos permitem reproduzir o ensaio; o hash da semente sozinho não reconstrói todos os identificadores.
 
@@ -40,6 +42,7 @@ npm run test:evolution:docker
 npm run test:evolution:checkout
 npm run test:capabilities:docker
 npm run test:evolution:live
+npm run test:evolution:current
 ```
 
 O primeiro teste faz probes reais de UID, escrita negada, ausência de dados privados, capabilities, rede e timeout/limpeza. O segundo introduz um defeito deliberado em uma réplica e confirma, em Docker real, aprovação de ganho e bloqueio de regressão e empate. Não usa modelo. O terceiro exige backend autenticado: cria réplica e origem Git locais temporárias, pesquisa, pede uma implementação ao modelo, executa o pipeline completo e testa commit/push nessa origem de ensaio. Não publica essa fixture no GitHub. Resultados locais ficam em `.yzzy/self-improvement-smoke.json` e `.patch`. Testes unitários usam runners injetados explicitamente e não são prova de isolamento real.
@@ -48,7 +51,9 @@ O primeiro teste faz probes reais de UID, escrita negada, ausência de dados pri
 
 `test:evolution:checkout` valida os três checks em Docker usando todos os caminhos rastreados do checkout real. Não usa modelo ou Git de publicação. Esse ensaio cobre diferenças entre o conteúdo do checkout e o pacote/réplica, incluindo o template `.env.example` que bloqueou uma execução real da 0.7.0 antes de inferência. A exclusão do template não altera a política de acesso às ferramentas.
 
-O ensaio original registrado em `replicacao/VALIDACAO-0.7.0.json` partiu da implementação anterior real, sem preparar um defeito artificial. Como a melhoria já foi incorporada, novas execuções de `test:evolution:live` reconstroem esse defeito conhecido somente na réplica temporária, antes de criar a baseline Git: removem a ampliação da pontuação e seu teste específico. Depois desse ponto todos os testes da baseline ficam congelados. Esse replay mede funcionamento do pipeline sobre uma correção conhecida, sem contar como descoberta nova ou benchmark de generalização. Nunca remove testes do checkout de origem.
+O ensaio original registrado em `replicacao/VALIDACAO-0.7.0.json` partiu da implementação anterior real, sem preparar um defeito artificial. Como a melhoria já foi incorporada, novas execuções de `test:evolution:live` reconstroem esse defeito conhecido somente na réplica temporária, antes de criar a baseline Git: removem a ampliação da pontuação e seus testes específicos de campos adicionais/tardios. Depois desse ponto todos os testes da baseline ficam congelados. Esse replay mede funcionamento do pipeline sobre uma correção conhecida, sem contar como descoberta nova ou benchmark de generalização. Nunca remove testes do checkout de origem.
+
+`test:evolution:current` copia o código atual sem reintroduzir defeitos nem remover testes. Antes de pedir uma melhoria, executa a pré-avaliação real. Se não houver margem, deve encerrar como saturado, sem inferência ou patch: repetir um benchmark concluído não cria uma nova capacidade. Melhorias em outros domínios exigem contratos adicionais revisados, e não aumento cego de orçamento. A cobertura continua finita e não equivale a uma medida de inteligência geral.
 
 1. Defina contratos observáveis e casos de sucesso e recusa antes de liberar edição ao modelo.
 2. Preserve uma revisão anterior imutável e congele avaliador, políticas e testes existentes.

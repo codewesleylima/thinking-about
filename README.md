@@ -1,6 +1,8 @@
 # YZZY BLACK
 
-**Versão 0.7.2 — evolução avaliada:** `/elevar [tema]` mede a margem de melhoria antes de gastar chamadas do modelo, pesquisa e edita uma candidata Git e só publica com ganho estável sem regressões. Testes e comparações de memória/contexto executam em Docker sem rede. Perfil no teto encerra sem inferência; empate encerra sem tentativa de correção. Exige checkout limpo e sincronizado, Docker e backend autenticado. [Algoritmo e reprodução](docs/AVALIACAO-COMPARATIVA.md).
+**Versão 0.8.0 — evolução avaliada:** `/elevar [tema]` mede a margem de melhoria antes de gastar chamadas do modelo, pesquisa e edita uma candidata Git e só publica com ganho estável sem regressões. O perfil de memória/contexto foi ampliado de 12 para 22 casos, incluindo lições longas, repetição e preservação do limite da consulta. Testes e comparações executam em Docker sem rede. Perfil no teto encerra sem inferência; empate encerra sem tentativa de correção. Exige checkout limpo e sincronizado, Docker e backend autenticado. [Algoritmo e reprodução](docs/AVALIACAO-COMPARATIVA.md).
+
+**Resultado observado:** o YZZY executado com Codex produziu uma correção de recuperação de termos tardios. A comparação passou de 45/66 para 66/66, com sete ganhos estáveis e nenhuma regressão. O patch foi revisado e incorporado. [Evidências e limites da medição](docs/replicacao/VALIDACAO-0.8.0.json).
 
 **Migração da 0.5.0:** o antigo estudo sem edição agora se chama `/estudar` ou `yzzy estudar "tema" --json`. `/elevar` passa a autorizar estudo, implementação, verificações Docker, comparação e publicação Git. Reinicie o CLI após atualizar ou autopublicar.
 

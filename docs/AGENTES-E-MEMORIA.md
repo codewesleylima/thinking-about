@@ -6,6 +6,14 @@ Na versão 0.5.0, `/elevar [tema]` acrescenta memória de conhecimento entre ses
 
 Desde 0.4.0, `--allow-host-shell` é uma concessão de CMD/sh do host, independente das flags de ferramentas restritas. Perfis readonly e consultas da equipe sempre a reduzem; o coordenador conserva o perfil humano. A memória registra `hostShellUsed`, e a sessão não obtém verificação independente depois desse canal. Veja [execução](replicacao/05-CMD-E-EXECUCAO.md) e [ensino de continuidade](replicacao/03-CONTEXTO-E-CONTINUIDADE.md).
 
+## Recuperação lexical de aprendizados
+
+Somente a consulta é limitada às primeiras 80 ocorrências relevantes, após normalização e remoção de palavras comuns, antes da deduplicação. Os campos armazenados válidos são examinados integralmente: tema, título e resumo usam OR; na ausência de correspondência principal, passos, verificação e limites devem reunir todos os termos distintos da consulta (AND). A pontuação conta termos distintos; campos adicionais não aumentam uma pontuação principal existente. Consulta sem termos relevantes não recupera lições.
+
+Permanecem os limites de armazenamento/contexto, expiração, allowlist atual, ordenação e seleção de até três lições. Recuperar uma lição não comprova sua correção nem amplia sua autoridade. O [Cookbook consultado](https://developers.openai.com/cookbook/examples/agents_sdk/building_reliable_agents_memory_compaction.md) recomenda: “Inspect generated memory before relying on it in future runs.” Essa orientação fundamenta a revisão da memória, não o algoritmo lexical local.
+
+A regressão independente em `tests/learning-late-tokens.test.js` cobre termos após 80 ocorrências nos campos extensos, título/resumo após tema extenso, AND entre campos tardios, corte da consulta antes da deduplicação, palavras comuns e pontuação distinta. No ensaio da 0.8.0, o controlador executou os checks em Docker e confirmou sete ganhos estáveis no perfil ampliado, passando de 45/66 para 66/66. Isso mede componentes do runtime; não constitui benchmark geral de um modelo.
+
 ## Perfis
 
 Perfis combinam nome, descrição, instruções e restrição `readOnly` no mesmo controlador. Não são subagentes concorrentes. Desde 0.3.0 são 19 perfis, incluindo engenharia, arquitetura, padrões, Java, depuração, engenharia reversa, frontend, testes, integrações, segurança, performance, dados, operação e documentação. `reviewer`, `researcher` e `security` negam escrita/execução mesmo com `--allow-write --allow-exec`. Consulte o [catálogo e a orquestração](codex/04-EQUIPE-E-ORQUESTRACAO.md).
