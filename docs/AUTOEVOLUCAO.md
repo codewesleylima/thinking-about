@@ -1,6 +1,6 @@
 # Autoevolução do runtime com `/elevar`
 
-YZZY BLACK 0.6.0. O comando agora estuda um assunto de agentes de IA, implementa uma melhoria nos próprios módulos, executa verificações e publica a revisão pelo Git quando os controles passam. O ciclo de memória sem alteração de código continua disponível em `/estudar`.
+YZZY BLACK 0.7.0. O comando agora estuda um assunto de agentes de IA, implementa uma melhoria nos próprios módulos, executa verificações e publica a revisão pelo Git quando os controles passam. O ciclo de memória sem alteração de código continua disponível em `/estudar`.
 
 ## Como usar
 
@@ -13,9 +13,9 @@ yzzy
 
 Em automação: `yzzy elevar "melhorar seleção de memória" --json`. O resultado `self_improvement_result` informa status, commit, confirmação de push, relatório e caminho da candidata. O comando opera o checkout onde os módulos carregados da YZZY estão instalados, mesmo que o chat tenha sido aberto em outro projeto. A interface mostra esse diretório antes do trabalho. Não procura um repositório qualquer pelo diretório atual.
 
-É necessário um checkout Git com branch ativa, árvore limpa, upstream `origin/<mesma-branch>` e HEAD igual à branch remota. Git e Node precisam estar disponíveis; o backend de inferência deve estar configurado e autenticado. A instalação global por junction existente aponta para o checkout de desenvolvimento. Uma instalação npm copiada sem `.git` não pode se autopublicar: execute a versão de um checkout de desenvolvimento.
+É necessário um checkout Git com branch ativa, árvore limpa, upstream `origin/<mesma-branch>` e HEAD igual à branch remota. Git, Node e Docker Linux precisam estar disponíveis, com a imagem fixada já baixada; o backend de inferência deve estar configurado e autenticado. A instalação global por junction existente aponta para o checkout de desenvolvimento. Uma instalação npm copiada sem `.git` não pode se autopublicar: execute a versão de um checkout de desenvolvimento.
 
-Invocar `/elevar` autoriza esse fluxo específico: pesquisa, escrita na candidata, execução das três verificações Node no host, commit e push na origem já configurada. Não é necessário `--allow-write` ou `--allow-host-shell`: o publicador é uma capacidade própria do controlador, e o modelo continua sem shell ou Git. Perfis somente leitura não podem iniciar autoevolução; eles podem usar `/estudar`.
+Invocar `/elevar` autoriza esse fluxo específico: pesquisa, escrita na candidata, execução das três verificações em Docker e comparação reservada, commit e push na origem já configurada. Não é necessário `--allow-write` ou `--allow-host-shell`: o publicador é uma capacidade própria do controlador, e o modelo continua sem shell ou Git. Perfis somente leitura não podem iniciar autoevolução; eles podem usar `/estudar`.
 
 Depois de uma publicação, reinicie o YZZY para carregar a nova revisão. O processo que conduziu o ciclo mantém os módulos e controles antigos em memória até encerrar. Não há recarga dinâmica de políticas no meio da execução.
 
@@ -36,7 +36,7 @@ O modelo deve estudar conceitos relevantes ao objetivo, confrontar a fonte com o
 5. Execute o perfil de programação com ferramentas de leitura e edição por hash, dentro da candidata. Fontes e lições permanecem dados não confiáveis. O modelo não recebe `run_command` nem `run_check`; as verificações serão escolhidas pelo host.
 6. Examine o diff. Aceite somente módulos liberados em `src/`, documentação e testes novos. Exija mudança no runtime e teste de regressão novo. Recuse alteração dos controles ou dos testes originais.
 7. Calcule manifesto de conteúdo/modo e execute as três verificações fixas. Elas precisam retornar zero, com saída íntegra, sem interrupção e com limpeza conhecida. O manifesto deve ser o mesmo ao terminar.
-8. Se uma verificação reprovar, forneça o diagnóstico ao modelo e permita uma rodada de correção, dentro do orçamento restante. A segunda reprovação preserva a candidata e interrompe o fluxo.
+8. Compare base e candidata nos 12 casos reservados de memória/contexto, três repetições por revisão e gabarito fora do contêiner. Exija pelo menos um ganho estável sem regressão/instabilidade; empate não autoriza publicação. Se uma verificação ou comparação reprovar, forneça o diagnóstico ao modelo e permita uma rodada de correção, dentro do orçamento restante. A segunda reprovação preserva a candidata e interrompe o fluxo.
 9. Sob lock do workspace original, revalide branch, HEAD e limpeza. Reconfira a candidata aprovada, faça commit dos caminhos exatos e verifique que hooks/commit não mudaram o conteúdo testado.
 10. Integre pelo `git merge --ff-only`, publique o hash exato para `origin` sem force e confirme o hash remoto por `ls-remote`.
 
@@ -47,22 +47,22 @@ O modelo deve estudar conceitos relevantes ao objetivo, confrontar a fonte com o
 Os comandos são executados diretamente, sem shell e sem consultar scripts npm que a candidata pudesse substituir:
 
 ```text
-node --test
+node --test --test-concurrency=2
 node scripts/check.js
 node evaluations/run.js
 ```
 
 O primeiro roda testes originais e novos. O segundo verifica sintaxe, JSON, especificação rastreável, hash do estudo preservado e lockfile da réplica. O terceiro executa cenários determinísticos do controlador. A baseline usa os mesmos comandos. A revisão só recebe `checks_passed`; nenhum desses comandos demonstra sozinho melhoria geral de inteligência.
 
-As verificações executam código **no host com permissões do usuário**. O worktree separa alterações de arquivos, mas não é sandbox de execução. Um teste ou módulo malicioso pode produzir efeitos externos; a filtragem de variáveis de ambiente conhecidas reduz exposição acidental, sem impedir acesso a todos os arquivos ou credenciais do usuário. Esta capacidade serve ao checkout de desenvolvimento confiável do proprietário. Não a descreva como execução isolada ou como certificação de código recebido da internet.
+As verificações executam somente em Docker: snapshot readonly sem Git/estado privado/credenciais, rede desabilitada, usuário sem privilégios e limites de recursos. Não há fallback para Node no host. O controlador usa Git e o cliente Docker no host. Consulte o [contrato completo de isolamento e comparação](AVALIACAO-COMPARATIVA.md).
 
-Em timeout, cancelamento ou saída excessiva, o processo é interrompido e o controlador não afirma que todos os descendentes foram removidos. Não publica nem repete automaticamente uma operação de efeito incerto. Investigue processos e o relatório antes de iniciar outro ciclo.
+Timeout, cancelamento, saída excessiva ou limpeza do contêiner desconhecida bloqueiam a publicação. A remoção do contêiner é tentada mesmo depois do cancelamento. Snapshots temporários são removidos após a avaliação; candidata Git e relatório permanecem para inspeção.
 
 ## Controles congelados
 
 O publicador impede escrita nos arquivos congelados por meio do `Workspace` e confronta o diff e os hashes antes de publicar. Isso preserva diretamente os arquivos de políticas, acesso a arquivos, despacho de ferramentas, provedores/autenticação, executor, shell, journal, configuração, orçamento de base e mecanismo de publicação, além dos testes já presentes.
 
-Os módulos protegidos explicitamente em `src/` são `agent`, `tools`, `workspace`, `config`, `budget`, `profiles`, `providers`, `codex-provider`, `codex-rpc`, `host-shell`, `executor`, `journal`, `identity`, `util`, `errors`, `self-improvement` e `elevation`. Os demais arquivos fora de `src/`, `docs/` e `tests/` também são congelados. Artefatos históricos `VALIDACAO-*.json` não podem ser reescritos pelo ciclo. Testes novos são permitidos; testes existentes não podem ser editados para acomodar uma regressão.
+Os módulos protegidos explicitamente em `src/` são `agent`, `tools`, `workspace`, `config`, `budget`, `profiles`, `providers`, `codex-provider`, `codex-rpc`, `host-shell`, `executor`, `journal`, `identity`, `util`, `errors`, `self-improvement`, `elevation`, `process-runner`, `evolution-sandbox` e `capability-evaluation`. Os demais arquivos fora de `src/`, `docs/` e `tests/` também são congelados. Artefatos históricos `VALIDACAO-*.json` não podem ser reescritos pelo ciclo. Testes novos são permitidos; testes existentes não podem ser editados para acomodar uma regressão.
 
 Essas restrições são controles executáveis, mas não uma prova semântica de segurança. Um módulo permitido pode introduzir comportamento ruim mesmo quando arquivos centrais e testes permanecem iguais. A suíte pode ter lacunas. Conserve casos adversariais e revisão de arquitetura no desenvolvimento do núcleo; não use a aprovação automática como atestado de correção universal.
 
@@ -70,7 +70,7 @@ Essas restrições são controles executáveis, mas não uma prova semântica de
 
 Pesquisa, implementação e eventual correção compartilham os contadores de chamadas, ferramentas, gasto/valor retido e prazo da configuração do runtime. A pesquisa usa até um terço das chamadas configuradas, com teto de oito; a implementação usa o restante. Não se multiplica o orçamento abrindo novas sessões. O prazo inclui baseline, Git e verificações. A cota do backend Codex continua sendo gerida pelo produto autenticado; o host não promete um teto financeiro que esse backend não implementa.
 
-O relatório `.yzzy/evolutions/<id>/report.json` contém base, branch, sessões, fontes, totais, verificações, diff por caminhos, manifesto aprovado, commit e confirmação de push. O journal de cada fase permanece na candidata. As lições de pesquisa desse ciclo ficam na candidata e no relatório; não são copiadas silenciosamente à memória privada de outro workspace. Para conhecimento reutilizável no projeto atual, use `/estudar`.
+O relatório `.yzzy/evolutions/<id>/report.json` contém comparações, hashes dos snapshots, imagem, casos aprovados, duração, base, branch, sessões, fontes, totais, verificações, diff por caminhos, manifesto aprovado, commit e confirmação de push. O journal de cada fase permanece na candidata. As lições de pesquisa desse ciclo ficam na candidata e no relatório; não são copiadas silenciosamente à memória privada de outro workspace. Para conhecimento reutilizável no projeto atual, use `/estudar`.
 
 O lock da evolução impede dois publicadores simultâneos. O lock normal do workspace protege a integração em relação a outras sessões da YZZY. Edições humanas diretas continuam possíveis e são rechecadas antes da integração; não há garantia contra um processo externo malicioso que escreva no exato intervalo de uma operação de filesystem. Uma divergência conhecida cancela a integração. O fluxo não faz stash, merge de conflitos ou reset de mudanças humanas.
 
@@ -84,4 +84,4 @@ Defina a identidade do repositório alvo pela instalação do próprio runtime, 
 
 Mantenha um ledger agregado entre fases e imponha limite para correções. Registre efeitos incertos e não tente resolvê-los por repetição cega. Distinga teste determinístico com provedor injetado, integração real com modelo e benchmark de qualidade. Os testes de referência estão em `tests/self-improvement.test.js`; o teste real está em `scripts/self-improvement-smoke.js`.
 
-O [Cookbook oficial de melhoria de agentes](https://developers.openai.com/cookbook/examples/agents_sdk/agent_improvement_loop), consultado em 22/10/2026, inspira a ligação entre observações, alterações e avaliação. Nossa implementação usa Node nativo e Git, com contratos próprios. Para demonstrar ganho de capacidade além do caso corrigido, acrescente avaliações pareadas em tarefas reservadas, tentativas repetidas, custo, tempo e falhas. Os resultados específicos desta entrega ficam em [VALIDACAO-0.6.0.json](replicacao/VALIDACAO-0.6.0.json).
+O [Cookbook oficial de melhoria de agentes](https://developers.openai.com/cookbook/examples/agents_sdk/agent_improvement_loop), consultado em 22/10/2026, inspira a ligação entre observações, alterações e avaliação. Nossa implementação usa Node nativo e Git, com contratos próprios. A versão 0.7 acrescenta a comparação reservada de componentes; benchmarks gerais com inferência e múltiplas tarefas continuam pendentes. Resultados históricos: [0.6.0](replicacao/VALIDACAO-0.6.0.json). Contrato atual: [avaliação comparativa](AVALIACAO-COMPARATIVA.md).

@@ -26,6 +26,11 @@ export function validateConfig(c) {
   only(c.docker, Object.keys(defaults.docker), 'docker');
   invariant(typeof c.docker.image === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9/:@._-]+$/.test(c.docker.image), 'Imagem Docker inválida');
   invariant(/^\d+[mg]$/.test(c.docker.memory) && /^\d+(\.\d+)?$/.test(c.docker.cpus) && Number.isSafeInteger(c.docker.pids) && c.docker.pids > 0, 'Recursos Docker inválidos');
+  only(c.evolution, Object.keys(defaults.evolution), 'evolution');
+  invariant(typeof c.evolution.image === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9/:._-]*@sha256:[a-f0-9]{64}$/.test(c.evolution.image), 'Imagem de evolução exige digest SHA-256 fixado');
+  invariant(/^\d+[mg]$/.test(c.evolution.memory) && /^\d+(\.\d+)?$/.test(c.evolution.cpus) && Number.isSafeInteger(c.evolution.pids) && c.evolution.pids > 0, 'Recursos de evolução inválidos');
+  invariant(Number.isInteger(c.evolution.repetitions) && c.evolution.repetitions >= 2 && c.evolution.repetitions <= 5
+    && Number.isInteger(c.evolution.minImprovedCases) && c.evolution.minImprovedCases >= 1 && c.evolution.minImprovedCases <= 12, 'Critérios comparativos de evolução inválidos');
   only(c.commands, Object.keys(c.commands), 'commands');
   for (const [name, command] of Object.entries(c.commands)) {
     invariant(/^[a-z][a-z0-9_-]*$/.test(name), 'Nome de comando inválido');
@@ -49,6 +54,7 @@ export async function loadConfig(workspace, filename, env = process.env) {
   const supplied = JSON.parse(raw);
   const c = { ...structuredClone(defaults), ...supplied,
     limits: { ...defaults.limits, ...supplied.limits }, docker: { ...defaults.docker, ...supplied.docker },
+    evolution: { ...defaults.evolution, ...supplied.evolution },
     documentation: { ...structuredClone(defaults.documentation), ...supplied.documentation } };
   if (env.YZZY_PROVIDER || env.WZZY_PROVIDER) c.provider = env.YZZY_PROVIDER || env.WZZY_PROVIDER;
   if (env.YZZY_MODEL || env.WZZY_MODEL) c.model = env.YZZY_MODEL || env.WZZY_MODEL;

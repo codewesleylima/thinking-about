@@ -1,6 +1,6 @@
 {
   "name": "yzzy-black",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "YZZY BLACK — agente CLI observável com ferramentas e verificação",
   "type": "module",
   "private": true,
@@ -25,7 +25,10 @@
     "test:codex": "node scripts/codex-smoke.js",
     "test:codex:edit": "node scripts/codex-smoke.js --edit",
     "test:codex:cli": "node scripts/codex-cli-smoke.js",
-    "test:package": "node scripts/package-smoke.js"
+    "test:package": "node scripts/package-smoke.js",
+    "test:evolution:docker": "node scripts/evolution-sandbox-smoke.js",
+    "test:capabilities:docker": "node scripts/capability-smoke.js",
+    "test:evolution:live": "node scripts/self-improvement-smoke.js"
   },
   "files": [
     ".gitattributes",
@@ -37,6 +40,7 @@
     "templates/",
     "evaluations/run.js",
     "evaluations/tasks.json",
+    "evaluations/capability-probe.js",
     "AGENTS.md",
     "REPLICAR.md",
     ".github/workflows/ci.yml",

@@ -19,6 +19,18 @@ test('ambiente troca provedor sem incluir a chave no config', async () => {
   const { config } = await loadConfig(root, undefined, { YZZY_PROVIDER: 'openai', YZZY_MODEL: 'selected', OPENAI_API_KEY: 'not-stored' });
   assert.equal(config.baseUrl, 'https://api.openai.com/v1'); assert.equal(config.model, 'selected'); assert.equal(JSON.stringify(config).includes('not-stored'), false);
 });
+
+test('autoevolução exige digest e critérios comparativos válidos; configuração antiga recebe defaults', async () => {
+  for (const mutate of [c => c.evolution.image = 'node:latest', c => c.evolution.repetitions = 1,
+    c => c.evolution.repetitions = 6, c => c.evolution.minImprovedCases = 0,
+    c => c.evolution.minImprovedCases = 13, c => c.evolution.fallback = 'host']) {
+    const c = structuredClone(defaults); mutate(c); assert.throws(() => validateConfig(c));
+  }
+  const { root } = await makeFixture();
+  await writeFile(path.join(root, 'yzzy.config.json'), JSON.stringify({ model: 'legacy-config' }));
+  const { config } = await loadConfig(root, undefined, {});
+  assert.deepEqual(config.evolution, defaults.evolution);
+});
 test('config padrão ausente usa defaults, mas config explícita ausente e JSON inválido falham', async () => {
   const { root } = await makeFixture();
   const { config } = await loadConfig(root, undefined, {}); assert.equal(config.provider, defaults.provider);

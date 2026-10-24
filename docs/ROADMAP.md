@@ -38,3 +38,8 @@ A inferência real via Codex autenticado foi observada, incluindo leitura/ediç�
 | Pesos próprios | Objetivo de pesquisa e orçamento específico | Plano de dados, compute, arquitetura, treinamento e avaliação independente |
 
 Esses marcos não estão ativados nem simulados como recursos existentes. Priorizar conforme métricas do piloto, seguindo a sequência incremental das seções 24 e 30 do estudo.
+
+
+## Atualização 0.7.0: avaliar antes de autopublicar
+
+A autoevolução exige verificações em Docker offline e readonly, mais ganho estável em casos reservados de memória/contexto, com três repetições por revisão. Empate, regressão ou limpeza incerta bloqueiam publicação. Git e inferência continuam no controlador. Esta atualização substitui descrições anteriores de verificações da autoevolução no host. Não implementa LSP, debugger Java ou benchmark geral de inteligência. Consulte [o contrato e o passo a passo](AVALIACAO-COMPARATIVA.md).

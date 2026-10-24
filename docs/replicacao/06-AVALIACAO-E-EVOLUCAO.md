@@ -93,3 +93,8 @@ Para cada extensão, escreva entrada, efeito, política, credenciais, falhas, es
 Registre data, plataforma, Node/toolchain, versão do runtime, configuração sem segredos, modelo resolvido, snapshots/digests, task ID, tentativas, gasto/cota, trajetória, estado e limitações. Journals locais podem conter código e dados: publique apenas artefatos preparados para compartilhamento.
 
 O [registro de validação do projeto](../VALIDACAO.md) preserva épocas distintas. Uma réplica deve criar seu próprio registro e não importar a taxa de sucesso da origem como resultado local. Hashes e manifestos tornam a comparação rastreável, mas não substituem execução.
+
+
+## Atualização 0.7.0: avaliar antes de autopublicar
+
+A autoevolução exige verificações em Docker offline e readonly, mais ganho estável em casos reservados de memória/contexto, com três repetições por revisão. Empate, regressão ou limpeza incerta bloqueiam publicação. Git e inferência continuam no controlador. Esta atualização substitui descrições anteriores de verificações da autoevolução no host. Não implementa LSP, debugger Java ou benchmark geral de inteligência. Consulte [o contrato e o passo a passo](../AVALIACAO-COMPARATIVA.md).

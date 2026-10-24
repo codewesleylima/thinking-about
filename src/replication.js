@@ -25,7 +25,7 @@ export async function createReplica({ directory, name = 'my-agent', command = 'm
     }
   };
   for (const directoryName of ['src', 'bin', 'docs', 'tests', 'scripts', 'templates']) await collect(directoryName);
-  files.push('evaluations/run.js', 'evaluations/tasks.json', 'README.md', 'YZZY.md', 'AGENTS.md',
+  files.push('evaluations/run.js', 'evaluations/tasks.json', 'evaluations/capability-probe.js', 'README.md', 'YZZY.md', 'AGENTS.md',
     'REPLICAR.md', 'GUIA_CIENTIFICO_DE_REPLICACAO.md', 'estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md', 'yzzy.config.json', 'package.json', '.github/workflows/ci.yml', '.gitattributes');
   // Os diretórios de trabalho, dependências, .git e credenciais nunca integram a lista.
   await mkdir(destination, { mode: 0o700 }); // EEXIST é erro: sem mescla/sobrescrita silenciosa.

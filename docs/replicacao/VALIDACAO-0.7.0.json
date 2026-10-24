@@ -1,0 +1,334 @@
+{
+  "schema": 1,
+  "productVersion": "0.7.0",
+  "recordedAt": "2026-10-24T00:22:15.387Z",
+  "kind": "observed_delivery_validation",
+  "interpretation": "Integração real com Codex para produzir uma correção de recuperação. Comparação determinística de componentes em Docker; não mede qualidade geral de LLM ou retreinamento.",
+  "localChecks": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "unitTests": {
+      "passed": 142,
+      "total": 142,
+      "failed": 0
+    },
+    "packagedCli": { "passed": true, "replica": "generated_demo_and_check_verified", "files": 125 },
+    "snapshotBinding": { "passed": true, "evidence": "Teste adicional bloqueia mutação da candidata durante comparação; manifesto validado vinculado ao snapshot antes de copiar e conferir." },
+    "syntaxAndReplication": {
+      "passed": true,
+      "requirements": 33,
+      "studySha256": "89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252"
+    },
+    "deterministicScenarios": {
+      "passed": 8,
+      "total": 8,
+      "realModelCalls": 0
+    }
+  },
+  "liveEvolution": {
+    "id": "21959300-4384-4c19-8b9f-12df1489794a",
+    "started": "2026-10-23T22:43:47.962Z",
+    "finished": "2026-10-23T22:48:19.218Z",
+    "status": "published",
+    "resolvedModel": "gpt-6.1-sol",
+    "backend": "codex",
+    "codexVersion": "0.163.0",
+    "sessions": [
+      {
+        "id": "76bd2439-6ab9-4e3c-bc98-e634aacc7117",
+        "status": "completed_unverified"
+      },
+      {
+        "id": "5647383a-cfd3-4c78-b729-e7f78792d171",
+        "status": "completed_unverified"
+      }
+    ],
+    "totals": {
+      "modelCalls": 18,
+      "toolCalls": 16,
+      "spent": 0,
+      "held": 0
+    },
+    "fixturePreparation": "Réplica do código anterior real, sem defeito artificial preparado neste ensaio. Replays posteriores reintroduzem a limitação conhecida apenas na fixture antes de congelar a baseline.",
+    "publication": {
+      "commit": "83d7ba1bd8615417dac2dc39ea005e6fef24b65e",
+      "pushed": true,
+      "remote": "origem Git bare temporária local; não é o commit desta entrega no GitHub"
+    },
+    "changed": [
+      "docs/APRENDIZADO-COM-ELEVAR.md",
+      "src/learning.js",
+      "tests/learning-additional-fields.test.js"
+    ],
+    "checks": [
+      {
+        "phase": "baseline",
+        "argv": [
+          "--test",
+          "--test-concurrency=2"
+        ],
+        "passed": true,
+        "isolation": "docker-readonly-offline",
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "e9f1c8f45769e5df660a0b24aaf6589bbe4fc243ebdb561ea0a727c4188a3eb3",
+        "cleanupKnown": true,
+        "tests": "129"
+      },
+      {
+        "phase": "baseline",
+        "argv": [
+          "scripts/check.js"
+        ],
+        "passed": true,
+        "isolation": "docker-readonly-offline",
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "e9f1c8f45769e5df660a0b24aaf6589bbe4fc243ebdb561ea0a727c4188a3eb3",
+        "cleanupKnown": true,
+        "tests": null
+      },
+      {
+        "phase": "baseline",
+        "argv": [
+          "evaluations/run.js"
+        ],
+        "passed": true,
+        "isolation": "docker-readonly-offline",
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "e9f1c8f45769e5df660a0b24aaf6589bbe4fc243ebdb561ea0a727c4188a3eb3",
+        "cleanupKnown": true,
+        "tests": null
+      },
+      {
+        "phase": "candidate",
+        "argv": [
+          "--test",
+          "--test-concurrency=2"
+        ],
+        "passed": true,
+        "isolation": "docker-readonly-offline",
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "37d58e24550b8a477b39d50ad85c004ba3f47fd361c6eadf0b4bb8614e13df51",
+        "cleanupKnown": true,
+        "tests": "140"
+      },
+      {
+        "phase": "candidate",
+        "argv": [
+          "scripts/check.js"
+        ],
+        "passed": true,
+        "isolation": "docker-readonly-offline",
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "37d58e24550b8a477b39d50ad85c004ba3f47fd361c6eadf0b4bb8614e13df51",
+        "cleanupKnown": true,
+        "tests": null
+      },
+      {
+        "phase": "candidate",
+        "argv": [
+          "evaluations/run.js"
+        ],
+        "passed": true,
+        "isolation": "docker-readonly-offline",
+        "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+        "snapshot": "37d58e24550b8a477b39d50ad85c004ba3f47fd361c6eadf0b4bb8614e13df51",
+        "cleanupKnown": true,
+        "tests": null
+      }
+    ],
+    "comparison": {
+      "schema": 1,
+      "kind": "reserved_component_comparison",
+      "repetitions": 3,
+      "cases": [
+        {
+          "id": "27cd67a2-84d2-4731-964f-544e88d9dfef",
+          "family": "relevance_title",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "e17bbd79-dddb-4b1a-b6ea-a5eb7e0eafd4",
+          "family": "relevance_summary",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "835a22a3-e24a-4b42-9406-1d8a08fda136",
+          "family": "relevance_steps",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "c10ec0c6-185e-4ee4-bcaa-685e3c9c64a4",
+          "family": "relevance_verification",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "16e96935-c64e-4847-beed-176745184b56",
+          "family": "relevance_limits",
+          "baselinePassed": 0,
+          "candidatePassed": 3,
+          "improved": true,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "2398563e-2ef3-4034-8150-9343465f783a",
+          "family": "irrelevant_query",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "1e45b325-c60b-4e49-917a-7c209ec9305c",
+          "family": "expired",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "4b9d2a43-1ade-4104-b22e-15e3510583c7",
+          "family": "revoked_source",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "c8c43d9b-675e-40ea-a4fa-0fce419b1a80",
+          "family": "context_budget",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "be816f54-27bf-4482-ba41-31dbac3c1919",
+          "family": "human_authority",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "12716925-5c84-4742-a647-47e5af410de9",
+          "family": "uncertain_effect",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        },
+        {
+          "id": "400a077d-c56c-4471-af4a-1c4d002f7b9f",
+          "family": "read_provenance",
+          "baselinePassed": 3,
+          "candidatePassed": 3,
+          "improved": false,
+          "regressed": false,
+          "unstable": false
+        }
+      ],
+      "baselinePassed": 27,
+      "candidatePassed": 36,
+      "total": 36,
+      "improvedCases": 3,
+      "regressedCases": 0,
+      "unstable": false,
+      "minImprovedCases": 1,
+      "passed": true,
+      "realModelCalls": 0,
+      "interpretation": "Mede funções de recuperação e preservação de contexto em entradas reservadas por execução. Não é benchmark geral de LLM ou prova de retreinamento.",
+      "datasetHash": "e32439a9b29f5dcd15c1e40dff1fa0ae16e62827238b25352f75c18fca82aefd",
+      "seedHash": "aec611133758951bb81eb9215597d3fd48a00f08135bf6ba11e49a4bd431b98a",
+      "baselineRevision": "e9f1c8f45769e5df660a0b24aaf6589bbe4fc243ebdb561ea0a727c4188a3eb3",
+      "candidateRevision": "37d58e24550b8a477b39d50ad85c004ba3f47fd361c6eadf0b4bb8614e13df51",
+      "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+      "durationMs": {
+        "baseline": 177.52181800000008,
+        "candidate": 174.46443700000003
+      }
+    },
+    "review": "Patch revisado e incorporado ao checkout principal; única adaptação no teste gerado: verificar caminho temporário absoluto antes da limpeza recursiva."
+  },
+  "negativeLiveAttempt": {
+    "id": "3400f118-5625-4189-82dc-bcefcce7916f",
+    "status": "error",
+    "modelCalls": 22,
+    "toolCalls": 19,
+    "commit": null,
+    "pushed": false,
+    "reason": "Ampliação irrestrita recuperou lição irrelevante pela palavra receita nos limites; teste original bloqueou a candidata. Reparo encontrou cota esgotada no Codex. Nenhuma comparação foi iniciada.",
+    "checksIsolation": "docker-readonly-offline"
+  },
+  "isolationProbe": {
+    "kind": "live_evolution_isolation",
+    "dockerEngine": "29.6.1",
+    "passed": true,
+    "uid": 65534,
+    "readonly": true,
+    "network": "none",
+    "privateDataExcluded": true,
+    "capabilities": "none",
+    "cleanupKnown": true,
+    "timeout": {
+      "approved": false,
+      "cleanupKnown": true
+    },
+    "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a"
+  },
+  "comparisonControls": {
+    "kind": "live_docker_comparison_controls",
+    "realModelCalls": 0,
+    "repetitions": 3,
+    "cases": 12,
+    "fixture": "Defeito artificial que esvazia tokens da consulta, sem edição do checkout de origem.",
+    "gain": {
+      "before": 21,
+      "after": 27,
+      "total": 36,
+      "improvedCases": 2,
+      "passed": true
+    },
+    "regression": {
+      "before": 27,
+      "after": 21,
+      "regressedCases": 2,
+      "passed": false
+    },
+    "tie": {
+      "before": 27,
+      "after": 27,
+      "improvedCases": 0,
+      "passed": false
+    },
+    "note": "Controles executados antes da incorporação da melhoria de campos adicionais."
+  },
+  "limits": [
+    "Não mede generalização, desempenho estatístico ou qualidade geral de respostas.",
+    "Cota/custo da inferência geridos pelo Codex; spent igual a zero no ledger não significa inferência gratuita.",
+    "Java/LSP, novas ferramentas de depuração e nova TUI não são implementados nesta entrega.",
+    "Perfil atual já alcança todos os casos; ampliações futuras de capacidade exigem novos critérios revisados no núcleo."
+  ]
+}

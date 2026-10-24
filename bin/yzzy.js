@@ -76,7 +76,7 @@ APRENDER
   /estudar [tema]   Estudar e guardar conhecimento sem editar código
   /aprendizados    Listar conhecimentos; acrescente um ID para detalhes
   /esquecer <id>   Retirar um conhecimento da memória ativa
-  /elevar autoriza edição em candidata, verificações Node no host e commit/push.
+  /elevar autoriza edição em candidata, verificações Docker, ganho comparativo e commit/push.
   /estudar autoriza somente leitura HTTPS nos hosts configurados.
 
 TERMINAL
@@ -232,13 +232,15 @@ async function main() {
         ...(values.backend ? { YZZY_PROVIDER: values.backend } : {}), ...(values.model ? { YZZY_MODEL: values.model } : {}) });
       if (!values.json) {
         screen.note(`Elevar · autoevolução do runtime em ${self.root}`);
-        screen.note('Estudo → edição em cópia Git → verificações Node no host → commit e push em origin.');
+        screen.note('Estudo → cópia Git → verificações Docker → comparação de capacidades → commit e push em origin.');
       }
       const result = await runSelfImprovement({ ...self, topic, preferences, agentProfile: profile, signal: activeAbort.signal, emit });
       if (values.json) print({ type: 'self_improvement_result', id: result.id, status: result.report.status,
         commit: result.report.commit, pushed: result.report.pushed, report: result.file, candidate: result.report.candidate, error: result.error || null });
       else {
         screen.outcome(result);
+        const comparison = result.report.comparisons?.at(-1);
+        if (comparison) screen.note(`Comparação de memória/contexto: ${comparison.baselinePassed}/${comparison.total} → ${comparison.candidatePassed}/${comparison.total}; ganhos: ${comparison.improvedCases}, regressões: ${comparison.regressedCases}.`);
         if (result.report.pushed) screen.note(`Publicado: ${result.report.commit}. Reinicie o YZZY para carregar a revisão nova.`);
         if (result.report.status === 'no_changes') screen.note('Nenhuma alteração concreta foi produzida; nenhum commit ou push.');
         if (result.file) screen.note(`Relatório: ${result.file}`);

@@ -1,8 +1,8 @@
 # YZZY BLACK
 
-**Versão 0.6.0 — autoevolução:** `/elevar [tema]` pesquisa melhorias de agentes de IA, edita os próprios módulos em um worktree Git, executa baseline/testes/checks e faz commit e push da revisão aprovada. O alvo é o checkout de instalação do runtime, com árvore limpa e `origin` sincronizado. O modelo não recebe shell/Git; o controlador publica sem force e preserva controles/testes originais. As verificações Node executam no host, sem sandbox de sistema operacional. [Funcionamento e replicação](docs/AUTOEVOLUCAO.md).
+**Versão 0.7.0 — evolução avaliada:** `/elevar [tema]` pesquisa e edita uma candidata Git, executa verificações em Docker sem rede e compara memória/contexto com a revisão anterior em casos reservados repetidos. Só publica com ganho estável e sem regressões. Exige checkout limpo e sincronizado, Docker e backend autenticado. [Algoritmo e reprodução](docs/AVALIACAO-COMPARATIVA.md).
 
-**Migração da 0.5.0:** o antigo estudo sem edição agora se chama `/estudar` ou `yzzy estudar "tema" --json`. `/elevar` passa a autorizar estudo, implementação, verificações no host e publicação Git. Reinicie o CLI após atualizar ou autopublicar.
+**Migração da 0.5.0:** o antigo estudo sem edição agora se chama `/estudar` ou `yzzy estudar "tema" --json`. `/elevar` passa a autorizar estudo, implementação, verificações Docker, comparação e publicação Git. Reinicie o CLI após atualizar ou autopublicar.
 
 **Memória persistente, introduzida na 0.5.0:** `/estudar [tema]` estuda documentação da internet e guarda aprendizados com fontes para tarefas futuras. `/aprendizados` consulta e `/esquecer <id>` remove. A memória é local por projeto, expira em 30 dias e não altera os pesos do backend. O estudo usa leitura HTTPS nos hosts configurados, sem edição ou shell. Veja o [guia completo de aprendizado e replicação](docs/APRENDIZADO-COM-ELEVAR.md).
 

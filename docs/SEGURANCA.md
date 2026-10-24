@@ -63,3 +63,8 @@ Na API OpenAI direta, reservas precedem chamadas pagas. O runtime conserva saldo
 A aplicação limita contexto e saída, mas não garante ausência de alucinação, solução correta, ausência de prompt injection semântico ou conclusão de qualquer tarefa. O status do controlador é independente do texto final. A ferramenta pode negar a exfiltração direta de um arquivo `.env` e ainda receber informação sensível embutida em outro documento permitido. A segurança observada é delimitada pelos cenários testados.
 
 Em incidente: interrompa a sessão, preserve journal/configuração/diff, examine containers específicos e efeitos, revogue credenciais efetivamente expostas e corrija a causa com regressão antes de ampliar o escopo.
+
+
+## Atualização 0.7.0: avaliar antes de autopublicar
+
+A autoevolução exige verificações em Docker offline e readonly, mais ganho estável em casos reservados de memória/contexto, com três repetições por revisão. Empate, regressão ou limpeza incerta bloqueiam publicação. Git e inferência continuam no controlador. Esta atualização substitui descrições anteriores de verificações da autoevolução no host. Não implementa LSP, debugger Java ou benchmark geral de inteligência. Consulte [o contrato e o passo a passo](AVALIACAO-COMPARATIVA.md).

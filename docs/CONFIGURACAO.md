@@ -1,12 +1,12 @@
 # Configuração e operação
 
-## Autoevolução (0.6.0)
+## Autoevolução (0.7.0)
 
-`/elevar [tema]` usa a configuração do próprio checkout instalado, e não a configuração do projeto aberto no chat. `--backend` e `--model` continuam podendo selecionar o motor. Exige branch ativa, árvore limpa, upstream `origin/<branch>` e sincronismo remoto. Usa limites agregados e verifica/publica automaticamente a candidata aprovada. `/estudar` mantém a operação de memória descrita abaixo para 0.5.0. Leia [escopo, execução no host e recuperação](AUTOEVOLUCAO.md).
+`/elevar [tema]` usa a configuração do próprio checkout instalado, e não a configuração do projeto aberto no chat. `--backend` e `--model` continuam podendo selecionar o motor. Exige branch ativa, árvore limpa, upstream `origin/<branch>` e sincronismo remoto. Usa limites agregados e verifica/publica automaticamente a candidata aprovada. `/estudar` mantém a operação de memória descrita abaixo para 0.5.0. Leia [escopo, isolamento Docker e recuperação](AUTOEVOLUCAO.md).
 
 ## Estudo e aprendizado (0.5.0)
 
-No chat, `/elevar [tema]`; em automação, `yzzy elevar "tema" --json`. O comando concede leitura externa somente para o estudo nos hosts exatos de `documentation.allowedHosts`, sem herdar escrita, execução ou shell. Não exige `--allow-network`. Usa os limites existentes com tetos próprios menores: dez chamadas de modelo, vinte de ferramentas, oito leituras externas e 180 segundos. `/aprendizados [id]` consulta e `/esquecer <id>` remove. A memória é local ao workspace, com validade inicial de 30 dias. [Operação, algoritmo e implementação](APRENDIZADO-COM-ELEVAR.md).
+No chat, `/estudar [tema]`; em automação, `yzzy estudar "tema" --json`. O comando concede leitura externa somente para o estudo nos hosts exatos de `documentation.allowedHosts`, sem herdar escrita, execução ou shell. Não exige `--allow-network`. Usa os limites existentes com tetos próprios menores: dez chamadas de modelo, vinte de ferramentas, oito leituras externas e 180 segundos. `/aprendizados [id]` consulta e `/esquecer <id>` remove. A memória é local ao workspace, com validade inicial de 30 dias. [Operação, algoritmo e implementação](APRENDIZADO-COM-ELEVAR.md).
 
 ## Replicação e CMD (0.4.0)
 
@@ -156,3 +156,6 @@ Resultados de erro distinguem `recoverable` (o fluxo pode se recuperar após cor
 O [Node.js recomenda executar a operação e tratar sua falha](https://nodejs.org/docs/latest-v24.x/api/fs.html#fsaccesspath-mode-callback), pois consultar existência antes de abrir não elimina corridas. O [Cosmiconfig](https://github.com/cosmiconfig/cosmiconfig#explorersearch) também distingue configuração não encontrada de configuração malformada. A YZZY BLACK aplica a distinção com APIs nativas, sem adicionar essa dependência nem buscar configuração fora do workspace.
 
 O requisito de Node.js 24+ continua válido. Esta recuperação não adiciona suporte ao Node.js 20.11.0 nem corrige automaticamente uma instalação externa de outro CLI. Para diagnosticar esse outro programa, ainda é necessário o `path` completo do erro.
+
+
+`evolution` configura a imagem Docker por digest, `memory` (padrão `1g`), `cpus` (`2`), `pids` (256), `repetitions` (3, intervalo 2–5) e `minImprovedCases` (1). A imagem completa Node 24 com Git é distinta da imagem slim usada pelo `run_check` normal. Os limites agregados e de comando continuam em `limits`; não existe fallback de execução no host. Leia [preparação e critérios](AVALIACAO-COMPARATIVA.md).

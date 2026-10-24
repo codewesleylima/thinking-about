@@ -99,8 +99,8 @@ O algoritmo de recuperação é deliberadamente pequeno e inspecionável:
 
 1. Leia e valide o armazenamento; dados inválidos não são injetados silenciosamente.
 2. Selecione somente lições com validade ativa e fontes ainda compatíveis com a allowlist atual.
-3. Normalize tema, título, resumo e pedido: minúsculas, remoção de acentos, tokens alfanuméricos com pelo menos três caracteres e remoção de palavras comuns. Considere até 80 tokens distintos.
-4. Conte interseções entre os tokens do pedido e os tokens de cada lição. Descarte pontuação zero; ordene por pontuação e, em empate, pela criação mais recente.
+3. Normalize pedido e campos pesquisados: minúsculas, remoção de acentos, tokens alfanuméricos com pelo menos três caracteres e remoção de palavras comuns. Preserve o corte existente nos primeiros 80 tokens relevantes antes da deduplicação. Consultas sem termos relevantes não recuperam lições.
+4. Preserve a correspondência OR e a pontuação por interseção em tema/título/resumo, normalizados em conjunto. Somente quando essa pontuação for zero, consulte a união dos tokens de cada passo, de `verification` e de `limits`, normalizados separadamente: todos os termos relevantes do pedido devem estar presentes nessa união (AND). Nesse fallback, a pontuação é o número de termos distintos do pedido. Assim, termos podem estar distribuídos entre campos, mas `receita de bolo` não corresponde somente a `receita` em limites. Descarte pontuação zero; ordene por pontuação e, em empate, pela criação mais recente. Os campos adicionais não aumentam a pontuação de uma correspondência principal.
 5. Inclua até três lições, dentro do menor valor entre 10.000 bytes e um oitavo do limite de contexto configurado.
 6. Envie as lições como mensagem de dados explicitamente não confiáveis antes do pedido atual, sem colocá-las nas instruções de sistema. Registre os IDs selecionados no estado.
 

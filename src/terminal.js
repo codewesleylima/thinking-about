@@ -204,7 +204,7 @@ export class Terminal {
     this.line();
   }
   event(event) {
-    if (event.type === 'evolution_phase') this.progress(({ git: 'Preparando Git', baseline: 'Verificando base', candidate: 'Verificando melhoria', repair: 'Verificando correção' })[event.phase] || 'Evoluindo');
+    if (event.type === 'evolution_phase') this.progress(({ git: 'Preparando Git', baseline: 'Verificando base isolada', candidate: 'Verificando melhoria isolada', repair: 'Verificando correção', comparison: 'Comparando capacidades' })[event.phase] || 'Evoluindo');
     else if (event.type === 'evolution_finished') this.stop();
     else if (event.type === 'team_phase') { this.stop(); this.text(`${event.phase === 'consultation' ? 'Consulta' : 'Coordenação'} · ${event.agent}`, '36;1'); }
     else if (event.type === 'team_finished') this.stop();

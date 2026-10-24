@@ -99,3 +99,8 @@ Na retomada, configuração, hash dos módulos do runtime e flags devem coincidi
 O executor copia arquivos permitidos para diretório temporário, calcula manifesto de conteúdo e monta essa cópia como somente leitura. O comando não modifica o checkout. Ao terminar, a revisão é recalculada: mudança humana invalida a evidência. Um resultado aprovado exige exit code 0, saída não truncada, ausência de timeout/cancelamento, revisão atual correspondente e remoção conhecida do container. Alterações posteriores invalidam evidências antigas.
 
 Testes do próprio projeto podem ter cobertura insuficiente ou ser alterados pelo agente quando `tests` integra o escopo. Por isso `checks_passed` tem significado limitado. Uma avaliação de produto requer um grader controlado fora do escopo do agente, como o smoke real de uma tarefa.
+
+
+## Atualização 0.7.0: avaliar antes de autopublicar
+
+A autoevolução exige verificações em Docker offline e readonly, mais ganho estável em casos reservados de memória/contexto, com três repetições por revisão. Empate, regressão ou limpeza incerta bloqueiam publicação. Git e inferência continuam no controlador. Esta atualização substitui descrições anteriores de verificações da autoevolução no host. Não implementa LSP, debugger Java ou benchmark geral de inteligência. Consulte [o contrato e o passo a passo](AVALIACAO-COMPARATIVA.md).

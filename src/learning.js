@@ -121,7 +121,13 @@ export async function retrieveLearnings(root, objective, config, now = Date.now(
   const query = tokens(objective), limit = Math.min(10000, Math.floor(config.limits.maxContextBytes / 8));
   const ranked = (await listLearnings(root, now)).filter(item => item.status === 'active'
     && item.sources.every(s => { try { documentationUrl(s.url, config.documentation.allowedHosts); return true; } catch { return false; } }))
-    .map(item => ({ item, score: [...tokens([item.topic, item.title, item.summary].join(' '))].filter(t => query.has(t)).length }))
+    .map(item => {
+      const score = [...tokens([item.topic, item.title, item.summary].join(' '))].filter(t => query.has(t)).length;
+      if (score > 0 || query.size === 0) return { item, score };
+      // Campos adicionais só recuperam a lição quando cobrem toda a consulta relevante.
+      const additional = new Set([...item.steps, item.verification, item.limits].flatMap(value => [...tokens(value)]));
+      return { item, score: [...query].every(t => additional.has(t)) ? query.size : 0 };
+    })
     .filter(r => r.score >= 1).sort((a, b) => b.score - a.score || b.item.createdAt.localeCompare(a.item.createdAt));
   const selected = [];
   for (const { item } of ranked) {

@@ -587,3 +587,8 @@ O comando `/elevar [tema]` implementa estudo online e aprendizado por memória e
 Pedidos posteriores recuperam até três lições por relevância lexical e orçamento de contexto. Elas entram como dados não confiáveis; a compactação não as classifica como instruções humanas. O estudo não herda shell, execução ou escrita. A pessoa pode consultar e esquecer o conhecimento. Aplicar uma técnica aprendida continua exigindo ferramentas autorizadas e evidências da tarefa.
 
 Outro projeto deve replicar o ciclo inteiro: leitura externa limitada, catálogo de estudo reduzido no controlador, schema de lição, confronto com fontes observadas, persistência protegida, recuperação limitada, expiração, correção/remoção e avaliação separada de origem e de qualidade. O [capítulo detalhado](docs/APRENDIZADO-COM-ELEVAR.md) contém contratos, algoritmo, limites, roteiro de implementação, testes e fontes. A especificação R28 agora é parcial: memória lexical com proveniência existe; embeddings e avaliação pareada de ganho permanecem pendentes.
+
+
+## Atualização 0.7.0: avaliar antes de autopublicar
+
+A autoevolução exige verificações em Docker offline e readonly, mais ganho estável em casos reservados de memória/contexto, com três repetições por revisão. Empate, regressão ou limpeza incerta bloqueiam publicação. Git e inferência continuam no controlador. Esta atualização substitui descrições anteriores de verificações da autoevolução no host. Não implementa LSP, debugger Java ou benchmark geral de inteligência. Consulte [o contrato e o passo a passo](docs/AVALIACAO-COMPARATIVA.md).

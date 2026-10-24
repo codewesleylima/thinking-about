@@ -41,8 +41,13 @@ function factory(implementation) {
       { text: 'Limite corrigido; host precisa verificar.', calls: [] }
     ]);
 }
-const run = (f, extra = {}) => runSelfImprovement({ ...f, topic: 'Melhorar precisão de fronteiras', documentationReader, providerFactory: factory(),
-  runner: (exe, args, options) => exe === process.execPath ? Promise.resolve(ok) : evolutionProcess(exe, args, options), ...extra });
+const run = (f, extra = {}) => {
+  const runner = extra.runner || ((exe, args, options) => exe === process.execPath ? Promise.resolve(ok) : evolutionProcess(exe, args, options));
+  return runSelfImprovement({ ...f, topic: 'Melhorar precisão de fronteiras', documentationReader, providerFactory: factory(), ...extra, runner,
+    verificationRunner: async o => { const r = await runner(process.execPath, o.argv, { cwd: o.root });
+      return { ...r, isolation: 'simulated-unit-fixture', passed: r.exitCode === 0 && !r.truncated && r.cleanupKnown }; },
+    comparisonRunner: extra.comparisonRunner || (async () => ({ kind: 'simulated-unit-fixture', passed: true })) });
+};
 
 test('pipeline roteirizado pesquisa, edita worktree, preserva testes originais e faz commit/push para remoto bare real', async () => {
   const f = await fixture(), r = await run(f);
@@ -130,4 +135,26 @@ test('verificação que muda o conteúdo invalida a candidata e não publica', a
 test('timeout do processo não afirma limpeza nem sucesso', async () => {
   const r = await evolutionProcess(process.execPath, ['-e', 'setTimeout(()=>{},1500)'], { timeoutMs: 50 });
   assert.equal(r.cleanupKnown, false); assert.notEqual(r.exitCode, 0);
+});
+
+test('candidata sem ganho comparativo não faz commit ou push mesmo com verificações aprovadas', async () => {
+  const f = await fixture();
+  const r = await run(f, { comparisonRunner: async () => ({ passed: false, improvedCases: 0, regressedCases: 0 }),
+    providerFactory: factory(phase => phase === 'repair' ? sequence([{ text: 'Sem ganho adicional.', calls: [] }]) : factory()('implement')) });
+  assert.equal(r.report.pushed, false); assert.equal(r.report.comparisons.length, 2);
+  assert.equal(await git(f.root, 'rev-parse', 'HEAD'), f.base);
+});
+
+test('mudança após os checks e durante comparação não publica conteúdo ausente do snapshot aprovado', async () => {
+  const f = await fixture();
+  const r = await run(f, { comparisonRunner: async () => {
+    const { readdir } = await import('node:fs/promises');
+    const directory = path.join(f.root, '.yzzy/evolutions');
+    const [id] = await readdir(directory);
+    await writeFile(path.join(directory, id, 'candidate/src/eligibility.js'), 'unverified after checks');
+    return { passed: true, improvedCases: 1, regressedCases: 0 };
+  } });
+  assert.match(r.error, /mudou durante a comparação/);
+  assert.equal(r.report.pushed, false); assert.equal(r.report.commit, null);
+  assert.equal(await git(f.root, 'rev-parse', 'HEAD'), f.base);
 });

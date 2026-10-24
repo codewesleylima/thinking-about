@@ -39,7 +39,8 @@ const report = { schema: 1, kind: 'deterministic_controller_scenarios', generate
   harnessHash: hash(canonical(sources)), instructionHash: hash(SYSTEM), toolSchemaHash: hash(canonical(tools)), manifestHash: hash(canonical(manifest)),
   passed: results.filter(r => r.passed).length, total: results.length, realModelCalls: 0,
   interpretation: 'Passagem de cenários roteirizados do controlador. Não mede qualidade de LLM; não há IC binomial para inferir generalização desta seleção determinística.', results };
-const dir = new URL('./results/', import.meta.url); await mkdir(dir, { recursive: true });
-await writeFile(new URL('latest.json', dir), JSON.stringify(report, null, 2) + '\n');
+const dir = process.env.YZZY_EVALUATION_OUTPUT || new URL('./results/', import.meta.url); await mkdir(dir, { recursive: true });
+const output = typeof dir === 'string' ? path.join(dir, 'latest.json') : new URL('latest.json', dir);
+await writeFile(output, JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 2));
 if (report.passed !== report.total) process.exitCode = 1;

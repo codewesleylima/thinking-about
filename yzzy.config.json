@@ -15,5 +15,9 @@
   },
   "pricing": null,
   "docker": { "image": "node:24-bookworm-slim@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bdf74566a0ebe01daee5", "memory": "512m", "cpus": "1", "pids": 64 },
+  "evolution": {
+    "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+    "memory": "1g", "cpus": "2", "pids": 256, "repetitions": 3, "minImprovedCases": 1
+  },
   "commands": { "tests": { "argv": ["node", "--test"], "verification": true } }
 }

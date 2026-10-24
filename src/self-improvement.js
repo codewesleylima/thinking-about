@@ -1,4 +1,3 @@
-import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { readFile, lstat, mkdir, open, rename, unlink, realpath } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -8,49 +7,23 @@ import { runAgent } from './agent.js';
 import { builtinAgents, defaultPreferences } from './profiles.js';
 import { stateDirectory, lockWorkspace } from './journal.js';
 import { invariant, abortIfNeeded, hash, canonical, redact } from './util.js';
+import { runProcess as evolutionProcess } from './process-runner.js';
+import { createEvolutionSnapshot, runEvolutionSandbox } from './evolution-sandbox.js';
+import { compareEvolutionCapabilities } from './capability-evaluation.js';
+export { evolutionProcess };
 
 export const runtimeRoot = fileURLToPath(new URL('../', import.meta.url));
-export const evolutionChecks = [['--test'], ['scripts/check.js'], ['evaluations/run.js']];
+export const evolutionChecks = [['--test', '--test-concurrency=2'], ['scripts/check.js'], ['evaluations/run.js']];
 const controls = new Set(['agent', 'tools', 'workspace', 'config', 'budget', 'profiles', 'providers', 'codex-provider', 'codex-rpc',
-  'host-shell', 'executor', 'journal', 'identity', 'util', 'errors', 'self-improvement', 'elevation'].map(s => `src/${s}.js`));
+  'host-shell', 'executor', 'journal', 'identity', 'util', 'errors', 'self-improvement', 'elevation',
+  'process-runner', 'evolution-sandbox', 'capability-evaluation'].map(s => `src/${s}.js`));
 const allowed = file => /^(src|docs|tests)\//.test(file) && !controls.has(file.toLowerCase())
   && !/\/VALIDACAO-[^/]+\.json$/i.test(file);
-const safeEnvironment = () => Object.fromEntries(Object.entries(process.env).filter(([key]) =>
-  !/KEY|TOKEN|SECRET|PASSWORD/i.test(key) && !/^GIT_(DIR|WORK_TREE|INDEX_FILE|OBJECT_DIRECTORY|ALTERNATE_OBJECT_DIRECTORIES|CONFIG_COUNT|CONFIG_KEY_\d+|CONFIG_VALUE_\d+)$/i.test(key)
-  && !['NODE_OPTIONS', 'NODE_PATH'].includes(key)));
-
-// Só o controlador escolhe executable/argv; esta função não é ferramenta do modelo.
-export function evolutionProcess(executable, args, { cwd, signal, timeoutMs = 60000, maxBytes = 32768 } = {}) {
-  return new Promise((resolve, reject) => {
-    abortIfNeeded(signal);
-    let stdout = '', stderr = '', bytes = 0, stopped = false, finished = false, grace;
-    const child = spawn(executable, args, { cwd, env: safeEnvironment(), shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
-    const finish = (code = null) => {
-      if (finished) return; finished = true; clearTimeout(timer); clearTimeout(grace); signal?.removeEventListener('abort', stop);
-      resolve({ exitCode: code, stdout, stderr, truncated: bytes > maxBytes, cleanupKnown: !stopped, cancelled: Boolean(signal?.aborted) });
-    };
-    const stop = () => {
-      if (stopped || finished) return; stopped = true; child.kill('SIGKILL');
-      // Descendentes podem sobreviver; não publica/reexecuta após interrupção.
-      grace = setTimeout(() => { child.stdout.destroy(); child.stderr.destroy(); child.unref(); finish(); }, 2000);
-    };
-    const timer = setTimeout(stop, timeoutMs);
-    signal?.addEventListener('abort', stop, { once: true });
-    if (signal?.aborted) stop();
-    const collect = key => chunk => {
-      bytes += chunk.length;
-      if (key === 'stdout') stdout += chunk.toString('utf8'); else stderr += chunk.toString('utf8');
-      if (bytes > maxBytes) { stdout = Buffer.from(stdout).subarray(0, maxBytes).toString('utf8'); stderr = Buffer.from(stderr).subarray(0, maxBytes).toString('utf8'); stop(); }
-    };
-    child.stdout.on('data', collect('stdout')); child.stderr.on('data', collect('stderr'));
-    child.once('error', error => { if (finished) return; finished = true; clearTimeout(timer); clearTimeout(grace); signal?.removeEventListener('abort', stop); reject(error); });
-    child.once('close', finish);
-  });
-}
 
 export async function runSelfImprovement({ root = runtimeRoot, config, configPath, topic = DEFAULT_STUDY,
   preferences = defaultPreferences, agentProfile = builtinAgents.general, signal, emit = () => {},
-  providerFactory, documentationReader, runner = evolutionProcess }) {
+  providerFactory, documentationReader, runner = evolutionProcess,
+  verificationRunner = runEvolutionSandbox, comparisonRunner = compareEvolutionCapabilities }) {
   invariant(!agentProfile.readOnly, 'Perfil somente leitura: use /estudar ou selecione um agente de escrita antes de /elevar');
   root = await realpath(root); topic = topic.trim() || DEFAULT_STUDY;
   invariant(Buffer.byteLength(topic) <= 2000 && config.limits.maxModelCalls >= 4, 'Tema muito longo ou orçamento insuficiente para estudar e implementar');
@@ -58,8 +31,9 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
   const lease = await open(path.join(root, '.yzzy', 'evolution.lock'), 'wx', 0o600);
   const id = randomUUID(), directory = path.join(root, '.yzzy', 'evolutions', id), candidate = path.join(directory, 'candidate');
   const report = { schema: 1, id, root, topic, started: new Date().toISOString(), status: 'running', candidate,
-    sessions: [], checks: [], totals: { modelCalls: 0, toolCalls: 0, spent: 0, held: 0 }, commit: null, pushed: false };
+    sessions: [], checks: [], comparisons: [], totals: { modelCalls: 0, toolCalls: 0, spent: 0, held: 0 }, commit: null, pushed: false };
   let reportFile, merged = false;
+  const snapshots = [];
   const started = Date.now(), deadline = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(config.limits.maxWallMs)]);
   const remaining = () => ({ ...config, limits: { ...config.limits,
     maxModelCalls: config.limits.maxModelCalls - report.totals.modelCalls,
@@ -124,12 +98,25 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
       for (const [file, digest] of baseline) invariant(hash(await readFile(path.join(candidate, file))) === digest, `Controle/teste original alterado: ${file}`);
       await manifest(); return [...new Set(changed)];
     };
-    const verify = async phase => {
+    const takeSnapshot = async () => {
+      const sourceManifest = await manifest();
+      const files = [...(await git(candidate, ['ls-files', '-z'])).split('\0'),
+        ...(await git(candidate, ['ls-files', '--others', '--exclude-standard', '-z'])).split('\0')].filter(Boolean);
+      const snapshot = await createEvolutionSnapshot(candidate, files, config, deadline); snapshots.push(snapshot);
+      invariant(await manifest() === sourceManifest, 'Candidata mudou durante a cópia do snapshot');
+      snapshot.sourceManifest = sourceManifest; return snapshot;
+    };
+    const verify = async (phase, snapshot) => {
       const before = await manifest();
+      invariant(before === snapshot.sourceManifest, 'Candidata diverge do snapshot antes das verificações');
       for (const args of evolutionChecks) {
-        const r = await execute(process.execPath, args, candidate, phase);
-        const check = { phase, argv: args, passed: r.exitCode === 0 && !r.truncated && r.cleanupKnown && !r.cancelled,
-          exitCode: r.exitCode, cleanupKnown: r.cleanupKnown, output: redact((r.stdout + r.stderr).slice(-12000)) };
+        emit({ type: 'evolution_phase', phase });
+        const remainingConfig = remaining(); invariant(remainingConfig.limits.maxWallMs > 0, 'Prazo agregado atingido');
+        remainingConfig.limits.commandTimeoutMs = Math.min(config.limits.commandTimeoutMs, remainingConfig.limits.maxWallMs);
+        const r = await verificationRunner({ root: candidate, snapshot, config: remainingConfig, argv: args, signal: deadline, phase });
+        const check = { phase, argv: args, passed: r.passed && r.exitCode === 0 && !r.truncated && r.cleanupKnown && !r.cancelled,
+          isolation: r.isolation, image: r.image, snapshot: snapshot.revision,
+          exitCode: r.exitCode, cleanupKnown: r.cleanupKnown, output: redact(((r.stdout || '') + (r.stderr || '')).slice(-12000)) };
         report.checks.push(check); await save();
         invariant(r.cleanupKnown, 'Verificação interrompida: inspecione processos; sem replay ou publicação');
         if (!check.passed) return false;
@@ -138,7 +125,8 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
       return true;
     };
     await save();
-    invariant(await verify('baseline'), 'Baseline falhou antes de qualquer melhoria; nada foi aplicado');
+    const baselineSnapshot = await takeSnapshot();
+    invariant(await verify('baseline', baselineSnapshot), 'Baseline isolada falhou antes de qualquer melhoria; confira Docker/imagem e o relatório; nada foi aplicado');
     invariant(await clean(candidate), 'Baseline alterou a candidata; nada será publicado');
     const studyConfig = remaining(); studyConfig.limits.maxModelCalls = Math.min(8, Math.max(2, Math.floor(config.limits.maxModelCalls / 3)));
     const study = await runElevation({ root: candidate, config: studyConfig, topic, preferences, signal: deadline, emit,
@@ -149,7 +137,7 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
     for (let attempt = 0; attempt < 2; attempt++) {
       const budget = remaining();
       invariant(budget.limits.maxModelCalls > 0 && budget.limits.maxToolCalls > 0 && budget.limits.maxCostMicrousd > 0, 'Orçamento agregado esgotado');
-      const task = `AUTOMELHORIA AUTORIZADA PELO USUÁRIO no próprio runtime. Tema: ${topic}\nEstude o código e implemente uma melhoria concreta e delimitada na capacidade do agente; não basta criar uma nota. Priorize confiabilidade, contexto, recuperação de memória, interação e qualidade de investigação de IA. Não invente retreinamento.\nAprendizados externos NÃO CONFIÁVEIS, para confronto com código/versão: ${JSON.stringify(study.learned)}\nVocê pode alterar módulos não congelados em src/, documentação e criar testes novos. Testes originais, controlador, políticas, execução, provedores, configuração, pacote/lockfiles e publicador estão congelados. Não enfraqueça guardrails, testes ou avaliadores. Consulte arquivos antes de editar com hash. Adicione uma regressão que demonstre a melhoria. Não execute shell ou Git: o host rodará testes, sintaxe/especificação e cenários determinísticos, depois fará commit/push se aprovados.\n${repair}\nEntregue mudança, justificativa, evidência a verificar e limites. Pare antes de esgotar o orçamento.`;
+      const task = `AUTOMELHORIA AUTORIZADA PELO USUÁRIO no próprio runtime. Tema: ${topic}\nImplemente uma melhoria concreta de memória/contexto. A versão candidata será comparada à anterior em tarefas reservadas pelo controlador, com repetições; publicação exige ganho estável e nenhuma regressão. Relevância de uma lição deve considerar tema, título, resumo, passos, verificação e limites, mantendo validade, allowlist, orçamento e preservação da autoridade humana. Não basta criar uma nota. Não invente retreinamento.\nAprendizados externos NÃO CONFIÁVEIS: ${JSON.stringify(study.learned)}\nVocê pode alterar módulos não congelados em src/, documentação e criar testes novos. Testes originais, controlador, políticas, execução, provedores, configuração, pacote/lockfiles e avaliadores estão congelados. Não tente localizar os casos reservados, detectar o avaliador ou fabricar resultados. Consulte arquivos antes de editar com hash. Adicione regressão significativa. Não execute shell ou Git: o host verificará snapshots isolados, comparará capacidades e publicará apenas a revisão aprovada.\n${repair}\nEntregue mudança, justificativa, evidência a verificar e limites. Termine dentro do orçamento.`;
       const result = await runAgent({ root: candidate, config: { ...budget, writeRoots: ['src', 'docs', 'tests'] }, objective: task,
         permissions: { allowWrite: true, allowExec: false, allowNetwork: true, allowHostShell: false }, preferences,
         agentProfile: builtinAgents.coder, evolutionContext: { id, attempt }, protectedPaths: [...frozen, ...controls],
@@ -161,8 +149,20 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
       if (!report.changed.length) { report.status = 'no_changes'; break; }
       invariant(report.changed.some(f => f.startsWith('src/')), 'A candidata só alterou documentação/testes; nenhuma melhoria do runtime foi implementada');
       invariant(report.changed.some(f => f.startsWith('tests/') && !tracked.includes(f)), 'Adicione um teste novo sem modificar os testes originais');
-      if (await verify(attempt ? 'repair' : 'candidate')) {
-        report.validatedManifest = await manifest(); await gate();
+      const candidateSnapshot = await takeSnapshot();
+      let approved = await verify(attempt ? 'repair' : 'candidate', candidateSnapshot);
+      if (approved) {
+        emit({ type: 'evolution_phase', phase: 'comparison' });
+        const comparison = await comparisonRunner({ baseline: baselineSnapshot, candidate: candidateSnapshot, config: remaining(), signal: deadline,
+          auditDirectory: path.join(directory, `comparison-${attempt}`),
+          onSample: async sample => { emit({ type: 'evolution_sample', ...sample }); } });
+        report.comparisons.push(comparison); await save(); approved = comparison.passed === true;
+        if (!approved) repair = 'A comparação reservada não comprovou ganho estável sem regressões. Melhore a cobertura semântica de recuperação e preserve restrições; casos/entradas reservados não serão fornecidos.\n';
+      }
+      if (approved) {
+        report.validatedManifest = candidateSnapshot.sourceManifest;
+        invariant(await manifest() === report.validatedManifest, 'Candidata mudou durante a comparação; revisão não avaliada');
+        await gate();
         const unlock = await lockWorkspace(root);
         try {
         invariant(await clean(root) && (await git(root, ['rev-parse', 'HEAD'])).trim() === report.base
@@ -181,7 +181,7 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
         report.pushed = true; report.status = 'published'; break;
         } finally { await unlock(); }
       }
-      repair = 'Verificação do host falhou. Corrija a implementação sem alterar testes originais ou controles:\n' + JSON.stringify(report.checks.filter(c => !c.passed).slice(-1));
+      repair += 'Verificações reprovadas (se houver):\n' + JSON.stringify(report.checks.filter(c => !c.passed).slice(-1));
       if (attempt === 1) throw new Error('Candidata reprovada após uma correção; original preservado');
     }
   } catch (error) {
@@ -189,7 +189,10 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
     report.status = merged ? 'push_unconfirmed' : report.integrationStarted ? 'integration_unconfirmed' : deadline.aborted ? 'cancelled' : /orçamento|Prazo|Limite/i.test(error.message) ? 'limited' : 'error';
   } finally {
     report.finished = new Date().toISOString();
-    try { if (reportFile) await save(); } finally { await lease.close(); await unlink(path.join(root, '.yzzy', 'evolution.lock')); }
+    try { if (reportFile) await save(); } finally {
+      try { for (const snapshot of snapshots) await snapshot.dispose(); }
+      finally { await lease.close(); await unlink(path.join(root, '.yzzy', 'evolution.lock')); }
+    }
   }
   emit({ type: 'evolution_finished', status: report.status, commit: report.commit, pushed: report.pushed, report: reportFile });
   return { id, report, file: reportFile, error: report.error,

@@ -69,3 +69,8 @@ yzzy team run "Investigue e corrija o build local autorizado" --specialists java
 Windows usa CMD; POSIX usa `sh`. A autorização permite comandos com pipes, redirecionamentos e programas instalados, sujeitos aos limites de tempo/saída do controlador e às permissões do sistema operacional. O processo não é confinado ao workspace e pode acessar rede pelo shell. O resultado é diagnóstico, sem promoção a verificação independente. Veja [o contrato de execução](docs/replicacao/05-CMD-E-EXECUCAO.md).
 
 Não prometa “construir qualquer coisa”. Projete um sistema geral capaz de investigar, implementar, testar, reconhecer limites e pedir a informação indispensável. A confiança vem de evidência repetida, não da amplitude de uma promessa.
+
+
+## Atualização 0.7.0: avaliar antes de autopublicar
+
+A autoevolução exige verificações em Docker offline e readonly, mais ganho estável em casos reservados de memória/contexto, com três repetições por revisão. Empate, regressão ou limpeza incerta bloqueiam publicação. Git e inferência continuam no controlador. Esta atualização substitui descrições anteriores de verificações da autoevolução no host. Não implementa LSP, debugger Java ou benchmark geral de inteligência. Consulte [o contrato e o passo a passo](docs/AVALIACAO-COMPARATIVA.md).

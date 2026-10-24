@@ -77,3 +77,8 @@ O modo restrito protege as capacidades que oferece. O shell do host é uma conce
 Ao concluir uma fase no repositório de destino, entregue: requisito atendido, módulo equivalente, decisão relevante, comando realmente executado, resultado observado, revisão/hash ou artefato e limitações. Quando houver uma falha, registre categoria e próximo experimento que pode refutar a hipótese.
 
 O objetivo deste ensino é permitir que outra implementação seja examinada e testada com o mesmo rigor. “Inspirou-se no YZZY” não transfere automaticamente resultados, segurança ou qualidade.
+
+
+## Atualização 0.7.0: avaliar antes de autopublicar
+
+A autoevolução exige verificações em Docker offline e readonly, mais ganho estável em casos reservados de memória/contexto, com três repetições por revisão. Empate, regressão ou limpeza incerta bloqueiam publicação. Git e inferência continuam no controlador. Esta atualização substitui descrições anteriores de verificações da autoevolução no host. Não implementa LSP, debugger Java ou benchmark geral de inteligência. Consulte [o contrato e o passo a passo](../AVALIACAO-COMPARATIVA.md).
