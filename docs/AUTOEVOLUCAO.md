@@ -1,6 +1,8 @@
 # Autoevolução do runtime com `/elevar`
 
-YZZY BLACK 0.7.0. O comando agora estuda um assunto de agentes de IA, implementa uma melhoria nos próprios módulos, executa verificações e publica a revisão pelo Git quando os controles passam. O ciclo de memória sem alteração de código continua disponível em `/estudar`.
+YZZY BLACK 0.7.1. O comando agora estuda um assunto de agentes de IA, implementa uma melhoria nos próprios módulos, executa verificações e publica a revisão pelo Git quando os controles passam. O ciclo de memória sem alteração de código continua disponível em `/estudar`.
+
+A versão 0.7.1 corrige o bloqueio do template rastreado `.env.example` na preparação do snapshot. Ele é omitido, sem liberar arquivos sensíveis. O teste `npm run test:evolution:checkout` verifica os três checks em Docker sobre o checkout Git real, além das réplicas. [Evidência da correção](replicacao/VALIDACAO-0.7.1.json).
 
 ## Como usar
 

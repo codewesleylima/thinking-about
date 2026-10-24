@@ -19,6 +19,9 @@ export async function createEvolutionSnapshot(root, files, config, signal) {
     await chmod(directory, 0o755);
     for (const relative of [...new Set(files)].sort()) {
       abortIfNeeded(signal);
+      // Template rastreado do checkout; não é necessário para executar os checks.
+      // Não libera .env ou outros nomes sensíveis na política de arquivos.
+      if (relative === '.env.example') continue;
       let source;
       if (relative === '.github/workflows/ci.yml') {
         let cursor = root;
@@ -28,7 +31,10 @@ export async function createEvolutionSnapshot(root, files, config, signal) {
             && (await realpath(cursor)).toLowerCase() === cursor.toLowerCase(), 'Workflow da réplica redirecionado');
         }
         source = cursor;
-      } else source = await workspace.resolve(relative);
+      } else {
+        try { source = await workspace.resolve(relative); }
+        catch (error) { throw new Error(`Snapshot de evolução: ${relative}: ${error.message}`, { cause: error }); }
+      }
       const stat = await lstat(source);
       invariant(stat.isFile() && stat.nlink === 1 && stat.size <= 8 * 1024 * 1024, 'Arquivo inválido no snapshot de evolução');
       const bytes = await readFile(source); total += bytes.length;

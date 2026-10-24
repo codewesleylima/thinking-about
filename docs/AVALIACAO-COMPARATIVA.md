@@ -22,7 +22,7 @@ Quando ambos os lados já passam todos os casos, este perfil não aprova outras 
 
 ## Isolamento de execução
 
-`src/evolution-sandbox.js` copia somente os arquivos autorizados para um snapshot temporário. Rejeita links, arquivos sensíveis e volumes excessivos. Não inclui `.git`, `.yzzy`, `.env`, dependências locais ou credenciais. Cada verificação e amostra roda em contêiner novo com código montado somente para leitura, rede desabilitada, raiz somente leitura, usuário 65534, todas as capabilities removidas e `no-new-privileges`. `/tmp` é temporário, com `noexec` e `nosuid`. Não monta socket Docker nem diretórios do usuário.
+`src/evolution-sandbox.js` copia somente os arquivos autorizados para um snapshot temporário. Rejeita links, arquivos sensíveis e volumes excessivos. Não inclui `.git`, `.yzzy`, `.env`, dependências locais ou credenciais. O caminho exato `.env.example` é omitido mesmo quando rastreado: o template não é necessário aos checks. Outros nomes sensíveis continuam bloqueados, com o caminho no diagnóstico. Cada verificação e amostra roda em contêiner novo com código montado somente para leitura, rede desabilitada, raiz somente leitura, usuário 65534, todas as capabilities removidas e `no-new-privileges`. `/tmp` é temporário, com `noexec` e `nosuid`. Não monta socket Docker nem diretórios do usuário.
 
 O padrão fixa imagem por digest, 1 GiB de memória, duas CPUs, 256 processos e 512 MiB temporários. A imagem completa Node inclui Git para fixtures locais dos testes; o Node continua sendo 24. A configuração `evolution` valida imagem, recursos, duas a cinco repetições e quantidade mínima de ganhos. Não há fallback para Node no host se Docker/imagem falharem. Timeout, truncamento, cancelamento, falha ou limpeza desconhecida impedem publicação. A remoção do contêiner usa um sinal independente do trabalho cancelado.
 
@@ -35,6 +35,7 @@ Instale e inicie Docker com contêineres Linux. Antes de usar `/elevar`, baixe a
 ```text
 docker pull node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
 npm run test:evolution:docker
+npm run test:evolution:checkout
 npm run test:capabilities:docker
 npm run test:evolution:live
 ```
@@ -42,6 +43,8 @@ npm run test:evolution:live
 O primeiro teste faz probes reais de UID, escrita negada, ausência de dados privados, capabilities, rede e timeout/limpeza. O segundo introduz um defeito deliberado em uma réplica e confirma, em Docker real, aprovação de ganho e bloqueio de regressão e empate. Não usa modelo. O terceiro exige backend autenticado: cria réplica e origem Git locais temporárias, pesquisa, pede uma implementação ao modelo, executa o pipeline completo e testa commit/push nessa origem de ensaio. Não publica essa fixture no GitHub. Resultados locais ficam em `.yzzy/self-improvement-smoke.json` e `.patch`. Testes unitários usam runners injetados explicitamente e não são prova de isolamento real.
 
 ## Como outra implementação deve replicar
+
+`test:evolution:checkout` valida os três checks em Docker usando todos os caminhos rastreados do checkout real. Não usa modelo ou Git de publicação. Esse ensaio cobre diferenças entre o conteúdo do checkout e o pacote/réplica, incluindo o template `.env.example` que bloqueou uma execução real da 0.7.0 antes de inferência. A exclusão do template não altera a política de acesso às ferramentas.
 
 O ensaio original registrado em `replicacao/VALIDACAO-0.7.0.json` partiu da implementação anterior real, sem preparar um defeito artificial. Como a melhoria já foi incorporada, novas execuções de `test:evolution:live` reconstroem esse defeito conhecido somente na réplica temporária, antes de criar a baseline Git: removem a ampliação da pontuação e seu teste específico. Depois desse ponto todos os testes da baseline ficam congelados. Esse replay mede funcionamento do pipeline sobre uma correção conhecida, sem contar como descoberta nova ou benchmark de generalização. Nunca remove testes do checkout de origem.
 

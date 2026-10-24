@@ -8,14 +8,17 @@ import { createEvolutionSnapshot, evolutionDockerArgs, runEvolutionSandbox } fro
 test('snapshot seleciona arquivos sem metadata Git, estado privado ou segredos; preserva bytes e detecta paths proibidos', async () => {
   const f = await makeFixture();
   await writeFile(path.join(f.root, '.env'), 'canary'); await mkdir(path.join(f.root, '.github/workflows'), { recursive: true });
+  await writeFile(path.join(f.root, '.env.example'), 'TEMPLATE_CANARY=not-mounted');
   await writeFile(path.join(f.root, '.github/workflows/ci.yml'), 'name: CI\n');
-  const s = await createEvolutionSnapshot(f.root, ['src/eligibility.js', '.github/workflows/ci.yml'], f.config);
+  const s = await createEvolutionSnapshot(f.root, ['.env.example', 'src/eligibility.js', '.github/workflows/ci.yml'], f.config);
   try {
     assert.equal(s.files, 2); await assert.rejects(readFile(path.join(s.directory, '.env')), { code: 'ENOENT' });
+    await assert.rejects(readFile(path.join(s.directory, '.env.example')), { code: 'ENOENT' });
     assert.match(await readFile(path.join(s.directory, 'src/eligibility.js'), 'utf8'), /isAdult/);
   } finally { await s.dispose(); }
   await assert.rejects(lstat(s.directory), { code: 'ENOENT' });
-  await assert.rejects(createEvolutionSnapshot(f.root, ['.env'], f.config), /bloqueado/);
+  await assert.rejects(createEvolutionSnapshot(f.root, ['.env'], f.config), /Snapshot de evolução: \.env: .*bloqueado/);
+  await assert.rejects(createEvolutionSnapshot(f.root, ['.env.production'], f.config), /bloqueado/);
 });
 
 test('flags isolam arquivos, rede, recursos e usuário, sem socket Docker ou credenciais', () => {

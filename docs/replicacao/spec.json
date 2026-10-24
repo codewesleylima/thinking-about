@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "productVersion": "0.7.0",
+  "productVersion": "0.7.1",
   "study": {"path":"estudo_agentes_ia_cli_arquitetura_implementacao_validacao.md","sha256":"89ca3740bec8b30e3e171becd99c61fa034a994821822911e2ff213f525c0252","sections":32},
   "meaning": "Especificação de referência. implemented indica código e testes locais, não paridade comercial. planned e partial não devem ser anunciados como funções completas.",
   "requirements": [

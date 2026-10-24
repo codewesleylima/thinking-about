@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "productVersion": "0.7.1",
+  "kind": "observed_checkout_snapshot_fix",
+  "failure": {
+    "reportId": "2f47911d-62e5-4166-b755-276262dbe03f",
+    "base": "518ed46895dab150ca1b4f2d367805678816dccb",
+    "error": "Caminho bloqueado pela política",
+    "modelCalls": 0,
+    "cause": "O snapshot usava todos os arquivos Git rastreados, incluindo .env.example; a réplica utilizada no ensaio anterior não incluía esse template."
+  },
+  "fix": "Omitir somente o caminho exato .env.example do snapshot. Preservar bloqueio de arquivos sensíveis e incluir o caminho nos diagnósticos de resolução.",
+  "checkoutProbe": {
+    "command": "node scripts/evolution-checkout-smoke.js",
+    "kind": "real_checkout_evolution_baseline",
+    "files": 128,
+    "snapshot": "cb054d80bd84f81b4acc5219d23d2d2971bb91a6504cfac32a03838bb0ed42b5",
+    "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+    "checks": ["node --test --test-concurrency=2", "node scripts/check.js", "node evaluations/run.js"],
+    "allPassed": true,
+    "cleanupKnown": true,
+    "excludedTemplate": ".env.example",
+    "realModelCalls": 0,
+    "publication": false,
+    "note": "Executado após a correção funcional e antes de alterar versões/documentação. Usa os arquivos rastreados do checkout, incluindo os módulos corrigidos; o script novo ainda não estava rastreado."
+  },
+  "regressionCoverage": "O teste de snapshot agora inclui .env.example junto dos fontes, comprova sua ausência na cópia e mantém recusa explícita para .env e .env.production.",
+  "localChecks": { "unitTests": { "passed": 142, "failed": 0 }, "check": "74 módulos JavaScript, JSON e 33 requisitos validados; hash do estudo original preservado" },
+  "limits": "Este ensaio valida a preparação e os checks reais. Não repete pesquisa/inferência, comparação de capacidades ou autopublicação."
+}
