@@ -6,6 +6,7 @@ import { loadConfig } from '../src/config.js';
 import { runProcess } from '../src/process-runner.js';
 import { createEvolutionSnapshot, runEvolutionSandbox } from '../src/evolution-sandbox.js';
 import { evolutionChecks } from '../src/self-improvement.js';
+import { evaluateEvolutionBaseline } from '../src/capability-evaluation.js';
 
 // Valida o checkout Git real, inclusive arquivos ausentes da réplica npm.
 // Não usa modelo, não edita o checkout e não faz commit/push.
@@ -26,6 +27,7 @@ try {
     console.log(JSON.stringify(checks.at(-1)));
     assert.equal(result.passed, true, JSON.stringify(result));
   }
+  const baselineEvaluation = await evaluateEvolutionBaseline({ baseline: snapshot, config });
   console.log(JSON.stringify({ kind: 'real_checkout_evolution_baseline', files: snapshot.files,
-    image: config.evolution.image, snapshot: snapshot.revision, excludedTemplate: '.env.example', checks, passed: true }));
+    image: config.evolution.image, snapshot: snapshot.revision, excludedTemplate: '.env.example', checks, baselineEvaluation, passed: true }));
 } finally { await snapshot.dispose(); }

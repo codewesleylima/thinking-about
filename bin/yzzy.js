@@ -236,13 +236,22 @@ async function main() {
       }
       const result = await runSelfImprovement({ ...self, topic, preferences, agentProfile: profile, signal: activeAbort.signal, emit });
       if (values.json) print({ type: 'self_improvement_result', id: result.id, status: result.report.status,
-        commit: result.report.commit, pushed: result.report.pushed, report: result.file, candidate: result.report.candidate, error: result.error || null });
+        commit: result.report.commit, pushed: result.report.pushed, report: result.file, candidate: result.report.candidate,
+        baselineEvaluation: result.report.baselineEvaluation, error: result.error || null });
       else {
         screen.outcome(result);
         const comparison = result.report.comparisons?.at(-1);
         if (comparison) screen.note(`Comparação de memória/contexto: ${comparison.baselinePassed}/${comparison.total} → ${comparison.candidatePassed}/${comparison.total}; ganhos: ${comparison.improvedCases}, regressões: ${comparison.regressedCases}.`);
         if (result.report.pushed) screen.note(`Publicado: ${result.report.commit}. Reinicie o YZZY para carregar a revisão nova.`);
         if (result.report.status === 'no_changes') screen.note('Nenhuma alteração concreta foi produzida; nenhum commit ou push.');
+        if (result.report.status === 'evaluation_saturated') {
+          const base = result.report.baselineEvaluation;
+          screen.note(`Avaliação atual no teto: ${base.baselinePassed}/${base.total}. Pesquisa e edição não foram iniciadas; nenhuma chamada de modelo consumida.`);
+          screen.note('O perfil de memória/contexto precisa de novos critérios revisados para medir outras melhorias. Isso não significa capacidade máxima geral. Use /estudar para pesquisar sem alterar código.');
+        }
+        if (result.report.status === 'no_measured_gain') screen.note('Sem ganho mensurável neste perfil. Candidata preservada para revisão; nenhuma nova tentativa, commit ou push.');
+        if (result.report.status === 'evaluation_unstable') screen.note('A versão atual apresentou resultados instáveis. Pesquisa e edição não foram iniciadas; revise a avaliação antes de continuar.');
+        if (result.report.status === 'insufficient_headroom') screen.note('O perfil atual não tem margem suficiente para o ganho mínimo configurado. Pesquisa e edição não foram iniciadas.');
         if (result.file) screen.note(`Relatório: ${result.file}`);
       }
       return result;

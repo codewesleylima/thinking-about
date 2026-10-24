@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "productVersion": "0.7.2",
+  "kind": "observed_evolution_ceiling_fix",
+  "reportedRun": {
+    "id": "6b3552f0-974e-45bb-9f93-c761a33d6c99",
+    "status": "limited",
+    "modelCalls": 24,
+    "toolCalls": 22,
+    "before": 36,
+    "after": 36,
+    "improvedCases": 0,
+    "regressedCases": 0,
+    "commit": null,
+    "pushed": false,
+    "diagnosis": "O perfil já estava no teto. O controlador iniciou reparação após um empate estável e consumiu o restante do limite local de chamadas. O relatório não indica cota remota esgotada."
+  },
+  "implementation": {
+    "preflight": "Avalia somente a baseline antes da pesquisa; detecta saturação, instabilidade e margem insuficiente sem inferência.",
+    "tie": "Resultado estável abaixo do ganho mínimo encerra como no_measured_gain, sem reparação adicional.",
+    "publication": "Mantém exigência de ganho estável, ausência de regressão e revisão vinculada ao snapshot. Nenhum empate é publicado.",
+    "modelLimit": "O limite agregado não foi aumentado nem reiniciado.",
+    "ui": "Estados de avaliação explicados sem exibir erro de inferência ou sugerir /new como solução para saturação."
+  },
+  "checks": {
+    "unitTests": { "passed": 145, "failed": 0 },
+    "syntaxAndReplication": { "passed": true, "modules": 74, "requirements": 33, "originalStudyPreserved": true },
+    "packagedCli": { "passed": true, "replica": "generated_demo_and_check_verified", "files": 128 },
+    "realDocker": {
+      "command": "node scripts/evolution-checkout-smoke.js",
+      "files": 130,
+      "snapshot": "ec0b384e5e65076d7092138950d9fab158295f2df2401d6c8072aba778cbb45e",
+      "image": "node:24-bookworm@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a",
+      "fixedChecksPassed": 3,
+      "cleanupKnown": true,
+      "preflight": { "baselinePassed": 36, "total": 36, "repetitions": 3, "saturated": true, "canImprove": false, "unstable": false, "availableImprovementCases": 0, "realModelCalls": 0 },
+      "note": "Executado após a correção funcional, antes da atualização de versão e documentação. Não executou publicação Git ou pesquisa."
+    },
+    "regressions": [
+      "Pré-avaliação distingue teto, margem insuficiente e instabilidade.",
+      "Pré-avaliação chama somente baseline e não monta gabarito privado.",
+      "Perfil saturado encerra antes de instanciar provedor, com zero chamadas e HEAD remoto preservado.",
+      "Empate da candidata encerra após uma comparação, sem consumir chamadas de reparação.",
+      "Ganho aprovado, falha de checks, orçamento agregado e proteção de publicação continuam testados."
+    ]
+  },
+  "limitations": [
+    "A avaliação atual mede componentes de memória/contexto. Saturação não significa capacidade geral máxima.",
+    "Novas classes de melhoria precisam de critérios e casos revisados no núcleo antes de autopublicação.",
+    "A candidata da execução relatada permanece preservada para revisão, sem incorporação automática."
+  ]
+}

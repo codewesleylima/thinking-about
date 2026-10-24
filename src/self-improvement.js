@@ -9,7 +9,7 @@ import { stateDirectory, lockWorkspace } from './journal.js';
 import { invariant, abortIfNeeded, hash, canonical, redact } from './util.js';
 import { runProcess as evolutionProcess } from './process-runner.js';
 import { createEvolutionSnapshot, runEvolutionSandbox } from './evolution-sandbox.js';
-import { compareEvolutionCapabilities } from './capability-evaluation.js';
+import { compareEvolutionCapabilities, evaluateEvolutionBaseline } from './capability-evaluation.js';
 export { evolutionProcess };
 
 export const runtimeRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -23,7 +23,8 @@ const allowed = file => /^(src|docs|tests)\//.test(file) && !controls.has(file.t
 export async function runSelfImprovement({ root = runtimeRoot, config, configPath, topic = DEFAULT_STUDY,
   preferences = defaultPreferences, agentProfile = builtinAgents.general, signal, emit = () => {},
   providerFactory, documentationReader, runner = evolutionProcess,
-  verificationRunner = runEvolutionSandbox, comparisonRunner = compareEvolutionCapabilities }) {
+  verificationRunner = runEvolutionSandbox, comparisonRunner = compareEvolutionCapabilities,
+  baselineEvaluator = evaluateEvolutionBaseline }) {
   invariant(!agentProfile.readOnly, 'Perfil somente leitura: use /estudar ou selecione um agente de escrita antes de /elevar');
   root = await realpath(root); topic = topic.trim() || DEFAULT_STUDY;
   invariant(Buffer.byteLength(topic) <= 2000 && config.limits.maxModelCalls >= 4, 'Tema muito longo ou orçamento insuficiente para estudar e implementar');
@@ -72,7 +73,7 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
     }
     return hash(canonical(entries));
   };
-  try {
+  evolution: try {
     const parent = path.dirname(directory); await mkdir(parent, { recursive: true });
     invariant(!(await lstat(parent)).isSymbolicLink(), 'Diretório de evolução não pode ser link');
     await mkdir(directory); reportFile = path.join(directory, 'report.json');
@@ -128,6 +129,15 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
     const baselineSnapshot = await takeSnapshot();
     invariant(await verify('baseline', baselineSnapshot), 'Baseline isolada falhou antes de qualquer melhoria; confira Docker/imagem e o relatório; nada foi aplicado');
     invariant(await clean(candidate), 'Baseline alterou a candidata; nada será publicado');
+    emit({ type: 'evolution_phase', phase: 'baseline_evaluation' });
+    report.baselineEvaluation = await baselineEvaluator({ baseline: baselineSnapshot, config: remaining(), signal: deadline,
+      auditDirectory: path.join(directory, 'baseline-evaluation') });
+    await save();
+    if (!report.baselineEvaluation.canImprove) {
+      report.status = report.baselineEvaluation.saturated ? 'evaluation_saturated'
+        : report.baselineEvaluation.unstable ? 'evaluation_unstable' : 'insufficient_headroom';
+      break evolution;
+    }
     const studyConfig = remaining(); studyConfig.limits.maxModelCalls = Math.min(8, Math.max(2, Math.floor(config.limits.maxModelCalls / 3)));
     const study = await runElevation({ root: candidate, config: studyConfig, topic, preferences, signal: deadline, emit,
       provider: providerFactory ? await providerFactory('study') : undefined, documentationReader });
@@ -157,6 +167,10 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
           auditDirectory: path.join(directory, `comparison-${attempt}`),
           onSample: async sample => { emit({ type: 'evolution_sample', ...sample }); } });
         report.comparisons.push(comparison); await save(); approved = comparison.passed === true;
+        if (!approved && !comparison.unstable && comparison.regressedCases === 0
+          && comparison.improvedCases < config.evolution.minImprovedCases) {
+          report.status = 'no_measured_gain'; break;
+        }
         if (!approved) repair = 'A comparação reservada não comprovou ganho estável sem regressões. Melhore a cobertura semântica de recuperação e preserve restrições; casos/entradas reservados não serão fornecidos.\n';
       }
       if (approved) {
@@ -196,6 +210,7 @@ export async function runSelfImprovement({ root = runtimeRoot, config, configPat
   }
   emit({ type: 'evolution_finished', status: report.status, commit: report.commit, pushed: report.pushed, report: reportFile });
   return { id, report, file: reportFile, error: report.error,
-    state: { status: report.status === 'published' ? 'checks_passed' : report.status === 'no_changes' ? 'completed_unverified'
+    state: { status: report.status === 'published' ? 'checks_passed'
+      : ['no_changes', 'no_measured_gain', 'evaluation_saturated', 'evaluation_unstable', 'insufficient_headroom'].includes(report.status) ? 'completed_unverified'
       : ['limited', 'cancelled'].includes(report.status) ? report.status : 'error', messages: [] } };
 }

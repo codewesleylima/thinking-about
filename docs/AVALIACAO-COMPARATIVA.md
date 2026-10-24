@@ -1,6 +1,6 @@
 # Comparação reservada e isolamento da autoevolução
 
-Contrato da versão 0.7.0. Esta é a primeira entrega das recomendações extraídas da pesquisa: comprovar uma melhoria delimitada antes de autopublicar e executar código candidato em ambiente isolado. Busca estrutural/LSP, debugger Java, contratos mais ricos entre especialistas e uma nova interface continuam como trabalhos separados.
+Contrato da versão 0.7.2. A entrega iniciada na 0.7.0 comprova uma melhoria delimitada antes de autopublicar e executa código candidato em ambiente isolado. Busca estrutural/LSP, debugger Java, contratos mais ricos entre especialistas e uma nova interface continuam como trabalhos separados.
 
 ## O que medimos
 
@@ -14,7 +14,9 @@ Somente a entrada e uma cópia confiável de `evaluations/capability-probe.js` s
 
 ## Critério de publicação
 
-Por padrão são três execuções por revisão, alternando a ordem anterior/candidata. Cada par usa exatamente a mesma entrada. A candidata precisa passar todos os testes/checks, corrigir pelo menos um caso em todas as repetições, não perder nenhum caso antes aprovado e não apresentar resultados instáveis. Empate bloqueia publicação automática. Uma rodada de reparação é permitida dentro do orçamento global; o reparador recebe diagnóstico geral sem o conjunto reservado.
+Antes da pesquisa, `evaluateEvolutionBaseline` executa somente a revisão atual nos casos reservados, três vezes. Seu gabarito privado fica em `baseline-evaluation/`. A classificação usa valores observados: `evaluation_saturated` quando todos os casos passam; `evaluation_unstable` se o resultado varia; `insufficient_headroom` quando há menos casos corrigíveis que o ganho mínimo exigido. Esses estados encerram o fluxo sem inferência, edição ou publicação, com código de saída zero e explicação na interface. Não declaram evolução comprovada ou capacidade geral máxima. O relatório inclui `baselineEvaluation` e contadores zerados; limites e prazos de Docker continuam ativos.
+
+Havendo margem, a pesquisa/implementação inicia. Depois são três execuções por revisão, alternando a ordem anterior/candidata em um novo conjunto reservado gerado após a proposta. Cada par usa exatamente a mesma entrada. A candidata precisa passar todos os testes/checks, corrigir pelo menos um caso em todas as repetições, não perder nenhum caso antes aprovado e não apresentar resultados instáveis. Resultado estável abaixo do ganho mínimo encerra como `no_measured_gain`, preservando candidata e relatório sem correção adicional. Uma rodada de reparação permanece disponível para falhas de check, regressão ou instabilidade, dentro do orçamento global; o reparador recebe diagnóstico geral sem o conjunto reservado.
 
 O relatório registra os casos aprovados por repetição, ganhos, regressões, instabilidade, hashes dos snapshots e da entrada, imagem, duração e escopo. As comparações não fazem chamadas de modelo (`realModelCalls: 0`); pesquisa e implementação possuem sessões e consumo próprios. `durationMs` soma os tempos das funções observadas, sem incluir a inicialização dos contêineres. Não há limiar estatístico de desempenho ou estimativa monetária fictícia para o backend Codex.
 

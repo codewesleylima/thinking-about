@@ -46,7 +46,8 @@ const run = (f, extra = {}) => {
   return runSelfImprovement({ ...f, topic: 'Melhorar precisão de fronteiras', documentationReader, providerFactory: factory(), ...extra, runner,
     verificationRunner: async o => { const r = await runner(process.execPath, o.argv, { cwd: o.root });
       return { ...r, isolation: 'simulated-unit-fixture', passed: r.exitCode === 0 && !r.truncated && r.cleanupKnown }; },
-    comparisonRunner: extra.comparisonRunner || (async () => ({ kind: 'simulated-unit-fixture', passed: true })) });
+    comparisonRunner: extra.comparisonRunner || (async () => ({ kind: 'simulated-unit-fixture', passed: true })),
+    baselineEvaluator: extra.baselineEvaluator || (async () => ({ kind: 'simulated-unit-fixture', canImprove: true })) });
 };
 
 test('pipeline roteirizado pesquisa, edita worktree, preserva testes originais e faz commit/push para remoto bare real', async () => {
@@ -141,7 +142,18 @@ test('candidata sem ganho comparativo não faz commit ou push mesmo com verifica
   const f = await fixture();
   const r = await run(f, { comparisonRunner: async () => ({ passed: false, improvedCases: 0, regressedCases: 0 }),
     providerFactory: factory(phase => phase === 'repair' ? sequence([{ text: 'Sem ganho adicional.', calls: [] }]) : factory()('implement')) });
-  assert.equal(r.report.pushed, false); assert.equal(r.report.comparisons.length, 2);
+  assert.equal(r.report.pushed, false); assert.equal(r.report.comparisons.length, 1);
+  assert.equal(r.report.status, 'no_measured_gain'); assert.equal(r.report.totals.modelCalls, 6);
+  assert.equal(await git(f.root, 'rev-parse', 'HEAD'), f.base);
+});
+
+test('perfil no teto encerra antes da pesquisa sem inferência, commit ou push', async () => {
+  const f = await fixture();
+  const r = await run(f, { baselineEvaluator: async () => ({ canImprove: false, saturated: true, baselinePassed: 36, total: 36 }),
+    providerFactory() { assert.fail('não deve consumir chamadas de modelo'); } });
+  assert.equal(r.report.status, 'evaluation_saturated'); assert.equal(r.report.totals.modelCalls, 0);
+  assert.equal(r.report.sessions.length, 0); assert.equal(r.report.commit, null); assert.equal(r.report.pushed, false);
+  assert.equal(r.state.status, 'completed_unverified'); assert.equal(r.error, undefined);
   assert.equal(await git(f.root, 'rev-parse', 'HEAD'), f.base);
 });
 

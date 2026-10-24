@@ -1,6 +1,6 @@
 # YZZY BLACK
 
-**Versão 0.7.1 — evolução avaliada:** `/elevar [tema]` pesquisa e edita uma candidata Git, executa verificações em Docker sem rede e compara memória/contexto com a revisão anterior em casos reservados repetidos. Só publica com ganho estável e sem regressões. Exige checkout limpo e sincronizado, Docker e backend autenticado. Corrige o bloqueio do template `.env.example` no snapshot do checkout real. [Algoritmo e reprodução](docs/AVALIACAO-COMPARATIVA.md).
+**Versão 0.7.2 — evolução avaliada:** `/elevar [tema]` mede a margem de melhoria antes de gastar chamadas do modelo, pesquisa e edita uma candidata Git e só publica com ganho estável sem regressões. Testes e comparações de memória/contexto executam em Docker sem rede. Perfil no teto encerra sem inferência; empate encerra sem tentativa de correção. Exige checkout limpo e sincronizado, Docker e backend autenticado. [Algoritmo e reprodução](docs/AVALIACAO-COMPARATIVA.md).
 
 **Migração da 0.5.0:** o antigo estudo sem edição agora se chama `/estudar` ou `yzzy estudar "tema" --json`. `/elevar` passa a autorizar estudo, implementação, verificações Docker, comparação e publicação Git. Reinicie o CLI após atualizar ou autopublicar.
 

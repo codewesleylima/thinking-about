@@ -83,7 +83,7 @@ export function compareCapabilitySamples(baseline, candidate, minImprovedCases =
 }
 
 export async function compareEvolutionCapabilities({ baseline, candidate, config, signal, auditDirectory,
-  sandboxRunner = runEvolutionSandbox, onSample = () => {} }) {
+  sandboxRunner = runEvolutionSandbox, onSample = () => {}, baselineOnly = false }) {
   const suite = buildCapabilitySuite(), directory = await mkdtemp(path.join(tmpdir(), 'yzzy-capability-suite-'));
   const samples = { baseline: [], candidate: [] };
   try {
@@ -97,7 +97,7 @@ export async function compareEvolutionCapabilities({ baseline, candidate, config
     }
     // Mesmas entradas para ambas as versões. A ordem alterna para reduzir viés de aquecimento.
     for (let repetition = 0; repetition < config.evolution.repetitions; repetition++) {
-      for (const version of repetition % 2 ? ['candidate', 'baseline'] : ['baseline', 'candidate']) {
+      for (const version of baselineOnly ? ['baseline'] : repetition % 2 ? ['candidate', 'baseline'] : ['baseline', 'candidate']) {
         abortIfNeeded(signal);
         const result = await sandboxRunner({ snapshot: version === 'baseline' ? baseline : candidate, config, signal,
           argv: ['/evaluation/probe.mjs'], evaluationDirectory: directory });
@@ -106,13 +106,27 @@ export async function compareEvolutionCapabilities({ baseline, candidate, config
         samples[version].push(graded); await onSample({ version, repetition, passed: graded.filter(c => c.passed).length, total: graded.length });
       }
     }
-    return { ...compareCapabilitySamples(samples.baseline, samples.candidate, config.evolution.minImprovedCases),
+    const metadata = {
       datasetHash: hash(canonical(suite.input)), seedHash: suite.seedHash,
-      baselineRevision: baseline.revision, candidateRevision: candidate.revision, image: config.evolution.image,
-      durationMs: Object.fromEntries(Object.entries(samples).map(([version, values]) => [version, values.flat().reduce((n, c) => n + c.durationMs, 0)])) };
+      baselineRevision: baseline.revision, ...(candidate ? { candidateRevision: candidate.revision } : {}), image: config.evolution.image,
+      durationMs: Object.fromEntries(Object.entries(samples).filter(([, values]) => values.length).map(([version, values]) => [version, values.flat().reduce((n, c) => n + c.durationMs, 0)])) };
+    if (baselineOnly) return { ...summarizeCapabilityBaseline(samples.baseline, config.evolution.minImprovedCases), ...metadata };
+    return { ...compareCapabilitySamples(samples.baseline, samples.candidate, config.evolution.minImprovedCases), ...metadata };
   } finally {
     const resolved = path.resolve(directory);
     invariant(path.dirname(resolved).toLowerCase() === path.resolve(tmpdir()).toLowerCase() && path.basename(resolved).startsWith('yzzy-capability-suite-'), 'Diretório de avaliação fora do temporário');
     await rm(resolved, { recursive: true, force: true });
   }
 }
+
+export function summarizeCapabilityBaseline(samples, minImprovedCases = 1) {
+  const compared = compareCapabilitySamples(samples, samples, minImprovedCases);
+  const availableImprovementCases = compared.cases.filter(c => c.baselinePassed < samples.length).length;
+  return { schema: 1, kind: 'reserved_component_baseline', repetitions: samples.length,
+    baselinePassed: compared.baselinePassed, total: compared.total, unstable: compared.unstable,
+    availableImprovementCases, minImprovedCases, saturated: compared.baselinePassed === compared.total,
+    canImprove: !compared.unstable && availableImprovementCases >= minImprovedCases, realModelCalls: 0,
+    interpretation: 'Mede margem de ganho no perfil de memória/contexto antes da inferência. Saturação deste perfil não significa capacidade geral máxima.' };
+}
+
+export const evaluateEvolutionBaseline = options => compareEvolutionCapabilities({ ...options, baselineOnly: true });
